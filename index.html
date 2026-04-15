@@ -271,9 +271,14 @@
             transition: transform 0.15s, box-shadow 0.15s;
         }
 
-        .theme-card:hover {
+        .theme-card:hover, .theme-card:focus-visible {
             transform: translateY(-2px);
             box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .theme-card:focus-visible {
+            outline: 2px solid var(--color-accent);
+            outline-offset: 2px;
         }
 
         .theme-header {
@@ -400,6 +405,10 @@
             .radar-selector { max-height: 200px; }
             #bubble-chart { height: 400px; }
             #radar-chart { height: 360px; }
+            /* Larger touch targets on mobile */
+            .view-tab { padding: 9px 14px; font-size: 0.85rem; min-height: 40px; }
+            .sort-btn { padding: 8px 14px; min-height: 36px; }
+            .radar-selector-item { padding: 10px 12px; min-height: 40px; }
         }
     </style>
 </head>
@@ -565,9 +574,14 @@
         window.switchView = function(view, skipHash) {
             currentView = view;
             document.querySelectorAll('.view-container').forEach(v => v.classList.remove('active'));
-            document.querySelectorAll('.view-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.view-tab').forEach(t => {
+                t.classList.remove('active');
+                t.setAttribute('aria-selected', 'false');
+            });
             document.getElementById('view-' + view).classList.add('active');
-            document.querySelector(`.view-tab[onclick*="${view}"]`).classList.add('active');
+            const activeTab = document.querySelector(`.view-tab[onclick*="${view}"]`);
+            activeTab.classList.add('active');
+            activeTab.setAttribute('aria-selected', 'true');
 
             // Show sort controls only in list view
             document.getElementById('sort-controls').style.display = view === 'list' ? 'flex' : 'none';
@@ -578,6 +592,19 @@
             if (view === 'matrix') initBubbleChart();
             if (view === 'radar') initRadarView();
         };
+
+        // Keyboard navigation for tabs (arrow keys per WAI-ARIA tablist pattern)
+        document.querySelector('.view-tabs').addEventListener('keydown', function(e) {
+            const tabs = Array.from(this.querySelectorAll('.view-tab'));
+            const current = tabs.findIndex(t => t.classList.contains('active'));
+            let next = current;
+            if (e.key === 'ArrowRight') next = (current + 1) % tabs.length;
+            else if (e.key === 'ArrowLeft') next = (current - 1 + tabs.length) % tabs.length;
+            else return;
+            e.preventDefault();
+            tabs[next].focus();
+            tabs[next].click();
+        });
 
         // --- Sort ---
         window.sortBy = function(type) {
@@ -618,7 +645,9 @@
                 </div>`;
             }).join('');
 
-            return `<div class="theme-card" onclick="openModal(${index})">
+            return `<div class="theme-card" onclick="openModal(${index})" tabindex="0" role="button"
+                aria-label="${displayName} - 総合スコア ${(theme.composite_score * 100).toFixed(0)}%"
+                onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openModal(${index})}">
                 <div class="theme-header">
                     <div>
                         <div class="theme-name">${displayName}</div>
@@ -728,11 +757,11 @@
         }
 
         function getThemeColor(score, delta) {
-            // High score + accelerating = dark accent, low = muted
-            if (score > 0.5 && delta > 0.01) return 'rgba(122, 64, 51, 0.85)';   // Critical
-            if (score <= 0.5 && delta > 0.01) return 'rgba(122, 64, 51, 0.75)';  // Emerging
-            if (score > 0.5 && delta <= 0.01) return 'rgba(176, 154, 136, 0.7)';  // Mature
-            return 'rgba(224, 204, 187, 0.6)';  // Low priority
+            // Distinct colors per quadrant for clear visual separation
+            if (score > 0.5 && delta > 0.01) return 'rgba(92, 46, 36, 0.9)';    // Critical: darkest
+            if (score <= 0.5 && delta > 0.01) return 'rgba(176, 114, 86, 0.8)';  // Emerging: warm mid-tone
+            if (score > 0.5 && delta <= 0.01) return 'rgba(150, 109, 94, 0.65)'; // Mature: cool mid-tone
+            return 'rgba(224, 204, 187, 0.55)';  // Low priority: lightest
         }
 
         // --- Radar comparison (ECharts) ---
@@ -749,17 +778,26 @@
         function renderRadarSelector() {
             const themes = getSortedThemes();
             const selector = document.getElementById('radar-selector');
-            selector.innerHTML = themes.map((t, i) => {
+            const count = selectedRadarThemes.length;
+            // Header showing selection count and limit feedback
+            let headerHtml = `<div class="radar-selector-header">${count}/4 件選択中</div>`;
+            if (count >= 4) {
+                headerHtml += `<div class="radar-limit-msg">最大4件に達しました。他を選ぶには先に解除してください</div>`;
+            }
+            const itemsHtml = themes.map((t, i) => {
                 const isSelected = selectedRadarThemes.includes(t.name);
                 const colorIdx = selectedRadarThemes.indexOf(t.name);
                 const dotColor = isSelected ? RADAR_COLORS[colorIdx] : '#E0CCBB';
-                return `<div class="radar-selector-item ${isSelected ? 'selected' : ''}"
-                    onclick="toggleRadarTheme('${t.name}')">
+                // Dim unselectable items when at limit
+                const dimmed = (!isSelected && count >= 4) ? ' style="opacity:0.45;cursor:default;"' : '';
+                return `<div class="radar-selector-item ${isSelected ? 'selected' : ''}"${dimmed}
+                    onclick="toggleRadarTheme('${t.name}')" role="option" aria-selected="${isSelected}">
                     <span class="color-dot" style="background:${dotColor}"></span>
                     ${formatThemeName(t.name)}
                     <span class="item-score">${(t.composite_score * 100).toFixed(0)}%</span>
                 </div>`;
             }).join('');
+            selector.innerHTML = headerHtml + itemsHtml;
         }
 
         window.toggleRadarTheme = function(name) {
@@ -777,7 +815,15 @@
             if (!radarChart) return;
 
             const hint = document.getElementById('radar-hint');
-            hint.style.display = selectedRadarThemes.length === 0 ? 'block' : 'none';
+            if (selectedRadarThemes.length === 0) {
+                hint.style.display = 'block';
+                hint.textContent = '左のリストからテーマをクリックして選択してください（最大4件）';
+            } else if (selectedRadarThemes.length === 1) {
+                hint.style.display = 'block';
+                hint.textContent = '比較するにはもう1件以上テーマを選択してください';
+            } else {
+                hint.style.display = 'none';
+            }
 
             const themeMap = {};
             THEMES_DATA.themes.forEach(t => themeMap[t.name] = t);
@@ -849,7 +895,7 @@
             if (theme.source_items && theme.source_items.length > 0) {
                 sourcesHtml = '<h3 style="margin-top:20px;font-size:0.9rem;color:var(--color-text-body);">情報ソース</h3>';
                 sourcesHtml += theme.source_items.map(s => `<div class="source-item">
-                    <a href="${s.url}" target="_blank">${s.title || '無題'}</a>
+                    <a href="${s.url}" target="_blank" rel="noopener">${s.title || '無題'}</a>
                     <div class="source-meta">${s.source} / ${s.date || '日付不明'}</div>
                 </div>`).join('');
             }
@@ -860,10 +906,12 @@
                 <p class="modal-subtitle">${theme.item_count} 件 / 総合スコア: ${(theme.composite_score * 100).toFixed(1)}%</p>
                 ${evidenceHtml}
                 ${sourcesHtml}
-                <a href="${SCORER_URL}?q=${scorerQuery}" target="_blank" class="scorer-link">詳細スコアリングを実行</a>
+                <a href="${SCORER_URL}?q=${scorerQuery}" target="_blank" rel="noopener" class="scorer-link">詳細スコアリングを実行</a>
             `;
             document.getElementById('modal-overlay').classList.add('active');
             document.body.style.overflow = 'hidden';
+            // Move focus to close button for keyboard/screen reader users
+            setTimeout(() => document.querySelector('.modal-close').focus(), 100);
             history.pushState({ modalOpen: true }, '', location.href);
         }
 
@@ -884,7 +932,22 @@
         });
 
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && document.getElementById('modal-overlay').classList.contains('active')) history.back();
+            const overlay = document.getElementById('modal-overlay');
+            if (!overlay.classList.contains('active')) return;
+            if (e.key === 'Escape') { history.back(); return; }
+            // Focus trap: keep Tab within modal
+            if (e.key === 'Tab') {
+                const modal = document.getElementById('modal-content');
+                const focusable = modal.querySelectorAll('button, a[href], [tabindex]:not([tabindex="-1"])');
+                if (focusable.length === 0) return;
+                const first = focusable[0];
+                const last = focusable[focusable.length - 1];
+                if (e.shiftKey && document.activeElement === first) {
+                    e.preventDefault(); last.focus();
+                } else if (!e.shiftKey && document.activeElement === last) {
+                    e.preventDefault(); first.focus();
+                }
+            }
         });
 
         init();
