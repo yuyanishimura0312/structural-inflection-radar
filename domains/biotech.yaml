@@ -1,0 +1,34 @@
+domain_id: biotech
+domain_name_ja: "バイオテクノロジー・合成生物学"
+domain_name_en: "Biotechnology / Synthetic Biology"
+description: "遺伝子治療・mRNA・合成生物学・精密医療等の構造変化検出"
+enabled: true
+
+sources:
+  openalex:
+    keywords:
+      - "CRISPR gene editing"
+      - "mRNA therapeutics"
+      - "synthetic biology"
+      - "cell therapy"
+      - "gene drive"
+      - "protein engineering"
+      - "biosynthesis pathway"
+      - "metabolic engineering"
+      - "precision medicine"
+      - "longevity biology"
+      - "GLP-1 receptor agonist"
+      - "base editing"
+      - "organoid"
+      - "biofoundry"
+      - "directed evolution"
+  hackernews:
+    keywords:
+      - "CRISPR"
+      - "gene therapy"
+      - "synthetic biology"
+      - "mRNA"
+      - "longevity"
+      - "biotech"
+      - "protein folding"
+      - "cell therapy"

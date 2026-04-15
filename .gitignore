@@ -5,6 +5,11 @@
 # Raw data (may contain large/sensitive content)
 data/raw/
 
+# SQLite database (local only, not deployed)
+data/radar.db
+data/radar.db-wal
+data/radar.db-shm
+
 # Python
 __pycache__/
 *.pyc

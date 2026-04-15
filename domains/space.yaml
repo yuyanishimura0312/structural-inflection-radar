@@ -1,0 +1,33 @@
+domain_id: space
+domain_name_ja: "宇宙商業技術"
+domain_name_en: "Commercial Space Technology"
+description: "再使用型ロケット・衛星コンステレーション・宇宙製造等の構造変化検出"
+enabled: true
+
+sources:
+  openalex:
+    keywords:
+      - "reusable launch vehicle"
+      - "satellite constellation"
+      - "small satellite"
+      - "space debris mitigation"
+      - "in-situ resource utilization"
+      - "lunar economy"
+      - "space manufacturing"
+      - "orbital refueling"
+      - "earth observation satellite"
+      - "direct to cell satellite"
+      - "launch cost reduction"
+      - "commercial space station"
+      - "CubeSat"
+      - "mega constellation"
+      - "space sustainability"
+  hackernews:
+    keywords:
+      - "Starship"
+      - "Starlink"
+      - "rocket launch"
+      - "satellite internet"
+      - "space station"
+      - "lunar"
+      - "small sat"

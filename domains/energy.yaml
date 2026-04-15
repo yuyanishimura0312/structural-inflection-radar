@@ -1,0 +1,38 @@
+domain_id: energy
+domain_name_ja: "エネルギー技術"
+domain_name_en: "Energy Technology"
+description: "再生可能エネルギー・蓄電・水素・核融合等の構造変化検出"
+enabled: true
+
+sources:
+  openalex:
+    keywords:
+      - "energy transition"
+      - "battery storage"
+      - "solar cell"
+      - "carbon capture"
+      - "green hydrogen"
+      - "perovskite solar"
+      - "flow battery"
+      - "nuclear fusion"
+      - "wind energy"
+      - "grid storage"
+      - "electrolysis"
+      - "solid state battery"
+      - "energy harvesting"
+      - "supercapacitor"
+      - "geothermal energy"
+  hackernews:
+    keywords:
+      - "solar"
+      - "battery"
+      - "energy"
+      - "hydrogen"
+      - "fusion"
+      - "carbon capture"
+      - "wind power"
+      - "grid"
+      - "EV charging"
+      - "perovskite"
+      - "electrolysis"
+      - "geothermal"

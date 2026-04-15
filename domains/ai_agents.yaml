@@ -1,0 +1,35 @@
+domain_id: ai_agents
+domain_name_ja: "AI・エージェント技術"
+domain_name_en: "Artificial Intelligence / Agentic Systems"
+description: "LLM・自律エージェント・AIチップ・推論効率化等の構造変化検出"
+enabled: true
+
+sources:
+  openalex:
+    keywords:
+      - "large language model"
+      - "autonomous agent"
+      - "AI reasoning"
+      - "foundation model"
+      - "multimodal AI"
+      - "AI inference"
+      - "AI chip architecture"
+      - "neural scaling law"
+      - "AI alignment"
+      - "retrieval augmented generation"
+      - "AI benchmark"
+      - "machine learning efficiency"
+      - "transformer architecture"
+      - "agentic AI"
+      - "AI deployment"
+  hackernews:
+    keywords:
+      - "LLM"
+      - "GPT"
+      - "Claude"
+      - "AI agent"
+      - "inference"
+      - "foundation model"
+      - "AI chip"
+      - "reasoning model"
+      - "benchmark"

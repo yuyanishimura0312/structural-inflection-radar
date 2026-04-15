@@ -1,0 +1,32 @@
+domain_id: quantum
+domain_name_ja: "量子技術"
+domain_name_en: "Quantum Technologies"
+description: "量子コンピュータ・量子通信・量子センシング等の構造変化検出"
+enabled: true
+
+sources:
+  openalex:
+    keywords:
+      - "quantum error correction"
+      - "quantum advantage"
+      - "fault tolerant quantum computing"
+      - "qubit coherence time"
+      - "quantum key distribution"
+      - "quantum networking"
+      - "superconducting qubit"
+      - "photonic quantum computing"
+      - "quantum simulation"
+      - "topological qubit"
+      - "quantum sensing"
+      - "quantum algorithm"
+      - "neutral atom quantum"
+      - "quantum memory"
+      - "post quantum cryptography"
+  hackernews:
+    keywords:
+      - "quantum computing"
+      - "qubit"
+      - "quantum error correction"
+      - "quantum supremacy"
+      - "quantum chip"
+      - "post-quantum"
