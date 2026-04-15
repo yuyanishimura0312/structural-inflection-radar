@@ -28,14 +28,22 @@ CREDIBILITY_WEIGHTS = {
     "general_media": 0.4,
 }
 
-SCORING_PROMPT = """あなたは技術予測と構造変化分析の専門家です。
-以下のアイテムを分析し、構造的変曲点の5軸に関連するシグナルが含まれているか判定してください。
+SCORING_PROMPT = """あなたは技術予測と構造変化分析の厳格な審査官です。
+以下のアイテムを分析し、構造的変曲点の5軸に関連する**具体的で明確な**シグナルが含まれているか判定してください。
 
-1. THRESHOLD_PROXIMITY（シェファー臨界転移）: コスト曲線の変曲点到達、性能ベンチマークの突破、技術指標の臨界閾値への接近
-2. EXTERNAL_PRESSURE（ギールズ多層パースペクティブ）: 地政学的イベント、規制圧力、サプライチェーン混乱、社会運動による機会の窓の出現
-3. TECH_CYCLE_POSITION（ペレス技術革命論）: VC投資パターン、大型買収、研究から実装フェーズへの移行、政府政策への組み込み
-4. INSTITUTIONAL_CHANGE（ノース制度経済学）: 規制の確定、標準の策定、認証制度の創設、規制サンドボックス
-5. UNCERTAINTY_RESOLUTION（ディキシット・ピンダイク実物オプション）: 大型契約の締結、政府方針の確定、不可逆的投資の実行、競合技術の排除
+重要な判定基準:
+- signalはデフォルトでfalseにしてください。明確な根拠がある場合のみtrueにしてください
+- 一般的な技術動向の記述や、単なる研究発表はシグナルではありません
+- 具体的な数値（コスト削減率、投資額、採用率）、固有名詞（企業名、法規制名）、時期の特定がある場合のみシグナルと判定してください
+- 学術論文のサーベイ・レビュー・メタ分析は、それ自体はシグナルではありません
+- 5軸のうち該当するのは通常0〜2軸です。3軸以上にシグナルがあるケースは稀です
+
+5軸の定義:
+1. THRESHOLD_PROXIMITY（臨界閾値接近）: コスト曲線の変曲点到達（具体的な数値あり）、性能ベンチマークの突破（何が何を超えたか明示）、技術指標の臨界閾値への接近
+2. EXTERNAL_PRESSURE（外圧・機会の窓）: 特定の地政学的イベント、具体的な規制措置、サプライチェーンの具体的混乱、社会運動による政策変更
+3. TECH_CYCLE_POSITION（技術サイクル位置）: 具体的なVC投資ラウンド・金額、特定企業の大型買収、政府の具体的政策決定、研究段階から商用展開への移行事例
+4. INSTITUTIONAL_CHANGE（制度変化）: 具体的な規制の確定・施行、特定の標準の策定・採択、認証制度の創設、規制サンドボックスの設置
+5. UNCERTAINTY_RESOLUTION（不確実性解消）: 特定の大型契約締結、政府方針の確定、不可逆的投資の実行（具体的金額）、競合技術の市場からの排除
 
 アイテム:
 タイトル: {title}
@@ -43,16 +51,17 @@ SCORING_PROMPT = """あなたは技術予測と構造変化分析の専門家で
 ソース: {source} ({source_type})
 日付: {date}
 
-theme_tagsは英語の短いタグ（snake_case）で返してください。evidenceは必ず日本語で記述してください。
+theme_tagsは英語の短いタグ（snake_case）で、このアイテムの技術テーマを1〜3個返してください。
+evidenceは必ず日本語で記述してください。シグナルなしの場合は空文字にしてください。
 JSONフォーマットのみで回答してください:
 {{
   "theme_tags": ["tag1", "tag2"],
   "axes": {{
-    "threshold_proximity": {{"signal": true/false, "evidence": "日本語で1文、またはシグナルなしなら空文字"}},
-    "external_pressure": {{"signal": true/false, "evidence": "日本語で1文、またはシグナルなしなら空文字"}},
-    "tech_cycle_position": {{"signal": true/false, "evidence": "日本語で1文、またはシグナルなしなら空文字"}},
-    "institutional_change": {{"signal": true/false, "evidence": "日本語で1文、またはシグナルなしなら空文字"}},
-    "uncertainty_resolution": {{"signal": true/false, "evidence": "日本語で1文、またはシグナルなしなら空文字"}}
+    "threshold_proximity": {{"signal": true/false, "evidence": "具体的根拠を日本語で1文、またはシグナルなしなら空文字"}},
+    "external_pressure": {{"signal": true/false, "evidence": "具体的根拠を日本語で1文、またはシグナルなしなら空文字"}},
+    "tech_cycle_position": {{"signal": true/false, "evidence": "具体的根拠を日本語で1文、またはシグナルなしなら空文字"}},
+    "institutional_change": {{"signal": true/false, "evidence": "具体的根拠を日本語で1文、またはシグナルなしなら空文字"}},
+    "uncertainty_resolution": {{"signal": true/false, "evidence": "具体的根拠を日本語で1文、またはシグナルなしなら空文字"}}
   }}
 }}"""
 

@@ -133,11 +133,19 @@ def aggregate_themes(items: list[dict]) -> dict:
         ]
 
         # Determine primary domain by majority vote
-        domain_counts = defaultdict(int)
+        # Items with multiple domains get fractional votes to avoid bias
+        domain_counts = defaultdict(float)
         for it in tag_items:
-            d = it.get("domain") or it.get("domains", [""])[0] if isinstance(it.get("domains"), list) else it.get("domain", "")
-            if d:
-                domain_counts[d] += 1
+            domains_list = it.get("domains", [])
+            single_domain = it.get("domain", "")
+            if domains_list and isinstance(domains_list, list):
+                # Fractional vote for multi-domain items
+                weight = 1.0 / len(domains_list)
+                for d in domains_list:
+                    if d:
+                        domain_counts[d] += weight
+            elif single_domain:
+                domain_counts[single_domain] += 1.0
         primary_domain = max(domain_counts, key=domain_counts.get) if domain_counts else ""
 
         themes[tag] = {
