@@ -1,0 +1,21 @@
+# Environment
+.env
+.env.local
+
+# Raw data (may contain large/sensitive content)
+data/raw/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/

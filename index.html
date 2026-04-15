@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="https://esse-sense.com/favicon.ico">
+    <title>Structural Inflection Radar</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
+            background-color: #3A2A20;
+            color: #1A0F0A;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container { max-width: 960px; margin: 0 auto; }
+
+        .app-header {
+            text-align: center;
+            margin-bottom: 32px;
+            padding-top: 20px;
+        }
+
+        .app-header h1 {
+            color: #F5EBE0;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: 0.05em;
+        }
+
+        .app-header .subtitle {
+            color: #B09A88;
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+
+        .meta-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 12px 16px;
+            background: rgba(255,250,246,0.08);
+            border-radius: 8px;
+        }
+
+        .meta-bar span {
+            color: #B09A88;
+            font-size: 0.8rem;
+        }
+
+        .sort-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .sort-btn {
+            background: none;
+            border: 1px solid #7A4033;
+            color: #B09A88;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .sort-btn.active {
+            background: #7A4033;
+            color: #FFFAF6;
+        }
+
+        .theme-card {
+            background: #FFFAF6;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+            cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+
+        .theme-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .theme-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .theme-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #3A2A20;
+        }
+
+        .theme-meta {
+            font-size: 0.75rem;
+            color: #B09A88;
+            margin-top: 4px;
+        }
+
+        .delta-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .delta-up {
+            background: #E8F5E9;
+            color: #2E7D32;
+        }
+
+        .delta-down {
+            background: #FFEBEE;
+            color: #C62828;
+        }
+
+        .delta-neutral {
+            background: #F5F5F5;
+            color: #757575;
+        }
+
+        .axes-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+        }
+
+        .axis-item {
+            text-align: center;
+        }
+
+        .axis-label {
+            font-size: 0.65rem;
+            color: #B09A88;
+            margin-bottom: 4px;
+        }
+
+        .axis-bar {
+            height: 6px;
+            background: #E0CCBB;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .axis-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.5s;
+        }
+
+        .axis-fill.high { background: #7A4033; }
+        .axis-fill.mid { background: #B09A88; }
+        .axis-fill.low { background: #D4C4B5; }
+
+        .axis-score {
+            font-size: 0.7rem;
+            color: #7A4033;
+            margin-top: 2px;
+            font-weight: 600;
+        }
+
+        .scorer-link {
+            display: inline-block;
+            margin-top: 12px;
+            padding: 6px 14px;
+            background: #7A4033;
+            color: #FFFAF6;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+
+        .scorer-link:hover { background: #5C2E22; }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active { display: flex; }
+
+        .modal {
+            background: #FFFAF6;
+            border-radius: 16px;
+            padding: 32px;
+            max-width: 700px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 16px; right: 16px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #B09A88;
+        }
+
+        .modal h2 {
+            font-size: 1.2rem;
+            color: #3A2A20;
+            margin-bottom: 8px;
+        }
+
+        .modal-subtitle {
+            color: #B09A88;
+            font-size: 0.8rem;
+            margin-bottom: 20px;
+        }
+
+        .evidence-section {
+            margin-bottom: 16px;
+        }
+
+        .evidence-section h3 {
+            font-size: 0.85rem;
+            color: #7A4033;
+            margin-bottom: 6px;
+        }
+
+        .evidence-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .evidence-list li {
+            font-size: 0.8rem;
+            color: #5A4A40;
+            padding: 6px 0;
+            border-bottom: 1px solid #E0CCBB;
+            line-height: 1.4;
+        }
+
+        .source-item {
+            display: block;
+            padding: 8px 0;
+            border-bottom: 1px solid #E0CCBB;
+        }
+
+        .source-item a {
+            color: #7A4033;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .source-item a:hover { text-decoration: underline; }
+
+        .source-item .source-meta {
+            font-size: 0.7rem;
+            color: #B09A88;
+            margin-top: 2px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #B09A88;
+        }
+
+        .empty-state h2 {
+            color: #F5EBE0;
+            margin-bottom: 12px;
+        }
+
+        @media (max-width: 600px) {
+            .axes-grid { grid-template-columns: repeat(3, 1fr); }
+            .theme-header { flex-direction: column; gap: 8px; }
+            .modal { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="app-header">
+            <h1>Structural Inflection Radar</h1>
+            <p class="subtitle">構造的変化点の加速度で新興技術を検出</p>
+        </div>
+
+        <div class="meta-bar">
+            <span id="meta-info">Loading...</span>
+            <div class="sort-controls">
+                <button class="sort-btn active" onclick="sortBy('delta')">Δスコア順</button>
+                <button class="sort-btn" onclick="sortBy('score')">スコア順</button>
+                <button class="sort-btn" onclick="sortBy('count')">件数順</button>
+            </div>
+        </div>
+
+        <div id="themes-list"></div>
+    </div>
+
+    <div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+        <div class="modal" id="modal-content">
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
+    <script src="themes_data.js"></script>
+    <script>
+        const SCORER_URL = 'https://yuyanishimura0312.github.io/structural-inflection-scorer/';
+        const AXIS_LABELS = {
+            threshold_proximity: '閾値接近',
+            external_pressure: '外圧/窓',
+            tech_cycle_position: '技術革命',
+            institutional_change: '制度変化',
+            uncertainty_resolution: '不確実性解消',
+        };
+
+        let currentSort = 'delta';
+
+        function init() {
+            if (typeof THEMES_DATA === 'undefined') {
+                document.getElementById('themes-list').innerHTML =
+                    '<div class="empty-state"><h2>データなし</h2><p>run_pipeline.py を実行してデータを生成してください。</p></div>';
+                return;
+            }
+
+            const info = document.getElementById('meta-info');
+            const date = new Date(THEMES_DATA.generated_at).toLocaleDateString('ja-JP');
+            info.textContent = `${date} 更新 / ${THEMES_DATA.total_themes} テーマ / ${THEMES_DATA.total_source_items} ソース`;
+
+            renderThemes();
+        }
+
+        function renderThemes() {
+            const themes = [...THEMES_DATA.themes];
+
+            if (currentSort === 'delta') {
+                themes.sort((a, b) => (b.delta?.composite || 0) - (a.delta?.composite || 0));
+            } else if (currentSort === 'score') {
+                themes.sort((a, b) => b.composite_score - a.composite_score);
+            } else {
+                themes.sort((a, b) => b.item_count - a.item_count);
+            }
+
+            const list = document.getElementById('themes-list');
+            list.innerHTML = themes.map((t, i) => renderCard(t, i)).join('');
+        }
+
+        function renderCard(theme, index) {
+            const delta = theme.delta?.composite || 0;
+            const deltaClass = delta > 0.01 ? 'delta-up' : delta < -0.01 ? 'delta-down' : 'delta-neutral';
+            const deltaText = delta > 0 ? `+${(delta * 100).toFixed(1)}%` : delta < 0 ? `${(delta * 100).toFixed(1)}%` : '0%';
+
+            const axesBars = Object.entries(theme.axes).map(([key, axis]) => {
+                const pct = Math.round(axis.score * 100);
+                const level = pct >= 60 ? 'high' : pct >= 30 ? 'mid' : 'low';
+                return `
+                    <div class="axis-item">
+                        <div class="axis-label">${AXIS_LABELS[key] || key}</div>
+                        <div class="axis-bar"><div class="axis-fill ${level}" style="width:${pct}%"></div></div>
+                        <div class="axis-score">${pct}%</div>
+                    </div>
+                `;
+            }).join('');
+
+            return `
+                <div class="theme-card" onclick="openModal(${index})">
+                    <div class="theme-header">
+                        <div>
+                            <div class="theme-name">${theme.name}</div>
+                            <div class="theme-meta">${theme.item_count} sources / score: ${(theme.composite_score * 100).toFixed(0)}%</div>
+                        </div>
+                        <span class="delta-badge ${deltaClass}">Δ ${deltaText}</span>
+                    </div>
+                    <div class="axes-grid">${axesBars}</div>
+                </div>
+            `;
+        }
+
+        function openModal(index) {
+            const themes = THEMES_DATA.themes;
+            const sortedThemes = [...themes];
+            if (currentSort === 'delta') {
+                sortedThemes.sort((a, b) => (b.delta?.composite || 0) - (a.delta?.composite || 0));
+            } else if (currentSort === 'score') {
+                sortedThemes.sort((a, b) => b.composite_score - a.composite_score);
+            } else {
+                sortedThemes.sort((a, b) => b.item_count - a.item_count);
+            }
+            const theme = sortedThemes[index];
+            if (!theme) return;
+
+            let evidenceHtml = '';
+            for (const [key, axis] of Object.entries(theme.axes)) {
+                if (axis.evidence && axis.evidence.length > 0) {
+                    evidenceHtml += `
+                        <div class="evidence-section">
+                            <h3>${AXIS_LABELS[key] || key} (${Math.round(axis.score * 100)}%)</h3>
+                            <ul class="evidence-list">
+                                ${axis.evidence.map(e => `<li>${e}</li>`).join('')}
+                            </ul>
+                        </div>
+                    `;
+                }
+            }
+
+            let sourcesHtml = '';
+            if (theme.source_items && theme.source_items.length > 0) {
+                sourcesHtml = '<h3 style="margin-top:20px;font-size:0.9rem;color:#3A2A20;">Sources</h3>';
+                sourcesHtml += theme.source_items.map(s => `
+                    <div class="source-item">
+                        <a href="${s.url}" target="_blank">${s.title || 'Untitled'}</a>
+                        <div class="source-meta">${s.source} / ${s.date || 'N/A'}</div>
+                    </div>
+                `).join('');
+            }
+
+            const scorerQuery = encodeURIComponent(theme.name);
+            const body = `
+                <h2>${theme.name}</h2>
+                <p class="modal-subtitle">${theme.item_count} sources / composite score: ${(theme.composite_score * 100).toFixed(1)}%</p>
+                ${evidenceHtml}
+                ${sourcesHtml}
+                <a href="${SCORER_URL}?q=${scorerQuery}" target="_blank" class="scorer-link">
+                    Structural Inflection Scorer で詳細評価
+                </a>
+            `;
+
+            document.getElementById('modal-body').innerHTML = body;
+            document.getElementById('modal-overlay').classList.add('active');
+        }
+
+        function closeModal(event) {
+            if (event && event.target !== document.getElementById('modal-overlay')) return;
+            document.getElementById('modal-overlay').classList.remove('active');
+        }
+
+        // Close modal on Escape key or browser back
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                document.getElementById('modal-overlay').classList.remove('active');
+            }
+        });
+
+        function sortBy(type) {
+            currentSort = type;
+            document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            renderThemes();
+        }
+
+        init();
+    </script>
+</body>
+</html>
