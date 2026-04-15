@@ -28,30 +28,31 @@ CREDIBILITY_WEIGHTS = {
     "general_media": 0.4,
 }
 
-SCORING_PROMPT = """You are an expert in technology forecasting and structural change analysis.
-Analyze the following item and determine if it contains signals related to these 5 axes of structural inflection points:
+SCORING_PROMPT = """あなたは技術予測と構造変化分析の専門家です。
+以下のアイテムを分析し、構造的変曲点の5軸に関連するシグナルが含まれているか判定してください。
 
-1. THRESHOLD_PROXIMITY (Scheffer Critical Transitions): Cost curves hitting inflection points, performance benchmarks being breached, technology metrics approaching critical thresholds
-2. EXTERNAL_PRESSURE (Geels Multi-Level Perspective): Geopolitical events, regulatory pressure, supply chain disruptions, social movements creating windows of opportunity
-3. TECH_CYCLE_POSITION (Perez Technological Revolutions): VC investment patterns, major acquisitions, shift from research to deployment phase, government policy inclusion
-4. INSTITUTIONAL_CHANGE (North Institutional Economics): Regulations being finalized, standards being set, certification systems created, regulatory sandboxes
-5. UNCERTAINTY_RESOLUTION (Dixit-Pindyck Real Options): Large contracts signed, government policies locked in, irreversible investments made, competing technologies eliminated
+1. THRESHOLD_PROXIMITY（シェファー臨界転移）: コスト曲線の変曲点到達、性能ベンチマークの突破、技術指標の臨界閾値への接近
+2. EXTERNAL_PRESSURE（ギールズ多層パースペクティブ）: 地政学的イベント、規制圧力、サプライチェーン混乱、社会運動による機会の窓の出現
+3. TECH_CYCLE_POSITION（ペレス技術革命論）: VC投資パターン、大型買収、研究から実装フェーズへの移行、政府政策への組み込み
+4. INSTITUTIONAL_CHANGE（ノース制度経済学）: 規制の確定、標準の策定、認証制度の創設、規制サンドボックス
+5. UNCERTAINTY_RESOLUTION（ディキシット・ピンダイク実物オプション）: 大型契約の締結、政府方針の確定、不可逆的投資の実行、競合技術の排除
 
-ITEM:
-Title: {title}
-Abstract: {abstract}
-Source: {source} ({source_type})
-Date: {date}
+アイテム:
+タイトル: {title}
+概要: {abstract}
+ソース: {source} ({source_type})
+日付: {date}
 
-Respond in JSON format only:
+theme_tagsは英語の短いタグ（snake_case）で返してください。evidenceは必ず日本語で記述してください。
+JSONフォーマットのみで回答してください:
 {{
   "theme_tags": ["tag1", "tag2"],
   "axes": {{
-    "threshold_proximity": {{"signal": true/false, "evidence": "one sentence or empty"}},
-    "external_pressure": {{"signal": true/false, "evidence": "one sentence or empty"}},
-    "tech_cycle_position": {{"signal": true/false, "evidence": "one sentence or empty"}},
-    "institutional_change": {{"signal": true/false, "evidence": "one sentence or empty"}},
-    "uncertainty_resolution": {{"signal": true/false, "evidence": "one sentence or empty"}}
+    "threshold_proximity": {{"signal": true/false, "evidence": "日本語で1文、またはシグナルなしなら空文字"}},
+    "external_pressure": {{"signal": true/false, "evidence": "日本語で1文、またはシグナルなしなら空文字"}},
+    "tech_cycle_position": {{"signal": true/false, "evidence": "日本語で1文、またはシグナルなしなら空文字"}},
+    "institutional_change": {{"signal": true/false, "evidence": "日本語で1文、またはシグナルなしなら空文字"}},
+    "uncertainty_resolution": {{"signal": true/false, "evidence": "日本語で1文、またはシグナルなしなら空文字"}}
   }}
 }}"""
 

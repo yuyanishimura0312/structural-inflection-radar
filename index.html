@@ -386,9 +386,101 @@
             uncertainty_resolution: '不確実性解消',
         };
 
+        const THEME_NAMES_JA = {
+            // Core energy themes
+            'fundamental_research': '基礎研究',
+            'academic_research': '学術研究',
+            'academic_publishing': '学術出版',
+            'materials_science': '材料科学',
+            'material_science': '材料科学',
+            'advanced_materials': '先端材料',
+            'solar_energy': '太陽光エネルギー',
+            'solar_power': '太陽光発電',
+            'battery_technology': 'バッテリー技術',
+            'battery_storage': '蓄電池',
+            'energy_storage': 'エネルギー貯蔵',
+            'carbon_capture': '炭素回収',
+            'green_hydrogen': 'グリーン水素',
+            'hydrogen_energy': '水素エネルギー',
+            'hydrogen_fuel_cell': '水素燃料電池',
+            'nuclear_fusion': '核融合',
+            'fusion_energy': '核融合エネルギー',
+            'wind_power': '風力発電',
+            'geothermal_energy': '地熱エネルギー',
+            'electrolysis': '電気分解',
+            'water_electrolysis': '水電解',
+            'water_splitting': '水分解',
+            'solid_state_battery': '全固体電池',
+            'sodium_ion_battery': 'ナトリウムイオン電池',
+            'perovskite_solar_cells': 'ペロブスカイト太陽電池',
+            'ev_charging': 'EV充電',
+            'fast_charging': '急速充電',
+            'energy_transition': 'エネルギー転換',
+            'renewable_energy': '再生可能エネルギー',
+            'clean_energy': 'クリーンエネルギー',
+            'energy_efficiency': 'エネルギー効率',
+            'decarbonization': '脱炭素',
+            'sustainability': '持続可能性',
+            'catalysis': '触媒',
+            'electrochemistry': '電気化学',
+            'circular_economy': 'サーキュラーエコノミー',
+            'machine_learning': '機械学習',
+            'space_technology': '宇宙技術',
+            // New themes from current data
+            'ai_infrastructure': 'AIインフラ',
+            'authentication': '認証技術',
+            'automotive_innovation': '自動車イノベーション',
+            'autonomous_systems': '自律システム',
+            'black_hole_formation': 'ブラックホール形成',
+            'climate_tech': '気候テック',
+            'consumer_adoption': '消費者普及',
+            'cosmology': '宇宙論',
+            'cost_competitiveness': 'コスト競争力',
+            'critical_infrastructure': '重要インフラ',
+            'developer_tools': '開発者ツール',
+            'distributed_generation': '分散型発電',
+            'drone_technology': 'ドローン技術',
+            'early_universe': '初期宇宙',
+            'electrification': '電化',
+            'energy_crisis': 'エネルギー危機',
+            'energy_independence': 'エネルギー自立',
+            'energy_infrastructure': 'エネルギーインフラ',
+            'energy_security': 'エネルギー安全保障',
+            'evolutionary_biology': '進化生物学',
+            'fluid_dynamics': '流体力学',
+            'geopolitical_conflict': '地政学的紛争',
+            'geopolitical_shock': '地政学的ショック',
+            'global_markets': 'グローバル市場',
+            'heterojunction': 'ヘテロ接合',
+            'historical_analysis': '歴史分析',
+            'identity_management': 'ID管理',
+            'infrastructure': 'インフラ',
+            'mathematical_modeling': '数理モデリング',
+            'microfluidics': 'マイクロ流体工学',
+            'ontology': 'オントロジー',
+            'oxygen_reduction_reaction': '酸素還元反応',
+            'peer_review': '査読',
+            'photovoltaic_efficiency': '太陽電池効率',
+            'plasma_physics': 'プラズマ物理学',
+            'predictive_modeling': '予測モデリング',
+            'quantum_computing': '量子コンピューティング',
+            'range_breakthrough': '航続距離ブレークスルー',
+            'range_extension': '航続距離延長',
+            'strategic_partnership': '戦略的提携',
+            'supply_chain_disruption': 'サプライチェーン混乱',
+            'sustainable_polymers': '持続可能ポリマー',
+            'terminal_ui': 'ターミナルUI',
+            'theoretical_physics': '理論物理学',
+            'uk_policy': '英国政策',
+            'waste_valorization': '廃棄物高付加価値化',
+            'window_technology': '窓技術',
+        };
+
         let currentSort = 'delta';
 
         function formatThemeName(name) {
+            if (THEME_NAMES_JA[name]) return THEME_NAMES_JA[name];
+            // Fallback: convert snake_case to Title Case
             return name.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
         }
 
@@ -483,8 +575,8 @@
                 sourcesHtml = '<h3 style="margin-top:20px;font-size:0.9rem;color:var(--color-text-body);">情報ソース</h3>';
                 sourcesHtml += theme.source_items.map(s => `
                     <div class="source-item">
-                        <a href="${s.url}" target="_blank">${s.title || 'Untitled'}</a>
-                        <div class="source-meta">${s.source} / ${s.date || 'N/A'}</div>
+                        <a href="${s.url}" target="_blank">${s.title || '無題'}</a>
+                        <div class="source-meta">${s.source} / ${s.date || '日付不明'}</div>
                     </div>
                 `).join('');
             }
