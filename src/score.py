@@ -126,11 +126,10 @@ def score_item(client: anthropic.Anthropic, item: dict) -> dict:
 
 
 def run(input_path: Path = None) -> Path:
-    """Score all items in the latest raw data file."""
+    """Score all items in the latest raw data file. Supports resume from checkpoint."""
     DATA_PROCESSED.mkdir(parents=True, exist_ok=True)
 
     if input_path is None:
-        # Find the latest raw data file
         raw_files = sorted(DATA_RAW.glob("*.json"), reverse=True)
         if not raw_files:
             print("エラー: data/raw/ にデータファイルがありません。先に collect.py を実行してください。", file=sys.stderr)
@@ -146,11 +145,29 @@ def run(input_path: Path = None) -> Path:
         print("エラー: アイテムが0件です。", file=sys.stderr)
         sys.exit(1)
 
-    client = anthropic.Anthropic(api_key=get_api_key())
+    # Use input file's date stem for output/checkpoint (survives midnight)
+    date_stem = input_path.stem  # e.g. "2026-04-15"
+    output_path = DATA_PROCESSED / f"{date_stem}.json"
+    checkpoint_path = DATA_PROCESSED / f"{date_stem}.checkpoint.json"
+
+    # Resume from checkpoint if available
     scored_items = []
+    scored_ids = set()
+    if checkpoint_path.exists():
+        with open(checkpoint_path, encoding="utf-8") as f:
+            checkpoint = json.load(f)
+        scored_items = checkpoint.get("items", [])
+        scored_ids = {item["id"] for item in scored_items}
+        print(f"  チェックポイントから再開: {len(scored_items)}/{len(items)}件完了済み")
+
+    client = anthropic.Anthropic(api_key=get_api_key())
 
     for i, item in enumerate(items):
-        print(f"  [{i + 1}/{len(items)}] {item.get('title', '')[:60]}...")
+        if item["id"] in scored_ids:
+            continue  # Already scored
+
+        title = item.get('title') or '(no title)'
+        print(f"  [{i + 1}/{len(items)}] {title[:60]}...")
         score_result = score_item(client, item)
 
         credibility = CREDIBILITY_WEIGHTS.get(item.get("source_type", ""), 0.4)
@@ -162,13 +179,16 @@ def run(input_path: Path = None) -> Path:
             "axes": score_result.get("axes", {}),
             "scored_at": datetime.now().isoformat(),
         })
+        scored_ids.add(item["id"])
 
-        # Small delay to be polite to the API
+        # Save checkpoint every 50 items
+        if len(scored_items) % 50 == 0:
+            _save_checkpoint(checkpoint_path, scored_items)
+            print(f"    [checkpoint] {len(scored_items)}/{len(items)}件保存")
+
         time.sleep(0.3)
 
-    today = datetime.now().strftime("%Y-%m-%d")
-    output_path = DATA_PROCESSED / f"{today}.json"
-
+    # Final output
     output = {
         "scored_at": datetime.now().isoformat(),
         "model": MODEL,
@@ -179,8 +199,18 @@ def run(input_path: Path = None) -> Path:
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(output, f, ensure_ascii=False, indent=2)
 
+    # Remove checkpoint after successful completion
+    if checkpoint_path.exists():
+        checkpoint_path.unlink()
+
     print(f"  {len(scored_items)} items scored and saved to {output_path}")
     return output_path
+
+
+def _save_checkpoint(path: Path, items: list):
+    """Save intermediate progress to a checkpoint file."""
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump({"items": items, "saved_at": datetime.now().isoformat()}, f, ensure_ascii=False)
 
 
 if __name__ == "__main__":
