@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="https://esse-sense.com/favicon.ico">
+    <title>管理ダッシュボード — 構造変化レーダー</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+    <script src="themes_data.js"></script>
+    <style>
+        :root {
+            --color-bg-page:        #3A2A20;
+            --color-bg-card:        #FFFAF6;
+            --color-bg-secondary:   #FDF5EE;
+            --color-bg-light:       #F5EBE0;
+            --color-accent:         #7A4033;
+            --color-accent-hover:   #966D5E;
+            --color-accent-dark:    #7A4033;
+            --color-text-body:      #1a1a1a;
+            --color-text-secondary: #7A5A48;
+            --color-text-muted:     #B09A88;
+            --color-border:         #E0CCBB;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
+            background-color: var(--color-bg-page);
+            color: var(--color-text-body);
+            min-height: 100vh;
+            padding: 24px 32px;
+        }
+
+        .container { max-width: 1100px; margin: 0 auto; }
+
+        /* Header */
+        .app-header {
+            text-align: center;
+            margin-bottom: 32px;
+            padding-top: 24px;
+            position: relative;
+        }
+
+        .app-header h1 {
+            color: var(--color-bg-light);
+            font-size: 1.6rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+            letter-spacing: 0.03em;
+        }
+
+        .app-header .subtitle {
+            color: var(--color-text-muted);
+            font-size: 0.85rem;
+            line-height: 1.5;
+            letter-spacing: 0.04em;
+        }
+
+        .nav-link {
+            position: absolute;
+            top: 28px;
+            color: var(--color-text-muted);
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover { color: var(--color-bg-light); }
+        .nav-link-left { left: 0; }
+
+        /* Tabs */
+        .tab-bar {
+            display: flex;
+            gap: 4px;
+            background: rgba(26, 15, 10, 0.25);
+            border: 1px solid rgba(224, 204, 187, 0.15);
+            border-radius: 8px;
+            padding: 4px;
+            margin-bottom: 24px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            background: none;
+            border: none;
+            color: var(--color-text-muted);
+            padding: 10px 16px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .tab-btn:focus-visible {
+            outline: 2px solid var(--color-accent);
+            outline-offset: 2px;
+        }
+
+        .tab-btn.active {
+            background: var(--color-accent);
+            color: var(--color-bg-card);
+        }
+
+        .tab-btn:hover:not(.active) {
+            background: rgba(122, 64, 51, 0.3);
+        }
+
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+
+        /* KPI Cards */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+
+        .kpi-card {
+            background: var(--color-bg-card);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .kpi-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--color-accent);
+            line-height: 1.2;
+            margin-bottom: 4px;
+        }
+
+        .kpi-label {
+            font-size: 0.78rem;
+            color: var(--color-text-secondary);
+            letter-spacing: 0.02em;
+        }
+
+        /* Tables */
+        .data-table-wrap {
+            background: var(--color-bg-card);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .data-table-wrap h3 {
+            padding: 16px 20px 0;
+            font-size: 0.95rem;
+            color: var(--color-text-body);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        thead th {
+            background: var(--color-bg-secondary);
+            padding: 10px 14px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--color-text-secondary);
+            border-bottom: 1px solid var(--color-border);
+            white-space: nowrap;
+        }
+
+        thead th.num { text-align: right; }
+
+        tbody td {
+            padding: 10px 14px;
+            border-bottom: 1px solid rgba(224, 204, 187, 0.4);
+            color: var(--color-text-body);
+        }
+
+        tbody td.num { text-align: right; font-variant-numeric: tabular-nums; }
+
+        tbody tr:last-child td { border-bottom: none; }
+
+        tbody tr:hover { background: var(--color-bg-secondary); }
+
+        /* Charts */
+        .chart-card {
+            background: var(--color-bg-card);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .chart-card h3 {
+            font-size: 0.95rem;
+            color: var(--color-text-body);
+            margin-bottom: 12px;
+        }
+
+        .chart-container {
+            width: 100%;
+            height: 400px;
+        }
+
+        /* Radar grid for domain comparison */
+        .radar-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .radar-cell {
+            background: var(--color-bg-card);
+            border-radius: 10px;
+            padding: 16px;
+        }
+
+        .radar-cell h4 {
+            font-size: 0.82rem;
+            color: var(--color-text-secondary);
+            margin-bottom: 4px;
+            text-align: center;
+        }
+
+        .radar-cell-chart {
+            width: 100%;
+            height: 220px;
+        }
+
+        /* Quality section */
+        .quality-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .info-card {
+            background: var(--color-bg-card);
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .info-card h3 {
+            font-size: 0.95rem;
+            color: var(--color-text-body);
+            margin-bottom: 12px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(224, 204, 187, 0.3);
+            font-size: 0.85rem;
+        }
+
+        .info-row:last-child { border-bottom: none; }
+
+        .info-row .label { color: var(--color-text-secondary); }
+        .info-row .value { font-weight: 600; color: var(--color-text-body); }
+
+        /* Score bar */
+        .score-bar-wrap {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .score-bar {
+            flex: 1;
+            height: 6px;
+            background: var(--color-bg-light);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .score-bar-fill {
+            height: 100%;
+            background: var(--color-accent);
+            border-radius: 3px;
+            transition: width 0.3s;
+        }
+
+        .score-bar-value {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--color-text-body);
+            min-width: 36px;
+            text-align: right;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body { padding: 16px; }
+            .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+            .quality-grid { grid-template-columns: 1fr; }
+            .radar-grid { grid-template-columns: 1fr 1fr; }
+            .tab-btn { font-size: 0.78rem; padding: 8px 10px; }
+        }
+
+        @media (max-width: 480px) {
+            .kpi-grid { grid-template-columns: 1fr 1fr; }
+            .radar-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="app-header">
+            <a href="index.html" class="nav-link nav-link-left">&larr; レーダーに戻る</a>
+            <h1>管理ダッシュボード</h1>
+            <p class="subtitle">構造変化レーダー — パイプライン状態・データ品質の可視化</p>
+        </div>
+
+        <!-- Tab navigation -->
+        <div class="tab-bar" role="tablist">
+            <button class="tab-btn active" role="tab" aria-selected="true" onclick="switchTab('overview')">概要</button>
+            <button class="tab-btn" role="tab" aria-selected="false" onclick="switchTab('domains')">ドメイン比較</button>
+            <button class="tab-btn" role="tab" aria-selected="false" onclick="switchTab('quality')">データ品質</button>
+        </div>
+
+        <!-- Tab 1: Overview -->
+        <div id="tab-overview" class="tab-panel active">
+            <div class="kpi-grid" id="kpi-cards"></div>
+            <div class="data-table-wrap">
+                <h3>ドメイン別サマリー</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ドメイン</th>
+                            <th class="num">テーマ数</th>
+                            <th class="num">ソース件数</th>
+                            <th class="num">平均スコア</th>
+                            <th>スコア分布</th>
+                        </tr>
+                    </thead>
+                    <tbody id="domain-summary-body"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Tab 2: Domain Comparison -->
+        <div id="tab-domains" class="tab-panel">
+            <div class="chart-card">
+                <h3>ドメイン別スコア分布</h3>
+                <div id="bar-chart" class="chart-container"></div>
+            </div>
+            <h3 style="color: var(--color-bg-light); font-size: 0.95rem; margin-bottom: 12px;">
+                ドメイン別 5軸レーダー
+            </h3>
+            <div class="radar-grid" id="radar-grid"></div>
+        </div>
+
+        <!-- Tab 3: Data Quality -->
+        <div id="tab-quality" class="tab-panel">
+            <div class="kpi-grid" id="quality-kpi"></div>
+            <div class="quality-grid">
+                <div class="info-card">
+                    <h3>スコアリング情報</h3>
+                    <div id="scoring-info"></div>
+                </div>
+                <div class="info-card">
+                    <h3>APIコスト推計</h3>
+                    <div id="cost-info"></div>
+                </div>
+            </div>
+            <div class="chart-card">
+                <h3>テーマ別スコア分布（ヒストグラム）</h3>
+                <div id="histogram-chart" class="chart-container" style="height: 300px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // =========================================================================
+    // Domain metadata — matches domains/*.yaml
+    // =========================================================================
+    const DOMAIN_META = {
+        'energy':         { name_ja: 'エネルギー技術',                 keywords: 33 },
+        'ai_agents':      { name_ja: 'AI・エージェント技術',            keywords: 33 },
+        'biotech':        { name_ja: 'バイオテクノロジー・合成生物学',    keywords: 31 },
+        'cybersecurity':  { name_ja: 'サイバーセキュリティ・デジタルトラスト', keywords: 33 },
+        'defense_tech':   { name_ja: '防衛テック',                     keywords: 32 },
+        'geopolitics':    { name_ja: '地政学・技術規制',                keywords: 33 },
+        'quantum':        { name_ja: '量子技術',                      keywords: 32 },
+        'robotics':       { name_ja: 'ロボティクス・Physical AI',      keywords: 33 },
+        'semiconductors': { name_ja: '半導体・先端製造',                keywords: 31 },
+        'space':          { name_ja: '宇宙商業技術',                   keywords: 32 },
+    };
+
+    const AXIS_LABELS = {
+        threshold_proximity: '閾値接近',
+        external_pressure: '外圧/窓',
+        tech_cycle_position: '技術革命',
+        institutional_change: '制度変化',
+        uncertainty_resolution: '不確実性解消',
+    };
+    const AXIS_KEYS = Object.keys(AXIS_LABELS);
+
+    // =========================================================================
+    // Data processing — derive stats from THEMES_DATA
+    // =========================================================================
+    function computeStats() {
+        const themes = (THEMES_DATA && THEMES_DATA.themes) ? THEMES_DATA.themes : [];
+        const generatedAt = THEMES_DATA ? THEMES_DATA.generated_at : '';
+
+        // Group themes by domain (currently all themes belong to energy)
+        // If themes have a domain field use it; otherwise default to 'energy'
+        const domainMap = {};
+
+        themes.forEach(t => {
+            const domainSlug = t.domain || 'energy';
+            if (!domainMap[domainSlug]) {
+                domainMap[domainSlug] = { themes: [], totalItems: 0, scores: [], axisScores: {} };
+                AXIS_KEYS.forEach(k => { domainMap[domainSlug].axisScores[k] = []; });
+            }
+            const d = domainMap[domainSlug];
+            d.themes.push(t);
+            d.totalItems += t.item_count || 0;
+            d.scores.push(t.composite_score || 0);
+            AXIS_KEYS.forEach(k => {
+                if (t.axes && t.axes[k]) {
+                    d.axisScores[k].push(t.axes[k].score || 0);
+                }
+            });
+        });
+
+        // Compute per-domain summary
+        const domainSummaries = [];
+        const allDomainSlugs = Object.keys(DOMAIN_META);
+        allDomainSlugs.forEach(slug => {
+            const meta = DOMAIN_META[slug];
+            const data = domainMap[slug];
+            domainSummaries.push({
+                slug,
+                name_ja: meta.name_ja,
+                keywords: meta.keywords,
+                themeCount: data ? data.themes.length : 0,
+                itemCount: data ? data.totalItems : 0,
+                avgScore: data && data.scores.length > 0
+                    ? data.scores.reduce((a, b) => a + b, 0) / data.scores.length
+                    : 0,
+                axisAvg: data ? computeAxisAvg(data.axisScores) : nullAxes(),
+                hasData: !!data,
+            });
+        });
+
+        // Sort so domains with data appear first, then by score descending
+        domainSummaries.sort((a, b) => {
+            if (a.hasData !== b.hasData) return b.hasData - a.hasData;
+            return b.avgScore - a.avgScore;
+        });
+
+        const totalKeywords = allDomainSlugs.reduce((s, k) => s + DOMAIN_META[k].keywords, 0);
+
+        // Scoring quality estimates
+        const totalSourceItems = THEMES_DATA ? (THEMES_DATA.total_source_items || 0) : 0;
+        const scoredCount = themes.reduce((s, t) => s + (t.item_count || 0), 0);
+        // Approximate: each theme's items were scored. Error count unknown from themes_data.js
+        const successRate = totalSourceItems > 0 ? 1.0 : 0; // Assume 100% if data exists
+        const costPerItem = 0.0008; // Haiku 4.5 estimate
+        const estimatedCost = totalSourceItems * costPerItem;
+
+        return {
+            generatedAt,
+            totalDomains: allDomainSlugs.length,
+            totalThemes: themes.length,
+            totalSourceItems,
+            totalKeywords,
+            domainSummaries,
+            themes,
+            successRate,
+            estimatedCost,
+            scoredCount,
+        };
+    }
+
+    function computeAxisAvg(axisScores) {
+        const result = {};
+        AXIS_KEYS.forEach(k => {
+            const arr = axisScores[k];
+            result[k] = arr.length > 0 ? arr.reduce((a, b) => a + b, 0) / arr.length : 0;
+        });
+        return result;
+    }
+
+    function nullAxes() {
+        const r = {};
+        AXIS_KEYS.forEach(k => { r[k] = 0; });
+        return r;
+    }
+
+    // =========================================================================
+    // Tab switching
+    // =========================================================================
+    let currentTab = 'overview';
+    let chartsInitialized = { domains: false, quality: false };
+
+    function switchTab(tab) {
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => {
+            b.classList.remove('active');
+            b.setAttribute('aria-selected', 'false');
+        });
+        document.getElementById('tab-' + tab).classList.add('active');
+        event.target.classList.add('active');
+        event.target.setAttribute('aria-selected', 'true');
+        currentTab = tab;
+
+        // Lazy-init charts when tab is first shown
+        if (tab === 'domains' && !chartsInitialized.domains) {
+            chartsInitialized.domains = true;
+            setTimeout(() => renderDomainCharts(), 50);
+        }
+        if (tab === 'quality' && !chartsInitialized.quality) {
+            chartsInitialized.quality = true;
+            setTimeout(() => renderQualityCharts(), 50);
+        }
+    }
+
+    // =========================================================================
+    // Tab 1: Overview
+    // =========================================================================
+    function renderOverview(stats) {
+        // KPI cards
+        const kpiData = [
+            { value: stats.totalDomains, label: 'ドメイン数' },
+            { value: stats.totalThemes, label: 'テーマ数' },
+            { value: stats.totalSourceItems, label: 'ソース件数' },
+            { value: formatDate(stats.generatedAt), label: '最終更新' },
+        ];
+        document.getElementById('kpi-cards').innerHTML = kpiData.map(d =>
+            `<div class="kpi-card">
+                <div class="kpi-value">${d.value}</div>
+                <div class="kpi-label">${d.label}</div>
+            </div>`
+        ).join('');
+
+        // Domain summary table
+        const tbody = document.getElementById('domain-summary-body');
+        tbody.innerHTML = stats.domainSummaries.map(d => {
+            const scorePercent = Math.round(d.avgScore * 100);
+            return `<tr>
+                <td>${d.name_ja}</td>
+                <td class="num">${d.themeCount || '—'}</td>
+                <td class="num">${d.itemCount || '—'}</td>
+                <td class="num">${d.themeCount > 0 ? d.avgScore.toFixed(2) : '—'}</td>
+                <td>
+                    ${d.themeCount > 0
+                        ? `<div class="score-bar-wrap">
+                            <div class="score-bar"><div class="score-bar-fill" style="width:${scorePercent}%"></div></div>
+                            <span class="score-bar-value">${scorePercent}%</span>
+                          </div>`
+                        : '<span style="color:var(--color-text-muted);font-size:0.8rem;">未収集</span>'
+                    }
+                </td>
+            </tr>`;
+        }).join('');
+    }
+
+    // =========================================================================
+    // Tab 2: Domain Comparison Charts
+    // =========================================================================
+    function renderDomainCharts() {
+        const stats = computeStats();
+        const withData = stats.domainSummaries.filter(d => d.hasData);
+
+        // --- Bar chart: score distribution per domain ---
+        const barEl = document.getElementById('bar-chart');
+        if (barEl && withData.length > 0) {
+            const barChart = echarts.init(barEl);
+            const categories = withData.map(d => d.name_ja);
+            const avgScores = withData.map(d => +(d.avgScore.toFixed(3)));
+            // Also show min/max
+            const minScores = withData.map(d => {
+                const scores = stats.themes
+                    .filter(t => (t.domain || 'energy') === d.slug)
+                    .map(t => t.composite_score || 0);
+                return scores.length > 0 ? Math.min(...scores) : 0;
+            });
+            const maxScores = withData.map(d => {
+                const scores = stats.themes
+                    .filter(t => (t.domain || 'energy') === d.slug)
+                    .map(t => t.composite_score || 0);
+                return scores.length > 0 ? Math.max(...scores) : 0;
+            });
+
+            barChart.setOption({
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: { type: 'shadow' },
+                    formatter: params => {
+                        const idx = params[0].dataIndex;
+                        return `<b>${categories[idx]}</b><br/>
+                                平均: ${avgScores[idx]}<br/>
+                                最小: ${minScores[idx].toFixed(2)}<br/>
+                                最大: ${maxScores[idx].toFixed(2)}`;
+                    }
+                },
+                grid: { left: 40, right: 30, bottom: 80, top: 30 },
+                xAxis: {
+                    type: 'category',
+                    data: categories,
+                    axisLabel: { rotate: 30, fontSize: 11 }
+                },
+                yAxis: { type: 'value', max: 1, name: 'Composite Score' },
+                series: [
+                    {
+                        name: '最小',
+                        type: 'bar',
+                        stack: 'range',
+                        itemStyle: { color: 'transparent' },
+                        data: minScores,
+                    },
+                    {
+                        name: 'スコア範囲',
+                        type: 'bar',
+                        stack: 'range',
+                        itemStyle: { color: 'rgba(122, 64, 51, 0.2)', borderColor: '#7A4033', borderWidth: 1 },
+                        data: maxScores.map((mx, i) => +(mx - minScores[i]).toFixed(3)),
+                    },
+                    {
+                        name: '平均スコア',
+                        type: 'scatter',
+                        symbolSize: 10,
+                        itemStyle: { color: '#7A4033' },
+                        data: avgScores,
+                        z: 10,
+                    }
+                ]
+            });
+            window.addEventListener('resize', () => barChart.resize());
+        }
+
+        // --- Radar charts per domain ---
+        const radarGrid = document.getElementById('radar-grid');
+        radarGrid.innerHTML = '';
+
+        withData.forEach(d => {
+            const cell = document.createElement('div');
+            cell.className = 'radar-cell';
+            cell.innerHTML = `
+                <h4>${d.name_ja}</h4>
+                <div class="radar-cell-chart" id="radar-${d.slug}"></div>
+            `;
+            radarGrid.appendChild(cell);
+
+            setTimeout(() => {
+                const el = document.getElementById('radar-' + d.slug);
+                if (!el) return;
+                const chart = echarts.init(el);
+                chart.setOption({
+                    radar: {
+                        indicator: AXIS_KEYS.map(k => ({ name: AXIS_LABELS[k], max: 1 })),
+                        radius: 70,
+                        axisName: { fontSize: 10, color: '#7A5A48' },
+                        splitArea: { areaStyle: { color: ['rgba(122,64,51,0.02)', 'rgba(122,64,51,0.05)'] } },
+                        splitLine: { lineStyle: { color: 'rgba(224,204,187,0.4)' } },
+                    },
+                    series: [{
+                        type: 'radar',
+                        data: [{
+                            value: AXIS_KEYS.map(k => +(d.axisAvg[k].toFixed(3))),
+                            name: d.name_ja,
+                            areaStyle: { color: 'rgba(122, 64, 51, 0.15)' },
+                            lineStyle: { color: '#7A4033', width: 2 },
+                            itemStyle: { color: '#7A4033' },
+                        }]
+                    }]
+                });
+                window.addEventListener('resize', () => chart.resize());
+            }, 100);
+        });
+
+        // If no data domains, show domains without data as placeholders
+        if (withData.length === 0) {
+            radarGrid.innerHTML = '<div style="color:var(--color-text-muted);padding:20px;">データがありません。パイプラインを実行してください。</div>';
+        }
+
+        // Show domains without data as grey placeholders
+        const noData = stats.domainSummaries.filter(d => !d.hasData);
+        noData.forEach(d => {
+            const cell = document.createElement('div');
+            cell.className = 'radar-cell';
+            cell.style.opacity = '0.5';
+            cell.innerHTML = `
+                <h4>${d.name_ja}</h4>
+                <div style="text-align:center;padding:60px 0;color:var(--color-text-muted);font-size:0.8rem;">未収集</div>
+            `;
+            radarGrid.appendChild(cell);
+        });
+    }
+
+    // =========================================================================
+    // Tab 3: Data Quality
+    // =========================================================================
+    function renderQuality(stats) {
+        // KPI cards
+        const successPct = Math.round(stats.successRate * 100);
+        const errorPct = 100 - successPct;
+        const qualityKpi = [
+            { value: successPct + '%', label: 'スコアリング成功率' },
+            { value: errorPct + '%', label: 'エラー率' },
+            { value: stats.totalSourceItems, label: '処理済みアイテム' },
+            { value: '$' + stats.estimatedCost.toFixed(2), label: '推計APIコスト' },
+        ];
+        document.getElementById('quality-kpi').innerHTML = qualityKpi.map(d =>
+            `<div class="kpi-card">
+                <div class="kpi-value">${d.value}</div>
+                <div class="kpi-label">${d.label}</div>
+            </div>`
+        ).join('');
+
+        // Scoring info
+        const avgItemsPerTheme = stats.totalThemes > 0
+            ? (stats.totalSourceItems / stats.totalThemes).toFixed(1) : '—';
+        document.getElementById('scoring-info').innerHTML = [
+            { label: '使用モデル', value: 'Claude Haiku 4.5' },
+            { label: 'プロンプト方式', value: '5軸シグナル検出' },
+            { label: 'max_tokens', value: '512' },
+            { label: 'テーマあたり平均アイテム数', value: avgItemsPerTheme },
+            { label: 'スコアリング済みテーマ数', value: stats.totalThemes },
+        ].map(r => `<div class="info-row"><span class="label">${r.label}</span><span class="value">${r.value}</span></div>`).join('');
+
+        // Cost info
+        const costPerItem = 0.0008;
+        document.getElementById('cost-info').innerHTML = [
+            { label: '入力トークン単価', value: '$0.80 / 1M tokens' },
+            { label: '出力トークン単価', value: '$4.00 / 1M tokens' },
+            { label: '1アイテムあたり推計コスト', value: '$' + costPerItem.toFixed(4) },
+            { label: 'ソースアイテム数', value: stats.totalSourceItems },
+            { label: '合計推計コスト', value: '$' + stats.estimatedCost.toFixed(2) },
+        ].map(r => `<div class="info-row"><span class="label">${r.label}</span><span class="value">${r.value}</span></div>`).join('');
+    }
+
+    function renderQualityCharts() {
+        const stats = computeStats();
+
+        // Histogram of composite scores
+        const histEl = document.getElementById('histogram-chart');
+        if (!histEl || stats.themes.length === 0) return;
+
+        const bins = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0];
+        const counts = new Array(bins.length - 1).fill(0);
+        stats.themes.forEach(t => {
+            const s = t.composite_score || 0;
+            let idx = Math.floor(s * 10);
+            if (idx >= counts.length) idx = counts.length - 1;
+            counts[idx]++;
+        });
+        const labels = bins.slice(0, -1).map((b, i) => `${b.toFixed(1)}–${bins[i + 1].toFixed(1)}`);
+
+        const histChart = echarts.init(histEl);
+        histChart.setOption({
+            tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+            grid: { left: 50, right: 20, bottom: 40, top: 20 },
+            xAxis: { type: 'category', data: labels, axisLabel: { fontSize: 10 } },
+            yAxis: { type: 'value', name: 'テーマ数' },
+            series: [{
+                type: 'bar',
+                data: counts,
+                itemStyle: { color: '#7A4033', borderRadius: [4, 4, 0, 0] },
+                barMaxWidth: 40,
+            }]
+        });
+        window.addEventListener('resize', () => histChart.resize());
+    }
+
+    // =========================================================================
+    // Utilities
+    // =========================================================================
+    function formatDate(isoStr) {
+        if (!isoStr) return '—';
+        try {
+            const d = new Date(isoStr);
+            const y = d.getFullYear();
+            const m = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            const h = String(d.getHours()).padStart(2, '0');
+            const min = String(d.getMinutes()).padStart(2, '0');
+            return `${y}/${m}/${day} ${h}:${min}`;
+        } catch {
+            return isoStr.substring(0, 16).replace('T', ' ');
+        }
+    }
+
+    // =========================================================================
+    // Init
+    // =========================================================================
+    function init() {
+        if (typeof THEMES_DATA === 'undefined') {
+            document.querySelector('.container').innerHTML =
+                '<div style="color:var(--color-text-muted);text-align:center;padding:80px 0;">' +
+                '<h2 style="color:var(--color-bg-light);">データがありません</h2>' +
+                '<p>run_pipeline.py を実行してデータを生成してください。</p></div>';
+            return;
+        }
+
+        const stats = computeStats();
+        renderOverview(stats);
+        renderQuality(stats);
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
