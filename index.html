@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="https://esse-sense.com/favicon.ico">
-    <title>Structural Inflection Radar</title>
+    <title>構造変化レーダー — Structural Inflection Radar</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -299,8 +299,8 @@
 <body>
     <div class="container">
         <div class="app-header">
-            <h1>Structural Inflection Radar</h1>
-            <p class="subtitle">構造的変化点の加速度で新興技術を検出</p>
+            <h1>構造変化レーダー</h1>
+            <p class="subtitle">構造的変化点の加速度で新興技術を検出する</p>
         </div>
 
         <div class="meta-bar">
@@ -338,13 +338,13 @@
         function init() {
             if (typeof THEMES_DATA === 'undefined') {
                 document.getElementById('themes-list').innerHTML =
-                    '<div class="empty-state"><h2>データなし</h2><p>run_pipeline.py を実行してデータを生成してください。</p></div>';
+                    '<div class="empty-state"><h2>データがありません</h2><p>run_pipeline.py を実行してデータを生成してください。</p></div>';
                 return;
             }
 
             const info = document.getElementById('meta-info');
             const date = new Date(THEMES_DATA.generated_at).toLocaleDateString('ja-JP');
-            info.textContent = `${date} 更新 / ${THEMES_DATA.total_themes} テーマ / ${THEMES_DATA.total_source_items} ソース`;
+            info.textContent = `${date} 更新 / ${THEMES_DATA.total_themes} テーマ / ${THEMES_DATA.total_source_items} 件のソース`;
 
             renderThemes();
         }
@@ -386,7 +386,7 @@
                     <div class="theme-header">
                         <div>
                             <div class="theme-name">${theme.name}</div>
-                            <div class="theme-meta">${theme.item_count} sources / score: ${(theme.composite_score * 100).toFixed(0)}%</div>
+                            <div class="theme-meta">${theme.item_count} 件 / 総合スコア: ${(theme.composite_score * 100).toFixed(0)}%</div>
                         </div>
                         <span class="delta-badge ${deltaClass}">Δ ${deltaText}</span>
                     </div>
@@ -424,7 +424,7 @@
 
             let sourcesHtml = '';
             if (theme.source_items && theme.source_items.length > 0) {
-                sourcesHtml = '<h3 style="margin-top:20px;font-size:0.9rem;color:#3A2A20;">Sources</h3>';
+                sourcesHtml = '<h3 style="margin-top:20px;font-size:0.9rem;color:#3A2A20;">情報ソース</h3>';
                 sourcesHtml += theme.source_items.map(s => `
                     <div class="source-item">
                         <a href="${s.url}" target="_blank">${s.title || 'Untitled'}</a>
@@ -436,11 +436,11 @@
             const scorerQuery = encodeURIComponent(theme.name);
             const body = `
                 <h2>${theme.name}</h2>
-                <p class="modal-subtitle">${theme.item_count} sources / composite score: ${(theme.composite_score * 100).toFixed(1)}%</p>
+                <p class="modal-subtitle">${theme.item_count} 件 / 総合スコア: ${(theme.composite_score * 100).toFixed(1)}%</p>
                 ${evidenceHtml}
                 ${sourcesHtml}
                 <a href="${SCORER_URL}?q=${scorerQuery}" target="_blank" class="scorer-link">
-                    Structural Inflection Scorer で詳細評価
+                    詳細スコアリングを実行
                 </a>
             `;
 
