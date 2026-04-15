@@ -13,8 +13,8 @@
             --color-bg-secondary:   #FDF5EE;
             --color-bg-light:       #F5EBE0;
             --color-accent:         #7A4033;
-            --color-accent-dark:    #5C2E24;
-            --color-text-body:      #1A0F0A;
+            --color-accent-dark:    #7A4033;
+            --color-text-body:      #1a1a1a;
             --color-text-secondary: #7A5A48;
             --color-text-muted:     #B09A88;
             --color-border:         #E0CCBB;
@@ -91,12 +91,18 @@
             background: none;
             border: none;
             color: var(--color-text-muted);
-            padding: 5px 14px;
+            padding: 7px 16px;
             border-radius: 4px;
-            font-size: 0.75rem;
+            font-size: 0.82rem;
             cursor: pointer;
             transition: all 0.2s;
             white-space: nowrap;
+            min-height: 36px;
+        }
+
+        .view-tab:focus-visible {
+            outline: 2px solid var(--color-accent);
+            outline-offset: 2px;
         }
 
         .view-tab.active {
@@ -117,11 +123,17 @@
             background: none;
             border: 1px solid var(--color-accent);
             color: var(--color-text-muted);
-            padding: 4px 12px;
+            padding: 6px 14px;
             border-radius: 4px;
-            font-size: 0.75rem;
+            font-size: 0.78rem;
             cursor: pointer;
             transition: all 0.2s;
+            min-height: 32px;
+        }
+
+        .sort-btn:focus-visible {
+            outline: 2px solid var(--color-accent);
+            outline-offset: 2px;
         }
 
         .sort-btn.active {
@@ -174,7 +186,7 @@
         }
 
         .q-emerging { background: rgba(122, 64, 51, 0.08); color: var(--color-accent); border: 1px solid rgba(122, 64, 51, 0.2); }
-        .q-critical { background: rgba(92, 46, 36, 0.1); color: var(--color-accent-dark); border: 1px solid rgba(92, 46, 36, 0.25); font-weight: 700; }
+        .q-critical { background: rgba(122, 64, 51, 0.1); color: var(--color-accent-dark); border: 1px solid rgba(122, 64, 51, 0.25); font-weight: 700; }
         .q-low { background: var(--color-bg-secondary); color: var(--color-text-muted); border: 1px solid var(--color-border); }
         .q-mature { background: var(--color-bg-light); color: var(--color-text-secondary); border: 1px solid var(--color-border); }
 
@@ -223,10 +235,29 @@
         #radar-chart { width: 100%; height: 480px; }
 
         .radar-hint {
-            font-size: 0.75rem;
+            font-size: 0.78rem;
             color: var(--color-text-muted);
             text-align: center;
-            padding: 8px;
+            padding: 10px;
+            line-height: 1.5;
+        }
+
+        .radar-limit-msg {
+            font-size: 0.75rem;
+            color: var(--color-accent);
+            text-align: center;
+            padding: 6px 12px;
+            background: rgba(122, 64, 51, 0.06);
+            border-radius: 6px;
+            margin-bottom: 8px;
+        }
+
+        .radar-selector-header {
+            font-size: 0.72rem;
+            color: var(--color-text-muted);
+            padding: 6px 10px 10px;
+            border-bottom: 1px solid var(--color-border);
+            margin-bottom: 4px;
         }
 
         /* Theme card styles (list view) */
@@ -382,10 +413,10 @@
         <div class="meta-bar">
             <span id="meta-info">読み込み中...</span>
             <div class="meta-right">
-                <div class="view-tabs">
-                    <button class="view-tab active" onclick="switchView('list')">一覧</button>
-                    <button class="view-tab" onclick="switchView('matrix')">マトリクス</button>
-                    <button class="view-tab" onclick="switchView('radar')">レーダー比較</button>
+                <div class="view-tabs" role="tablist" aria-label="表示切替">
+                    <button class="view-tab active" role="tab" aria-selected="true" aria-controls="view-list" onclick="switchView('list')">一覧</button>
+                    <button class="view-tab" role="tab" aria-selected="false" aria-controls="view-matrix" onclick="switchView('matrix')">マトリクス</button>
+                    <button class="view-tab" role="tab" aria-selected="false" aria-controls="view-radar" onclick="switchView('radar')">レーダー比較</button>
                 </div>
                 <div class="sort-controls" id="sort-controls">
                     <button class="sort-btn active" onclick="sortBy('delta')">加速度順</button>
@@ -396,27 +427,27 @@
         </div>
 
         <!-- List view -->
-        <div id="view-list" class="view-container active">
+        <div id="view-list" class="view-container active" role="tabpanel" aria-label="一覧表示">
             <div id="themes-list"></div>
         </div>
 
         <!-- Bubble matrix view -->
-        <div id="view-matrix" class="view-container">
+        <div id="view-matrix" class="view-container" role="tabpanel" aria-label="マトリクス表示">
             <div class="chart-card">
                 <h2>加速度 x 総合スコア マトリクス</h2>
                 <p class="chart-desc">X軸: 総合スコア（構造変化の強度）、Y軸: 加速度（変化の勢い）、バブルサイズ: ソース件数。クリックで詳細を表示。</p>
                 <div id="bubble-chart"></div>
-                <div class="quadrant-legend">
-                    <div class="q-label q-emerging">左上: 新興テーマ（低スコア・加速中）</div>
-                    <div class="q-label q-critical">右上: 最重要テーマ（高スコア・加速中）</div>
-                    <div class="q-label q-low">左下: 低優先テーマ</div>
-                    <div class="q-label q-mature">右下: 成熟テーマ（高スコア・安定）</div>
+                <div class="quadrant-legend" role="list" aria-label="象限の説明">
+                    <div class="q-label q-emerging" role="listitem">左上: 新興テーマ（低スコア・加速中）</div>
+                    <div class="q-label q-critical" role="listitem">右上: 最重要テーマ（高スコア・加速中）</div>
+                    <div class="q-label q-low" role="listitem">左下: 低優先テーマ</div>
+                    <div class="q-label q-mature" role="listitem">右下: 成熟テーマ（高スコア・安定）</div>
                 </div>
             </div>
         </div>
 
         <!-- Radar comparison view -->
-        <div id="view-radar" class="view-container">
+        <div id="view-radar" class="view-container" role="tabpanel" aria-label="レーダー比較表示">
             <div class="chart-card">
                 <h2>5軸レーダー比較</h2>
                 <p class="chart-desc">左のリストからテーマを選択すると、5軸のスコアをレーダーチャートで比較できます（最大4件）。</p>
@@ -429,9 +460,9 @@
         </div>
     </div>
 
-    <div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+    <div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)" role="dialog" aria-modal="true" aria-label="テーマ詳細">
         <div class="modal" id="modal-content">
-            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <button class="modal-close" onclick="closeModal()" aria-label="閉じる">&times;</button>
             <div id="modal-body"></div>
         </div>
     </div>
@@ -497,7 +528,7 @@
             'window_technology': '窓技術',
         };
 
-        const RADAR_COLORS = ['#7A4033', '#5C2E24', '#B09A88', '#3A2A20'];
+        const RADAR_COLORS = ['#7A4033', '#B07256', '#DC8766', '#966D5E'];
 
         let currentSort = 'delta';
         let currentView = 'list';
@@ -653,10 +684,10 @@
                         formatter: p => p.data.name.length > 8 ? p.data.name.slice(0, 8) + '...' : p.data.name,
                         position: 'top',
                         fontSize: 10,
-                        color: '#1A0F0A',
+                        color: '#1a1a1a',
                     },
                     emphasis: {
-                        itemStyle: { borderColor: '#5C2E24', borderWidth: 2 },
+                        itemStyle: { borderColor: '#7A4033', borderWidth: 2 },
                         label: { fontSize: 12, fontWeight: 'bold', formatter: p => p.data.name },
                     },
                 }],
@@ -670,7 +701,7 @@
                     trigger: 'item',
                     backgroundColor: '#FFFAF6',
                     borderColor: '#E0CCBB',
-                    textStyle: { color: '#1A0F0A', fontSize: 12 },
+                    textStyle: { color: '#1a1a1a', fontSize: 12 },
                     formatter: function(p) {
                         const v = p.data.value;
                         const delta = v[1];
@@ -698,7 +729,7 @@
 
         function getThemeColor(score, delta) {
             // High score + accelerating = dark accent, low = muted
-            if (score > 0.5 && delta > 0.01) return 'rgba(92, 46, 36, 0.85)';   // Critical
+            if (score > 0.5 && delta > 0.01) return 'rgba(122, 64, 51, 0.85)';   // Critical
             if (score <= 0.5 && delta > 0.01) return 'rgba(122, 64, 51, 0.75)';  // Emerging
             if (score > 0.5 && delta <= 0.01) return 'rgba(176, 154, 136, 0.7)';  // Mature
             return 'rgba(224, 204, 187, 0.6)';  // Low priority
@@ -786,7 +817,7 @@
                     trigger: 'item',
                     backgroundColor: '#FFFAF6',
                     borderColor: '#E0CCBB',
-                    textStyle: { color: '#1A0F0A', fontSize: 12 },
+                    textStyle: { color: '#1a1a1a', fontSize: 12 },
                 },
                 series: series,
             }, true);
