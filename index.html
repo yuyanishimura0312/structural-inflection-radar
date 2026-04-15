@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="https://esse-sense.com/favicon.ico">
     <title>構造変化レーダー — Structural Inflection Radar</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
     <style>
         :root {
             --color-bg-page:        #3A2A20;
@@ -52,6 +53,7 @@
             letter-spacing: 0.04em;
         }
 
+        /* Meta bar with view tabs and sort controls */
         .meta-bar {
             display: flex;
             justify-content: space-between;
@@ -61,11 +63,49 @@
             background: rgba(26, 15, 10, 0.25);
             border: 1px solid rgba(224, 204, 187, 0.15);
             border-radius: 8px;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
         .meta-bar span {
             color: var(--color-text-muted);
             font-size: 0.8rem;
+        }
+
+        .meta-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .view-tabs {
+            display: flex;
+            gap: 4px;
+            background: rgba(26, 15, 10, 0.3);
+            border-radius: 6px;
+            padding: 3px;
+        }
+
+        .view-tab {
+            background: none;
+            border: none;
+            color: var(--color-text-muted);
+            padding: 5px 14px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .view-tab.active {
+            background: var(--color-accent);
+            color: var(--color-bg-card);
+        }
+
+        .view-tab:hover:not(.active) {
+            background: rgba(122, 64, 51, 0.3);
         }
 
         .sort-controls {
@@ -89,6 +129,107 @@
             color: var(--color-bg-card);
         }
 
+        /* View containers */
+        .view-container { display: none; }
+        .view-container.active { display: block; }
+
+        /* Chart card wrapper */
+        .chart-card {
+            background: var(--color-bg-card);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+
+        .chart-card h2 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--color-text-body);
+            margin-bottom: 6px;
+        }
+
+        .chart-card .chart-desc {
+            font-size: 0.78rem;
+            color: var(--color-text-secondary);
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        #bubble-chart { width: 100%; height: 520px; }
+
+        /* Quadrant labels */
+        .quadrant-legend {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .q-label {
+            font-size: 0.72rem;
+            padding: 6px 10px;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .q-emerging { background: rgba(122, 64, 51, 0.08); color: var(--color-accent); border: 1px solid rgba(122, 64, 51, 0.2); }
+        .q-critical { background: rgba(92, 46, 36, 0.1); color: var(--color-accent-dark); border: 1px solid rgba(92, 46, 36, 0.25); font-weight: 700; }
+        .q-low { background: var(--color-bg-secondary); color: var(--color-text-muted); border: 1px solid var(--color-border); }
+        .q-mature { background: var(--color-bg-light); color: var(--color-text-secondary); border: 1px solid var(--color-border); }
+
+        /* Radar comparison view */
+        .radar-layout {
+            display: grid;
+            grid-template-columns: 240px 1fr;
+            gap: 20px;
+        }
+
+        .radar-selector {
+            max-height: 480px;
+            overflow-y: auto;
+            padding-right: 8px;
+        }
+
+        .radar-selector-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            color: var(--color-text-body);
+            transition: background 0.15s;
+            border-bottom: 1px solid var(--color-bg-light);
+        }
+
+        .radar-selector-item:hover { background: var(--color-bg-secondary); }
+
+        .radar-selector-item.selected { background: var(--color-bg-light); font-weight: 600; }
+
+        .radar-selector-item .color-dot {
+            width: 10px; height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .radar-selector-item .item-score {
+            margin-left: auto;
+            font-size: 0.7rem;
+            color: var(--color-text-muted);
+        }
+
+        #radar-chart { width: 100%; height: 480px; }
+
+        .radar-hint {
+            font-size: 0.75rem;
+            color: var(--color-text-muted);
+            text-align: center;
+            padding: 8px;
+        }
+
+        /* Theme card styles (list view) */
         .theme-card {
             background: var(--color-bg-card);
             border-radius: 12px;
@@ -132,22 +273,9 @@
             white-space: nowrap;
         }
 
-        .delta-up {
-            background: var(--color-accent-dark);
-            color: var(--color-bg-card);
-        }
-
-        .delta-down {
-            background: var(--color-bg-secondary);
-            color: var(--color-text-secondary);
-            border: 1px solid var(--color-text-muted);
-        }
-
-        .delta-neutral {
-            background: transparent;
-            color: var(--color-text-muted);
-            border: 1px solid var(--color-border);
-        }
+        .delta-up { background: var(--color-accent-dark); color: var(--color-bg-card); }
+        .delta-down { background: var(--color-bg-secondary); color: var(--color-text-secondary); border: 1px solid var(--color-text-muted); }
+        .delta-neutral { background: transparent; color: var(--color-text-muted); border: 1px solid var(--color-border); }
 
         .axes-grid {
             display: grid;
@@ -158,9 +286,7 @@
             margin-top: 4px;
         }
 
-        .axis-item {
-            text-align: center;
-        }
+        .axis-item { text-align: center; }
 
         .axis-label {
             font-size: 0.72rem;
@@ -169,176 +295,68 @@
             letter-spacing: 0.02em;
         }
 
-        .axis-bar {
-            height: 8px;
-            background: var(--color-border);
-            border-radius: 4px;
-            overflow: hidden;
-        }
-
-        .axis-fill {
-            height: 100%;
-            border-radius: 4px;
-            transition: width 0.5s;
-        }
-
+        .axis-bar { height: 8px; background: var(--color-border); border-radius: 4px; overflow: hidden; }
+        .axis-fill { height: 100%; border-radius: 4px; transition: width 0.5s; }
         .axis-fill.high { background: var(--color-accent); }
         .axis-fill.mid { background: var(--color-text-muted); }
         .axis-fill.low { background: var(--color-border); }
 
-        .axis-score {
-            font-size: 0.72rem;
-            color: var(--color-accent-dark);
-            margin-top: 3px;
-            font-weight: 700;
-        }
+        .axis-score { font-size: 0.72rem; color: var(--color-accent-dark); margin-top: 3px; font-weight: 700; }
 
         .scorer-link {
-            display: block;
-            width: 100%;
-            text-align: center;
-            margin-top: 16px;
-            padding: 10px 16px;
-            background: var(--color-accent);
-            color: var(--color-bg-card);
-            border-radius: 8px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            text-decoration: none;
-            transition: background 0.2s;
+            display: block; width: 100%; text-align: center; margin-top: 16px;
+            padding: 10px 16px; background: var(--color-accent); color: var(--color-bg-card);
+            border-radius: 8px; font-size: 0.85rem; font-weight: 600;
+            text-decoration: none; transition: background 0.2s;
         }
-
         .scorer-link:hover { background: var(--color-accent-dark); }
 
         /* Modal */
         .modal-overlay {
-            display: flex;
-            position: fixed;
+            display: flex; position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(58, 42, 32, 0.7);
-            z-index: 100;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            opacity: 0;
-            visibility: hidden;
+            background: rgba(58, 42, 32, 0.7); z-index: 100;
+            align-items: center; justify-content: center; padding: 20px;
+            opacity: 0; visibility: hidden;
             transition: opacity 0.2s ease, visibility 0.2s ease;
         }
-
-        .modal-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
+        .modal-overlay.active { opacity: 1; visibility: visible; }
 
         .modal {
-            background: var(--color-bg-card);
-            border-radius: 16px;
-            padding: 32px;
-            max-width: 700px;
-            width: 100%;
-            max-height: 85vh;
-            overflow-y: auto;
+            background: var(--color-bg-card); border-radius: 16px; padding: 32px;
+            max-width: 700px; width: 100%; max-height: 85vh; overflow-y: auto;
             position: relative;
-            transform: scale(0.95) translateY(8px);
-            opacity: 0;
+            transform: scale(0.95) translateY(8px); opacity: 0;
             transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
         }
-
-        .modal-overlay.active .modal {
-            transform: scale(1) translateY(0);
-            opacity: 1;
-        }
+        .modal-overlay.active .modal { transform: scale(1) translateY(0); opacity: 1; }
 
         .modal-close {
-            position: absolute;
-            top: 16px; right: 16px;
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: var(--color-bg-light);
-            border: 1px solid var(--color-border);
-            border-radius: 50%;
-            font-size: 1.1rem;
-            cursor: pointer;
-            color: var(--color-text-secondary);
-            transition: background 0.15s;
+            position: absolute; top: 16px; right: 16px;
+            width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+            background: var(--color-bg-light); border: 1px solid var(--color-border);
+            border-radius: 50%; font-size: 1.1rem; cursor: pointer;
+            color: var(--color-text-secondary); transition: background 0.15s;
         }
-
         .modal-close:hover { background: var(--color-border); }
 
-        .modal h2 {
-            font-size: 1.2rem;
-            color: var(--color-text-body);
-            margin-bottom: 8px;
-        }
+        .modal h2 { font-size: 1.2rem; color: var(--color-text-body); margin-bottom: 8px; }
+        .modal-subtitle { color: var(--color-text-muted); font-size: 0.8rem; margin-bottom: 20px; }
 
-        .modal-subtitle {
-            color: var(--color-text-muted);
-            font-size: 0.8rem;
-            margin-bottom: 20px;
-        }
-
-        .evidence-section {
-            margin-bottom: 20px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid var(--color-bg-light);
-        }
-
+        .evidence-section { margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--color-bg-light); }
         .evidence-section:last-of-type { border-bottom: none; }
+        .evidence-section h3 { font-size: 0.88rem; color: var(--color-accent-dark); margin-bottom: 10px; font-weight: 700; }
 
-        .evidence-section h3 {
-            font-size: 0.88rem;
-            color: var(--color-accent-dark);
-            margin-bottom: 10px;
-            font-weight: 700;
-        }
+        .evidence-list { list-style: none; padding: 0; }
+        .evidence-list li { font-size: 0.83rem; color: var(--color-text-body); padding: 8px 0; border-bottom: 1px solid var(--color-border); line-height: 1.6; }
 
-        .evidence-list {
-            list-style: none;
-            padding: 0;
-        }
-
-        .evidence-list li {
-            font-size: 0.83rem;
-            color: var(--color-text-body);
-            padding: 8px 0;
-            border-bottom: 1px solid var(--color-border);
-            line-height: 1.6;
-        }
-
-        .source-item {
-            display: block;
-            padding: 8px 0;
-            border-bottom: 1px solid var(--color-border);
-        }
-
-        .source-item a {
-            color: var(--color-accent);
-            text-decoration: none;
-            font-size: 0.85rem;
-            font-weight: 500;
-        }
-
+        .source-item { display: block; padding: 8px 0; border-bottom: 1px solid var(--color-border); }
+        .source-item a { color: var(--color-accent); text-decoration: none; font-size: 0.85rem; font-weight: 500; }
         .source-item a:hover { text-decoration: underline; }
+        .source-item .source-meta { font-size: 0.7rem; color: var(--color-text-muted); margin-top: 2px; }
 
-        .source-item .source-meta {
-            font-size: 0.7rem;
-            color: var(--color-text-muted);
-            margin-top: 2px;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: var(--color-text-muted);
-        }
-
-        .empty-state h2 {
-            color: var(--color-bg-light);
-            margin-bottom: 12px;
-        }
+        .empty-state { text-align: center; padding: 60px 20px; color: var(--color-text-muted); }
+        .empty-state h2 { color: var(--color-bg-light); margin-bottom: 12px; }
 
         @media (max-width: 600px) {
             body { padding: 16px; }
@@ -346,6 +364,11 @@
             .theme-header { flex-direction: column; gap: 8px; }
             .theme-card { padding: 18px; }
             .modal { padding: 20px; }
+            .meta-right { width: 100%; justify-content: space-between; }
+            .radar-layout { grid-template-columns: 1fr; }
+            .radar-selector { max-height: 200px; }
+            #bubble-chart { height: 400px; }
+            #radar-chart { height: 360px; }
         }
     </style>
 </head>
@@ -358,14 +381,52 @@
 
         <div class="meta-bar">
             <span id="meta-info">読み込み中...</span>
-            <div class="sort-controls">
-                <button class="sort-btn active" onclick="sortBy('delta')">加速度順</button>
-                <button class="sort-btn" onclick="sortBy('score')">スコア順</button>
-                <button class="sort-btn" onclick="sortBy('count')">件数順</button>
+            <div class="meta-right">
+                <div class="view-tabs">
+                    <button class="view-tab active" onclick="switchView('list')">一覧</button>
+                    <button class="view-tab" onclick="switchView('matrix')">マトリクス</button>
+                    <button class="view-tab" onclick="switchView('radar')">レーダー比較</button>
+                </div>
+                <div class="sort-controls" id="sort-controls">
+                    <button class="sort-btn active" onclick="sortBy('delta')">加速度順</button>
+                    <button class="sort-btn" onclick="sortBy('score')">スコア順</button>
+                    <button class="sort-btn" onclick="sortBy('count')">件数順</button>
+                </div>
             </div>
         </div>
 
-        <div id="themes-list"></div>
+        <!-- List view -->
+        <div id="view-list" class="view-container active">
+            <div id="themes-list"></div>
+        </div>
+
+        <!-- Bubble matrix view -->
+        <div id="view-matrix" class="view-container">
+            <div class="chart-card">
+                <h2>加速度 x 総合スコア マトリクス</h2>
+                <p class="chart-desc">X軸: 総合スコア（構造変化の強度）、Y軸: 加速度（変化の勢い）、バブルサイズ: ソース件数。クリックで詳細を表示。</p>
+                <div id="bubble-chart"></div>
+                <div class="quadrant-legend">
+                    <div class="q-label q-emerging">左上: 新興テーマ（低スコア・加速中）</div>
+                    <div class="q-label q-critical">右上: 最重要テーマ（高スコア・加速中）</div>
+                    <div class="q-label q-low">左下: 低優先テーマ</div>
+                    <div class="q-label q-mature">右下: 成熟テーマ（高スコア・安定）</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Radar comparison view -->
+        <div id="view-radar" class="view-container">
+            <div class="chart-card">
+                <h2>5軸レーダー比較</h2>
+                <p class="chart-desc">左のリストからテーマを選択すると、5軸のスコアをレーダーチャートで比較できます（最大4件）。</p>
+                <div class="radar-layout">
+                    <div class="radar-selector" id="radar-selector"></div>
+                    <div id="radar-chart"></div>
+                </div>
+                <p class="radar-hint" id="radar-hint">テーマを選択してください</p>
+            </div>
+        </div>
     </div>
 
     <div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
@@ -377,6 +438,9 @@
 
     <script src="themes_data.js"></script>
     <script>
+    (function() {
+        'use strict';
+
         const SCORER_URL = 'https://yuyanishimura0312.github.io/structural-inflection-scorer/';
         const AXIS_LABELS = {
             threshold_proximity: '閾値接近',
@@ -385,105 +449,67 @@
             institutional_change: '制度変化',
             uncertainty_resolution: '不確実性解消',
         };
+        const AXIS_KEYS = Object.keys(AXIS_LABELS);
 
         const THEME_NAMES_JA = {
-            // Core energy themes
-            'fundamental_research': '基礎研究',
-            'academic_research': '学術研究',
-            'academic_publishing': '学術出版',
-            'materials_science': '材料科学',
-            'material_science': '材料科学',
-            'advanced_materials': '先端材料',
-            'solar_energy': '太陽光エネルギー',
-            'solar_power': '太陽光発電',
-            'battery_technology': 'バッテリー技術',
-            'battery_storage': '蓄電池',
-            'energy_storage': 'エネルギー貯蔵',
-            'carbon_capture': '炭素回収',
-            'green_hydrogen': 'グリーン水素',
-            'hydrogen_energy': '水素エネルギー',
-            'hydrogen_fuel_cell': '水素燃料電池',
-            'nuclear_fusion': '核融合',
-            'fusion_energy': '核融合エネルギー',
-            'wind_power': '風力発電',
-            'geothermal_energy': '地熱エネルギー',
-            'electrolysis': '電気分解',
-            'water_electrolysis': '水電解',
-            'water_splitting': '水分解',
-            'solid_state_battery': '全固体電池',
-            'sodium_ion_battery': 'ナトリウムイオン電池',
-            'perovskite_solar_cells': 'ペロブスカイト太陽電池',
-            'ev_charging': 'EV充電',
-            'fast_charging': '急速充電',
-            'energy_transition': 'エネルギー転換',
-            'renewable_energy': '再生可能エネルギー',
-            'clean_energy': 'クリーンエネルギー',
-            'energy_efficiency': 'エネルギー効率',
-            'decarbonization': '脱炭素',
-            'sustainability': '持続可能性',
-            'catalysis': '触媒',
-            'electrochemistry': '電気化学',
-            'circular_economy': 'サーキュラーエコノミー',
-            'machine_learning': '機械学習',
-            'space_technology': '宇宙技術',
-            // New themes from current data
-            'ai_infrastructure': 'AIインフラ',
-            'authentication': '認証技術',
-            'automotive_innovation': '自動車イノベーション',
-            'autonomous_systems': '自律システム',
-            'black_hole_formation': 'ブラックホール形成',
-            'climate_tech': '気候テック',
-            'consumer_adoption': '消費者普及',
-            'cosmology': '宇宙論',
-            'cost_competitiveness': 'コスト競争力',
-            'critical_infrastructure': '重要インフラ',
-            'developer_tools': '開発者ツール',
-            'distributed_generation': '分散型発電',
-            'drone_technology': 'ドローン技術',
-            'early_universe': '初期宇宙',
-            'electrification': '電化',
-            'energy_crisis': 'エネルギー危機',
-            'energy_independence': 'エネルギー自立',
-            'energy_infrastructure': 'エネルギーインフラ',
-            'energy_security': 'エネルギー安全保障',
-            'evolutionary_biology': '進化生物学',
-            'fluid_dynamics': '流体力学',
-            'geopolitical_conflict': '地政学的紛争',
-            'geopolitical_shock': '地政学的ショック',
-            'global_markets': 'グローバル市場',
-            'heterojunction': 'ヘテロ接合',
-            'historical_analysis': '歴史分析',
-            'identity_management': 'ID管理',
-            'infrastructure': 'インフラ',
-            'mathematical_modeling': '数理モデリング',
-            'microfluidics': 'マイクロ流体工学',
-            'ontology': 'オントロジー',
-            'oxygen_reduction_reaction': '酸素還元反応',
-            'peer_review': '査読',
-            'photovoltaic_efficiency': '太陽電池効率',
-            'plasma_physics': 'プラズマ物理学',
-            'predictive_modeling': '予測モデリング',
-            'quantum_computing': '量子コンピューティング',
-            'range_breakthrough': '航続距離ブレークスルー',
-            'range_extension': '航続距離延長',
-            'strategic_partnership': '戦略的提携',
-            'supply_chain_disruption': 'サプライチェーン混乱',
-            'sustainable_polymers': '持続可能ポリマー',
-            'terminal_ui': 'ターミナルUI',
-            'theoretical_physics': '理論物理学',
-            'uk_policy': '英国政策',
-            'waste_valorization': '廃棄物高付加価値化',
+            'fundamental_research': '基礎研究', 'academic_research': '学術研究',
+            'academic_publishing': '学術出版', 'materials_science': '材料科学',
+            'material_science': '材料科学', 'advanced_materials': '先端材料',
+            'solar_energy': '太陽光エネルギー', 'solar_power': '太陽光発電',
+            'battery_technology': 'バッテリー技術', 'battery_storage': '蓄電池',
+            'energy_storage': 'エネルギー貯蔵', 'carbon_capture': '炭素回収',
+            'green_hydrogen': 'グリーン水素', 'hydrogen_energy': '水素エネルギー',
+            'hydrogen_fuel_cell': '水素燃料電池', 'nuclear_fusion': '核融合',
+            'fusion_energy': '核融合エネルギー', 'wind_power': '風力発電',
+            'geothermal_energy': '地熱エネルギー', 'electrolysis': '電気分解',
+            'water_electrolysis': '水電解', 'water_splitting': '水分解',
+            'solid_state_battery': '全固体電池', 'sodium_ion_battery': 'ナトリウムイオン電池',
+            'perovskite_solar_cells': 'ペロブスカイト太陽電池', 'ev_charging': 'EV充電',
+            'fast_charging': '急速充電', 'energy_transition': 'エネルギー転換',
+            'renewable_energy': '再生可能エネルギー', 'clean_energy': 'クリーンエネルギー',
+            'energy_efficiency': 'エネルギー効率', 'decarbonization': '脱炭素',
+            'sustainability': '持続可能性', 'catalysis': '触媒',
+            'electrochemistry': '電気化学', 'circular_economy': 'サーキュラーエコノミー',
+            'machine_learning': '機械学習', 'space_technology': '宇宙技術',
+            'ai_infrastructure': 'AIインフラ', 'authentication': '認証技術',
+            'automotive_innovation': '自動車イノベーション', 'autonomous_systems': '自律システム',
+            'black_hole_formation': 'ブラックホール形成', 'climate_tech': '気候テック',
+            'consumer_adoption': '消費者普及', 'cosmology': '宇宙論',
+            'cost_competitiveness': 'コスト競争力', 'critical_infrastructure': '重要インフラ',
+            'developer_tools': '開発者ツール', 'distributed_generation': '分散型発電',
+            'drone_technology': 'ドローン技術', 'early_universe': '初期宇宙',
+            'electrification': '電化', 'energy_crisis': 'エネルギー危機',
+            'energy_independence': 'エネルギー自立', 'energy_infrastructure': 'エネルギーインフラ',
+            'energy_security': 'エネルギー安全保障', 'evolutionary_biology': '進化生物学',
+            'fluid_dynamics': '流体力学', 'geopolitical_conflict': '地政学的紛争',
+            'geopolitical_shock': '地政学的ショック', 'global_markets': 'グローバル市場',
+            'heterojunction': 'ヘテロ接合', 'historical_analysis': '歴史分析',
+            'identity_management': 'ID管理', 'infrastructure': 'インフラ',
+            'mathematical_modeling': '数理モデリング', 'microfluidics': 'マイクロ流体工学',
+            'ontology': 'オントロジー', 'oxygen_reduction_reaction': '酸素還元反応',
+            'peer_review': '査読', 'photovoltaic_efficiency': '太陽電池効率',
+            'plasma_physics': 'プラズマ物理学', 'predictive_modeling': '予測モデリング',
+            'quantum_computing': '量子コンピューティング', 'range_breakthrough': '航続距離ブレークスルー',
+            'range_extension': '航続距離延長', 'strategic_partnership': '戦略的提携',
+            'supply_chain_disruption': 'サプライチェーン混乱', 'sustainable_polymers': '持続可能ポリマー',
+            'terminal_ui': 'ターミナルUI', 'theoretical_physics': '理論物理学',
+            'uk_policy': '英国政策', 'waste_valorization': '廃棄物高付加価値化',
             'window_technology': '窓技術',
         };
 
+        const RADAR_COLORS = ['#7A4033', '#5C2E24', '#B09A88', '#3A2A20'];
+
         let currentSort = 'delta';
+        let currentView = 'list';
+        let bubbleChart = null;
+        let radarChart = null;
+        let selectedRadarThemes = [];
 
         function formatThemeName(name) {
-            if (THEME_NAMES_JA[name]) return THEME_NAMES_JA[name];
-            // Fallback: convert snake_case to Title Case
-            return name.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+            return THEME_NAMES_JA[name] || name.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
         }
 
+        // --- Init ---
         function init() {
             if (typeof THEMES_DATA === 'undefined' || !THEMES_DATA.themes || THEMES_DATA.themes.length === 0) {
                 document.getElementById('themes-list').innerHTML =
@@ -496,24 +522,52 @@
             info.textContent = `${date} 更新 / ${THEMES_DATA.total_themes} テーマ / ${THEMES_DATA.total_source_items} 件のソース`;
 
             renderThemes();
+
+            // Handle URL hash for view state
+            const hash = location.hash.replace('#', '');
+            if (['list', 'matrix', 'radar'].includes(hash)) {
+                switchView(hash, true);
+            }
         }
+
+        // --- View switching ---
+        window.switchView = function(view, skipHash) {
+            currentView = view;
+            document.querySelectorAll('.view-container').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.view-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById('view-' + view).classList.add('active');
+            document.querySelector(`.view-tab[onclick*="${view}"]`).classList.add('active');
+
+            // Show sort controls only in list view
+            document.getElementById('sort-controls').style.display = view === 'list' ? 'flex' : 'none';
+
+            if (!skipHash) location.hash = view === 'list' ? '' : view;
+
+            // Lazy-init charts
+            if (view === 'matrix') initBubbleChart();
+            if (view === 'radar') initRadarView();
+        };
+
+        // --- Sort ---
+        window.sortBy = function(type) {
+            currentSort = type;
+            document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            renderThemes();
+        };
 
         function getSortedThemes() {
             const themes = [...THEMES_DATA.themes];
-            if (currentSort === 'delta') {
-                themes.sort((a, b) => (b.delta?.composite || 0) - (a.delta?.composite || 0));
-            } else if (currentSort === 'score') {
-                themes.sort((a, b) => b.composite_score - a.composite_score);
-            } else {
-                themes.sort((a, b) => b.item_count - a.item_count);
-            }
+            if (currentSort === 'delta') themes.sort((a, b) => (b.delta?.composite || 0) - (a.delta?.composite || 0));
+            else if (currentSort === 'score') themes.sort((a, b) => b.composite_score - a.composite_score);
+            else themes.sort((a, b) => b.item_count - a.item_count);
             return themes;
         }
 
+        // --- List view ---
         function renderThemes() {
             const themes = getSortedThemes();
-            const list = document.getElementById('themes-list');
-            list.innerHTML = themes.map((t, i) => renderCard(t, i)).join('');
+            document.getElementById('themes-list').innerHTML = themes.map((t, i) => renderCard(t, i)).join('');
         }
 
         function renderCard(theme, index) {
@@ -521,115 +575,289 @@
             const deltaClass = delta > 0.01 ? 'delta-up' : delta < -0.01 ? 'delta-down' : 'delta-neutral';
             const deltaIcon = delta > 0.01 ? '\u2191' : delta < -0.01 ? '\u2193' : '\u2014';
             const deltaText = delta > 0 ? `${deltaIcon} +${(delta * 100).toFixed(1)}%` : delta < 0 ? `${deltaIcon} ${(delta * 100).toFixed(1)}%` : `${deltaIcon} 0%`;
-
             const displayName = formatThemeName(theme.name);
 
             const axesBars = Object.entries(theme.axes).map(([key, axis]) => {
                 const pct = Math.round(axis.score * 100);
                 const level = pct >= 60 ? 'high' : pct >= 30 ? 'mid' : 'low';
-                return `
-                    <div class="axis-item">
-                        <div class="axis-label">${AXIS_LABELS[key] || key}</div>
-                        <div class="axis-bar"><div class="axis-fill ${level}" style="width:${pct}%"></div></div>
-                        <div class="axis-score">${pct}%</div>
-                    </div>
-                `;
+                return `<div class="axis-item">
+                    <div class="axis-label">${AXIS_LABELS[key] || key}</div>
+                    <div class="axis-bar"><div class="axis-fill ${level}" style="width:${pct}%"></div></div>
+                    <div class="axis-score">${pct}%</div>
+                </div>`;
             }).join('');
 
-            return `
-                <div class="theme-card" onclick="openModal(${index})">
-                    <div class="theme-header">
-                        <div>
-                            <div class="theme-name">${displayName}</div>
-                            <div class="theme-meta">${theme.item_count} 件 / 総合スコア: ${(theme.composite_score * 100).toFixed(0)}%</div>
-                        </div>
-                        <span class="delta-badge ${deltaClass}">${deltaText}</span>
+            return `<div class="theme-card" onclick="openModal(${index})">
+                <div class="theme-header">
+                    <div>
+                        <div class="theme-name">${displayName}</div>
+                        <div class="theme-meta">${theme.item_count} 件 / 総合スコア: ${(theme.composite_score * 100).toFixed(0)}%</div>
                     </div>
-                    <div class="axes-grid">${axesBars}</div>
+                    <span class="delta-badge ${deltaClass}">${deltaText}</span>
                 </div>
-            `;
+                <div class="axes-grid">${axesBars}</div>
+            </div>`;
         }
 
-        function openModal(index) {
+        // --- Bubble matrix (ECharts) ---
+        function initBubbleChart() {
+            if (bubbleChart) { bubbleChart.resize(); return; }
+
+            const el = document.getElementById('bubble-chart');
+            bubbleChart = echarts.init(el);
+
+            const themes = THEMES_DATA.themes;
+            const data = themes.map((t, i) => ({
+                name: formatThemeName(t.name),
+                value: [
+                    t.composite_score,
+                    t.delta?.composite || 0,
+                    Math.max(t.item_count, 2),
+                    i  // index for modal
+                ],
+                itemStyle: {
+                    color: getThemeColor(t.composite_score, t.delta?.composite || 0),
+                }
+            }));
+
+            const option = {
+                backgroundColor: 'transparent',
+                grid: { left: 60, right: 30, top: 40, bottom: 50 },
+                xAxis: {
+                    name: '総合スコア',
+                    nameLocation: 'center',
+                    nameGap: 35,
+                    nameTextStyle: { color: '#7A5A48', fontSize: 12 },
+                    min: 0, max: 1,
+                    axisLine: { lineStyle: { color: '#E0CCBB' } },
+                    axisLabel: { color: '#7A5A48', formatter: v => (v * 100).toFixed(0) + '%' },
+                    splitLine: { lineStyle: { color: '#F5EBE0', type: 'dashed' } },
+                },
+                yAxis: {
+                    name: '加速度',
+                    nameLocation: 'center',
+                    nameGap: 45,
+                    nameTextStyle: { color: '#7A5A48', fontSize: 12 },
+                    axisLine: { lineStyle: { color: '#E0CCBB' } },
+                    axisLabel: { color: '#7A5A48', formatter: v => (v >= 0 ? '+' : '') + (v * 100).toFixed(0) + '%' },
+                    splitLine: { lineStyle: { color: '#F5EBE0', type: 'dashed' } },
+                },
+                series: [{
+                    type: 'scatter',
+                    data: data,
+                    symbolSize: function(val) {
+                        return Math.max(Math.sqrt(val[2]) * 12, 14);
+                    },
+                    label: {
+                        show: true,
+                        formatter: p => p.data.name.length > 8 ? p.data.name.slice(0, 8) + '...' : p.data.name,
+                        position: 'top',
+                        fontSize: 10,
+                        color: '#1A0F0A',
+                    },
+                    emphasis: {
+                        itemStyle: { borderColor: '#5C2E24', borderWidth: 2 },
+                        label: { fontSize: 12, fontWeight: 'bold', formatter: p => p.data.name },
+                    },
+                }],
+                // Quadrant divider lines
+                graphic: [
+                    // Vertical center line
+                    { type: 'line', shape: { x1: '50%', y1: 0, x2: '50%', y2: '100%' }, style: { stroke: '#E0CCBB', lineWidth: 1, lineDash: [4, 4] }, z: -1, },
+                    // Horizontal center line (y=0)
+                ],
+                tooltip: {
+                    trigger: 'item',
+                    backgroundColor: '#FFFAF6',
+                    borderColor: '#E0CCBB',
+                    textStyle: { color: '#1A0F0A', fontSize: 12 },
+                    formatter: function(p) {
+                        const v = p.data.value;
+                        const delta = v[1];
+                        const arrow = delta > 0.01 ? '&uarr;' : delta < -0.01 ? '&darr;' : '&mdash;';
+                        return `<strong>${p.data.name}</strong><br/>
+                            総合スコア: ${(v[0] * 100).toFixed(1)}%<br/>
+                            加速度: ${arrow} ${(delta * 100).toFixed(1)}%<br/>
+                            ソース: ${v[2]}件`;
+                    }
+                },
+            };
+
+            bubbleChart.setOption(option);
+
+            // Click to open modal
+            bubbleChart.on('click', function(params) {
+                const idx = params.data.value[3];
+                // Find theme in sorted order for modal
+                const theme = THEMES_DATA.themes[idx];
+                if (theme) openModalByTheme(theme);
+            });
+
+            window.addEventListener('resize', () => { if (bubbleChart) bubbleChart.resize(); });
+        }
+
+        function getThemeColor(score, delta) {
+            // High score + accelerating = dark accent, low = muted
+            if (score > 0.5 && delta > 0.01) return 'rgba(92, 46, 36, 0.85)';   // Critical
+            if (score <= 0.5 && delta > 0.01) return 'rgba(122, 64, 51, 0.75)';  // Emerging
+            if (score > 0.5 && delta <= 0.01) return 'rgba(176, 154, 136, 0.7)';  // Mature
+            return 'rgba(224, 204, 187, 0.6)';  // Low priority
+        }
+
+        // --- Radar comparison (ECharts) ---
+        function initRadarView() {
+            renderRadarSelector();
+            if (radarChart) { radarChart.resize(); return; }
+
+            const el = document.getElementById('radar-chart');
+            radarChart = echarts.init(el);
+            updateRadarChart();
+            window.addEventListener('resize', () => { if (radarChart) radarChart.resize(); });
+        }
+
+        function renderRadarSelector() {
+            const themes = getSortedThemes();
+            const selector = document.getElementById('radar-selector');
+            selector.innerHTML = themes.map((t, i) => {
+                const isSelected = selectedRadarThemes.includes(t.name);
+                const colorIdx = selectedRadarThemes.indexOf(t.name);
+                const dotColor = isSelected ? RADAR_COLORS[colorIdx] : '#E0CCBB';
+                return `<div class="radar-selector-item ${isSelected ? 'selected' : ''}"
+                    onclick="toggleRadarTheme('${t.name}')">
+                    <span class="color-dot" style="background:${dotColor}"></span>
+                    ${formatThemeName(t.name)}
+                    <span class="item-score">${(t.composite_score * 100).toFixed(0)}%</span>
+                </div>`;
+            }).join('');
+        }
+
+        window.toggleRadarTheme = function(name) {
+            const idx = selectedRadarThemes.indexOf(name);
+            if (idx >= 0) {
+                selectedRadarThemes.splice(idx, 1);
+            } else if (selectedRadarThemes.length < 4) {
+                selectedRadarThemes.push(name);
+            }
+            renderRadarSelector();
+            updateRadarChart();
+        };
+
+        function updateRadarChart() {
+            if (!radarChart) return;
+
+            const hint = document.getElementById('radar-hint');
+            hint.style.display = selectedRadarThemes.length === 0 ? 'block' : 'none';
+
+            const themeMap = {};
+            THEMES_DATA.themes.forEach(t => themeMap[t.name] = t);
+
+            const series = selectedRadarThemes.map((name, i) => {
+                const t = themeMap[name];
+                if (!t) return null;
+                return {
+                    name: formatThemeName(name),
+                    type: 'radar',
+                    data: [{
+                        value: AXIS_KEYS.map(k => t.axes[k]?.score || 0),
+                        name: formatThemeName(name),
+                        areaStyle: { opacity: 0.15 },
+                        lineStyle: { width: 2 },
+                        itemStyle: { color: RADAR_COLORS[i] },
+                    }],
+                };
+            }).filter(Boolean);
+
+            radarChart.setOption({
+                backgroundColor: 'transparent',
+                legend: {
+                    data: selectedRadarThemes.map(formatThemeName),
+                    bottom: 0,
+                    textStyle: { color: '#7A5A48', fontSize: 11 },
+                },
+                radar: {
+                    indicator: AXIS_KEYS.map(k => ({ name: AXIS_LABELS[k], max: 1 })),
+                    shape: 'polygon',
+                    splitArea: { areaStyle: { color: ['#FFFAF6', '#FDF5EE', '#F5EBE0', '#E0CCBB'] } },
+                    axisLine: { lineStyle: { color: '#E0CCBB' } },
+                    splitLine: { lineStyle: { color: '#E0CCBB' } },
+                    axisName: { color: '#7A5A48', fontSize: 11, fontWeight: 500 },
+                },
+                tooltip: {
+                    trigger: 'item',
+                    backgroundColor: '#FFFAF6',
+                    borderColor: '#E0CCBB',
+                    textStyle: { color: '#1A0F0A', fontSize: 12 },
+                },
+                series: series,
+            }, true);
+        }
+
+        // --- Modal ---
+        window.openModal = function(index) {
             const theme = getSortedThemes()[index];
             if (!theme) return;
+            openModalByTheme(theme);
+        };
 
+        function openModalByTheme(theme) {
             const displayName = formatThemeName(theme.name);
 
             let evidenceHtml = '';
             for (const [key, axis] of Object.entries(theme.axes)) {
                 if (axis.evidence && axis.evidence.length > 0) {
-                    evidenceHtml += `
-                        <div class="evidence-section">
-                            <h3>${AXIS_LABELS[key] || key} (${Math.round(axis.score * 100)}%)</h3>
-                            <ul class="evidence-list">
-                                ${axis.evidence.map(e => `<li>${e}</li>`).join('')}
-                            </ul>
-                        </div>
-                    `;
+                    evidenceHtml += `<div class="evidence-section">
+                        <h3>${AXIS_LABELS[key] || key} (${Math.round(axis.score * 100)}%)</h3>
+                        <ul class="evidence-list">
+                            ${axis.evidence.map(e => `<li>${e}</li>`).join('')}
+                        </ul>
+                    </div>`;
                 }
             }
 
             let sourcesHtml = '';
             if (theme.source_items && theme.source_items.length > 0) {
                 sourcesHtml = '<h3 style="margin-top:20px;font-size:0.9rem;color:var(--color-text-body);">情報ソース</h3>';
-                sourcesHtml += theme.source_items.map(s => `
-                    <div class="source-item">
-                        <a href="${s.url}" target="_blank">${s.title || '無題'}</a>
-                        <div class="source-meta">${s.source} / ${s.date || '日付不明'}</div>
-                    </div>
-                `).join('');
+                sourcesHtml += theme.source_items.map(s => `<div class="source-item">
+                    <a href="${s.url}" target="_blank">${s.title || '無題'}</a>
+                    <div class="source-meta">${s.source} / ${s.date || '日付不明'}</div>
+                </div>`).join('');
             }
 
             const scorerQuery = encodeURIComponent(theme.name);
-            const body = `
+            document.getElementById('modal-body').innerHTML = `
                 <h2>${displayName}</h2>
                 <p class="modal-subtitle">${theme.item_count} 件 / 総合スコア: ${(theme.composite_score * 100).toFixed(1)}%</p>
                 ${evidenceHtml}
                 ${sourcesHtml}
-                <a href="${SCORER_URL}?q=${scorerQuery}" target="_blank" class="scorer-link">
-                    詳細スコアリングを実行
-                </a>
+                <a href="${SCORER_URL}?q=${scorerQuery}" target="_blank" class="scorer-link">詳細スコアリングを実行</a>
             `;
-
-            document.getElementById('modal-body').innerHTML = body;
             document.getElementById('modal-overlay').classList.add('active');
             document.body.style.overflow = 'hidden';
             history.pushState({ modalOpen: true }, '', location.href);
         }
 
-        function _doCloseModal() {
+        window._doCloseModal = function() {
             document.getElementById('modal-overlay').classList.remove('active');
             document.body.style.overflow = '';
-        }
+        };
 
-        function closeModal(event) {
+        window.closeModal = function(event) {
             if (event && event.target !== document.getElementById('modal-overlay')) return;
             if (document.getElementById('modal-overlay').classList.contains('active')) {
                 history.back();
             }
-        }
+        };
 
         window.addEventListener('popstate', () => {
-            if (document.getElementById('modal-overlay').classList.contains('active')) {
-                _doCloseModal();
-            }
+            if (document.getElementById('modal-overlay').classList.contains('active')) _doCloseModal();
         });
 
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && document.getElementById('modal-overlay').classList.contains('active')) {
-                history.back();
-            }
+            if (e.key === 'Escape' && document.getElementById('modal-overlay').classList.contains('active')) history.back();
         });
 
-        function sortBy(type) {
-            currentSort = type;
-            document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
-            event.target.classList.add('active');
-            renderThemes();
-        }
-
         init();
+    })();
     </script>
 </body>
 </html>
