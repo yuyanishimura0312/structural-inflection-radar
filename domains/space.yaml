@@ -1,33 +1,47 @@
 domain_id: space
 domain_name_ja: "宇宙商業技術"
 domain_name_en: "Commercial Space Technology"
-description: "再使用型ロケット・衛星コンステレーション・宇宙製造等の構造変化検出"
+description: "打ち上げ・衛星・月面経済・宇宙インフラの商業化動向を追跡"
 enabled: true
 
 sources:
   openalex:
     keywords:
+      # 技術コア
       - "reusable launch vehicle"
-      - "satellite constellation"
-      - "small satellite"
-      - "space debris mitigation"
-      - "in-situ resource utilization"
-      - "lunar economy"
-      - "space manufacturing"
-      - "orbital refueling"
-      - "earth observation satellite"
-      - "direct to cell satellite"
-      - "launch cost reduction"
+      - "optical inter-satellite link"
+      - "active debris removal"
+      - "in-orbit servicing refueling"
+      - "lunar in-situ resource utilization"
+      - "space-based solar power"
+      - "satellite constellation broadband"
+      - "lunar lander precision landing"
+      - "space nuclear propulsion"
+      # 産業・市場
       - "commercial space station"
-      - "CubeSat"
-      - "mega constellation"
-      - "space sustainability"
+      - "launch market competition"
+      - "satellite insurance orbital risk"
+      - "space tourism suborbital"
+      - "new space startup funding"
+      # 政策・制度
+      - "space debris regulation ITU"
+      - "Artemis Accords lunar resource"
+      - "FCC satellite spectrum license"
+      - "space traffic management policy"
+      # クロスドメイン
+      - "AI satellite autonomy"
+      - "earth observation climate monitoring"
+      - "space cybersecurity"
   hackernews:
     keywords:
-      - "Starship"
-      - "Starlink"
-      - "rocket launch"
-      - "satellite internet"
-      - "space station"
-      - "lunar"
-      - "small sat"
+      - "Starship launch"
+      - "active debris removal"
+      - "in-orbit servicing"
+      - "lunar economy"
+      - "space solar power"
+      - "optical satellite link"
+      - "Starlink competitor"
+      - "commercial space station"
+      - "reusable rocket"
+      - "Artemis moon mission"
+      - "satellite constellation"

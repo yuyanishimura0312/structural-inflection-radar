@@ -1,0 +1,48 @@
+domain_id: robotics
+domain_name_ja: "ロボティクス・Physical AI"
+domain_name_en: "Robotics & Physical AI"
+description: "ヒューマノイド・協働ロボット・自律移動・Physical AIの構造変化を追跡"
+enabled: true
+
+sources:
+  openalex:
+    keywords:
+      # 技術コア
+      - "humanoid robot foundation model"
+      - "robot learning from demonstration"
+      - "vision language action model robot"
+      - "collaborative robot cobot"
+      - "autonomous mobile robot warehouse"
+      - "legged robot locomotion"
+      - "dexterous manipulation"
+      - "drone delivery swarm"
+      - "agricultural robot precision farming"
+      # 産業・市場
+      - "humanoid robot manufacturing deployment"
+      - "robot as a service"
+      - "eVTOL low altitude economy"
+      - "autonomous vehicle commercialization"
+      - "construction robot automation"
+      # 政策・制度
+      - "autonomous vehicle regulation"
+      - "drone airspace management UTM"
+      - "robot safety standard ISO"
+      - "AI liability robot"
+      # クロスドメイン
+      - "physical AI embodied cognition"
+      - "robot foundation model transfer learning"
+      - "surgical robot AI guidance"
+  hackernews:
+    keywords:
+      - "humanoid robot"
+      - "Tesla Optimus"
+      - "Figure robot"
+      - "Boston Dynamics Atlas"
+      - "GR00T foundation model"
+      - "robot learning"
+      - "autonomous vehicle"
+      - "drone delivery"
+      - "cobot"
+      - "physical AI"
+      - "agricultural robot"
+      - "eVTOL"

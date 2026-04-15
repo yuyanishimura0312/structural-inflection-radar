@@ -1,0 +1,48 @@
+domain_id: cybersecurity
+domain_name_ja: "サイバーセキュリティ・デジタルトラスト"
+domain_name_en: "Cybersecurity & Digital Trust"
+description: "AI脅威・規制対応・暗号移行・デジタルアイデンティティの構造変化を追跡"
+enabled: true
+
+sources:
+  openalex:
+    keywords:
+      # 技術コア
+      - "zero trust architecture"
+      - "post-quantum cryptography deployment"
+      - "AI red teaming adversarial attack"
+      - "privacy enhancing technology"
+      - "software supply chain security"
+      - "ransomware resilience recovery"
+      - "decentralized identity self-sovereign"
+      - "homomorphic encryption application"
+      - "secure multiparty computation"
+      # 産業・市場
+      - "cyber insurance market"
+      - "managed detection response MDR"
+      - "AI powered security operations"
+      - "identity access management market"
+      - "critical infrastructure protection"
+      # 政策・制度
+      - "EU NIS2 directive compliance"
+      - "DORA digital operational resilience"
+      - "NIST cybersecurity framework"
+      - "SEC cyber disclosure rule"
+      # クロスドメイン
+      - "AI generated phishing detection"
+      - "quantum safe network migration"
+      - "IoT device security regulation"
+  hackernews:
+    keywords:
+      - "zero trust"
+      - "ransomware"
+      - "post-quantum cryptography"
+      - "supply chain attack"
+      - "AI red teaming"
+      - "privacy enhancing technology"
+      - "NIS2 DORA compliance"
+      - "decentralized identity"
+      - "cyber resilience"
+      - "AI phishing"
+      - "homomorphic encryption"
+      - "security operations AI"

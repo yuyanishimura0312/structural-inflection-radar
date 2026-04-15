@@ -1,32 +1,47 @@
 domain_id: quantum
 domain_name_ja: "量子技術"
-domain_name_en: "Quantum Technologies"
-description: "量子コンピュータ・量子通信・量子センシング等の構造変化検出"
+domain_name_en: "Quantum Technology"
+description: "量子コンピューティング・通信・暗号・センシングの商業化動向を追跡"
 enabled: true
 
 sources:
   openalex:
     keywords:
-      - "quantum error correction"
-      - "quantum advantage"
+      # 技術コア
       - "fault tolerant quantum computing"
-      - "qubit coherence time"
-      - "quantum key distribution"
-      - "quantum networking"
-      - "superconducting qubit"
-      - "photonic quantum computing"
-      - "quantum simulation"
+      - "quantum error correction surface code"
       - "topological qubit"
-      - "quantum sensing"
-      - "quantum algorithm"
-      - "neutral atom quantum"
-      - "quantum memory"
-      - "post quantum cryptography"
+      - "post-quantum cryptography migration"
+      - "quantum key distribution network"
+      - "neutral atom quantum processor"
+      - "photonic quantum computing"
+      - "quantum machine learning"
+      - "quantum sensing magnetometer"
+      # 産業・市場
+      - "quantum as a service"
+      - "quantum cloud computing platform"
+      - "quantum software development kit"
+      - "quantum startup funding"
+      - "quantum advantage demonstration"
+      # 政策・制度
+      - "NIST post-quantum standard"
+      - "national quantum initiative"
+      - "EU quantum flagship"
+      - "quantum export control"
+      # クロスドメイン
+      - "quantum AI hybrid algorithm"
+      - "quantum simulation drug discovery"
+      - "quantum internet prototype"
   hackernews:
     keywords:
-      - "quantum computing"
-      - "qubit"
       - "quantum error correction"
-      - "quantum supremacy"
-      - "quantum chip"
-      - "post-quantum"
+      - "post-quantum cryptography"
+      - "fault tolerant quantum"
+      - "quantum advantage"
+      - "qubit processor"
+      - "quantum networking"
+      - "NIST PQC standard"
+      - "quantum machine learning"
+      - "topological qubit"
+      - "quantum cloud"
+      - "quantum cryptography"
