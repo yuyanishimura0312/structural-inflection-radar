@@ -80,6 +80,9 @@ def aggregate_themes(items: list[dict]) -> dict:
     for tag, tag_items in theme_items.items():
         if tag == "unclassified":
             continue
+        # Filter out themes with too few items (noise reduction)
+        if len(tag_items) < 2:
+            continue
 
         axes_data = {}
         total_weight = sum(it.get("credibility_weight", 0.4) for it in tag_items)

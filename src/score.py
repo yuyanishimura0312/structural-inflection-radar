@@ -63,7 +63,7 @@ def get_api_key() -> str:
         return key
     try:
         result = subprocess.run(
-            ["security", "find-generic-password", "-s", "anthropic-api-key", "-w"],
+            ["security", "find-generic-password", "-s", "ANTHROPIC_API_KEY", "-w"],
             capture_output=True, text=True, check=True,
         )
         return result.stdout.strip()

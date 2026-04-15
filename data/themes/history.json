@@ -1,0 +1,530 @@
+{
+  "snapshot_at": "2026-04-15T18:21:34.051114",
+  "themes": {
+    "academic publishing": {
+      "threshold_proximity": 0.0,
+      "external_pressure": 0.0,
+      "tech_cycle_position": 0.25,
+      "institutional_change": 0.25,
+      "uncertainty_resolution": 0.0
+    },
+    "materials science": {
+      "threshold_proximity": 0.873,
+      "external_pressure": 0.745,
+      "tech_cycle_position": 0.873,
+      "institutional_change": 0.0,
+      "uncertainty_resolution": 0.108
+    },
+    "theoretical physics": {
+      "threshold_proximity": 0.143,
+      "external_pressure": 0.143,
+      "tech_cycle_position": 0.143,
+      "institutional_change": 0.0,
+      "uncertainty_resolution": 0.0
+    },
+    "energy efficiency": {
+      "threshold_proximity": 0.0,
+      "external_pressure": 0.0,
+      "tech_cycle_position": 0.0,
+      "institutional_change": 0.0,
+      "uncertainty_resolution": 0.0
+    },
+    "fundamental science": {
+      "threshold_proximity": 0.0,
+      "external_pressure": 0.0,
+      "tech_cycle_position": 0.0,
+      "institutional_change": 0.0,
+      "uncertainty_resolution": 0.0
+    },
+    "pure mathematics": {
+      "threshold_proximity": 0.0,
+      "external_pressure": 0.0,
+      "tech_cycle_position": 0.0,
+      "institutional_change": 0.0,
+      "uncertainty_resolution": 0.0
+    },
+    "academic research": {
+      "threshold_proximity": 0.0,
+      "external_pressure": 0.0,
+      "tech_cycle_position": 0.333,
+      "institutional_change": 0.0,
+      "uncertainty_resolution": 0.0
+    },
+    "quantum computing": {
+      "threshold_proximity": 1.0,
+      "external_pressure": 1.0,
+      "tech_cycle_position": 1.0,
+      "institutional_change": 0.5,
+      "uncertainty_resolution": 0.5
+    },
+    "cybersecurity": {
+      "threshold_proximity": 0.5,
+      "external_pressure": 1.0,
+      "tech_cycle_position": 1.0,
+      "institutional_change": 0.5,
+      "uncertainty_resolution": 0.5
+    },
+    "energy transition": {
+      "threshold_proximity": 0.861,
+      "external_pressure": 1.0,
+      "tech_cycle_position": 0.722,
+      "institutional_change": 0.806,
+      "uncertainty_resolution": 0.389
+    },
+    "energy_storage": {
+      "threshold_proximity": 1.0,
+      "external_pressure": 1.0,
+      "tech_cycle_position": 1.0,
+      "institutional_change": 0.404,
+      "uncertainty_resolution": 0.404
+    },
+    "electric vehicles": {
+      "threshold_proximity": 1.0,
+      "external_pressure": 1.0,
+      "tech_cycle_position": 1.0,
+      "institutional_change": 0.226,
+      "uncertainty_resolution": 1.0
+    },
+    "renewable_energy": {
+      "threshold_proximity": 1.0,
+      "external_pressure": 1.0,
+      "tech_cycle_position": 1.0,
+      "institutional_change": 0.525,
+      "uncertainty_resolution": 0.475
+    },
+    "materials_science": {
+      "threshold_proximity": 1.0,
+      "external_pressure": 0.724,
+      "tech_cycle_position": 0.796,
+      "institutional_change": 0.0,
+      "uncertainty_resolution": 0.0
+    },
+    "electrochemistry": {
+      "threshold_proximity": 0.833,
+      "external_pressure": 0.667,
+      "tech_cycle_position": 0.833,
+      "institutional_change": 0.0,
+      "uncertainty_resolution": 0.0
+    },
+    "battery-technology": {
+      "threshold_proximity": 1.0,
+      "external_pressure": 1.0,
+      "tech_cycle_position": 1.0,
+      "institutional_change": 0.0,
+      "uncertainty_resolution": 0.0
+    },
+    "energy storage": {
+      "threshold_proximity": 1.0,
+      "external_pressure": 0.851,
+      "tech_cycle_position": 1.0,
+      "institutional_change": 0.0,
+      "uncertainty_resolution": 0.0
+    },
+    "battery technology": {
+      "threshold_proximity": 1.0,
+      "external_pressure": 1.0,
+      "tech_cycle_position": 1.0,
+      "institutional_change": 0.127,
+      "uncertainty_resolution": 0.255
+    },
+    "sustainable_materials": {
+      "threshold_proximity": 1.0,
+      "external_pressure": 1.0,
+      "tech_cycle_position": 0.412,
+      "institutional_change": 0.588,
+      "uncertainty_resolution": 0.0
+    },
+    "renewable energy": {
+      "threshold_proximity": 1.0,
+      "external_pressure": 1.0,
+      "tech_cycle_position": 1.0,
+      "institutional_change": 0.463,
+      "uncertainty_resolution": 0.512
+    },
+    "energy infrastructure": {
+      "threshold_proximity": 1.0,
+      "external_pressure": 1.0,
+      "tech_cycle_position": 1.0,
+      "institutional_change": 0.774,
+      "uncertainty_resolution": 0.774
+    },
+    "energy_transition": {
+      "threshold_proximity": 1.0,
+      "external_pressure": 1.0,
+      "tech_cycle_position": 1.0,
+      "institutional_change": 0.774,
+      "uncertainty_resolution": 0.677
+    },
+    "fundamental_physics": {
+      "threshold_proximity": 0.5,
+      "external_pressure": 0.0,
+      "tech_cycle_position": 0.5,
+      "institutional_change": 0.0,
+      "uncertainty_resolution": 0.5
+    },
+    "cosmology": {
+      "threshold_proximity": 0.333,
+      "external_pressure": 0.0,
+      "tech_cycle_position": 0.333,
+      "institutional_change": 0.0,
+      "uncertainty_resolution": 0.333
+    },
+    "nanotechnology": {
+      "threshold_proximity": 1.0,
+      "external_pressure": 0.0,
+      "tech_cycle_position": 1.0,
+      "institutional_change": 0.0,
+      "uncertainty_resolution": 0.5
+    },
+    "basic research": {
+      "threshold_proximity": 0.0,
+      "external_pressure": 0.333,
+      "tech_cycle_position": 0.0,
+      "institutional_change": 0.0,
+      "uncertainty_resolution": 0.0
+    },
+    "fundamental_research": {
+      "threshold_proximity": 1.0,
+      "external_pressure": 0.0,
+      "tech_cycle_position": 0.0,
+      "institutional_change": 0.0,
+      "uncertainty_resolution": 0.0
+    },
+    "perovskite solar cells": {
+      "threshold_proximity": 1.0,
+      "external_pressure": 1.0,
+      "tech_cycle_position": 1.0,
+      "institutional_change": 0.0,
+      "uncertainty_resolution": 0.259
+    },
+    "photovoltaics": {
+      "threshold_proximity": 1.0,
+      "external_pressure": 1.0,
+      "tech_cycle_position": 1.0,
+      "institutional_change": 0.0,
+      "uncertainty_resolution": 0.0
+    },
+    "distributed energy": {
+      "threshold_proximity": 1.0,
+      "external_pressure": 1.0,
+      "tech_cycle_position": 1.0,
+      "institutional_change": 0.583,
+      "uncertainty_resolution": 0.583
+    },
+    "decarbonization": {
+      "threshold_proximity": 1.0,
+      "external_pressure": 1.0,
+      "tech_cycle_position": 1.0,
+      "institutional_change": 0.585,
+      "uncertainty_resolution": 0.585
+    },
+    "perovskite_solar_cells": {
+      "threshold_proximity": 1.0,
+      "external_pressure": 1.0,
+      "tech_cycle_position": 1.0,
+      "institutional_change": 0.0,
+      "uncertainty_resolution": 0.0
+    },
+    "fuel_cells": {
+      "threshold_proximity": 1.0,
+      "external_pressure": 1.0,
+      "tech_cycle_position": 1.0,
+      "institutional_change": 0.0,
+      "uncertainty_resolution": 0.0
+    },
+    "catalysis": {
+      "threshold_proximity": 1.0,
+      "external_pressure": 1.0,
+      "tech_cycle_position": 1.0,
+      "institutional_change": 0.0,
+      "uncertainty_resolution": 0.0
+    },
+    "clean_energy": {
+      "threshold_proximity": 1.0,
+      "external_pressure": 1.0,
+      "tech_cycle_position": 1.0,
+      "institutional_change": 0.0,
+      "uncertainty_resolution": 0.0
+    },
+    "fusion energy": {
+      "threshold_proximity": 1.0,
+      "external_pressure": 1.0,
+      "tech_cycle_position": 1.0,
+      "institutional_change": 0.0,
+      "uncertainty_resolution": 0.412
+    },
+    "astrophysics": {
+      "threshold_proximity": 0.0,
+      "external_pressure": 0.0,
+      "tech_cycle_position": 0.0,
+      "institutional_change": 0.0,
+      "uncertainty_resolution": 0.0
+    },
+    "fundamental research": {
+      "threshold_proximity": 0.5,
+      "external_pressure": 0.5,
+      "tech_cycle_position": 0.0,
+      "institutional_change": 0.0,
+      "uncertainty_resolution": 0.0
+    },
+    "green hydrogen": {
+      "threshold_proximity": 1.0,
+      "external_pressure": 1.0,
+      "tech_cycle_position": 1.0,
+      "institutional_change": 0.0,
+      "uncertainty_resolution": 0.0
+    },
+    "water electrolysis": {
+      "threshold_proximity": 1.0,
+      "external_pressure": 1.0,
+      "tech_cycle_position": 1.0,
+      "institutional_change": 0.0,
+      "uncertainty_resolution": 0.0
+    },
+    "sustainable energy": {
+      "threshold_proximity": 1.0,
+      "external_pressure": 1.0,
+      "tech_cycle_position": 1.0,
+      "institutional_change": 0.0,
+      "uncertainty_resolution": 0.0
+    },
+    "energy harvesting": {
+      "threshold_proximity": 1.0,
+      "external_pressure": 1.0,
+      "tech_cycle_position": 1.0,
+      "institutional_change": 0.0,
+      "uncertainty_resolution": 0.0
+    },
+    "advanced materials": {
+      "threshold_proximity": 1.0,
+      "external_pressure": 1.0,
+      "tech_cycle_position": 1.0,
+      "institutional_change": 0.0,
+      "uncertainty_resolution": 0.0
+    },
+    "supercapacitors": {
+      "threshold_proximity": 1.0,
+      "external_pressure": 0.667,
+      "tech_cycle_position": 1.0,
+      "institutional_change": 0.0,
+      "uncertainty_resolution": 0.0
+    },
+    "microfluidics": {
+      "threshold_proximity": 0.5,
+      "external_pressure": 0.5,
+      "tech_cycle_position": 0.5,
+      "institutional_change": 0.0,
+      "uncertainty_resolution": 0.0
+    },
+    "geothermal energy": {
+      "threshold_proximity": 1.0,
+      "external_pressure": 1.0,
+      "tech_cycle_position": 1.0,
+      "institutional_change": 1.0,
+      "uncertainty_resolution": 1.0
+    },
+    "geopolitics": {
+      "threshold_proximity": 0.412,
+      "external_pressure": 1.0,
+      "tech_cycle_position": 0.0,
+      "institutional_change": 1.0,
+      "uncertainty_resolution": 0.412
+    },
+    "energy security": {
+      "threshold_proximity": 0.677,
+      "external_pressure": 1.0,
+      "tech_cycle_position": 0.677,
+      "institutional_change": 1.0,
+      "uncertainty_resolution": 0.452
+    },
+    "solar energy": {
+      "threshold_proximity": 1.0,
+      "external_pressure": 1.0,
+      "tech_cycle_position": 1.0,
+      "institutional_change": 1.0,
+      "uncertainty_resolution": 0.75
+    },
+    "distributed generation": {
+      "threshold_proximity": 1.0,
+      "external_pressure": 1.0,
+      "tech_cycle_position": 1.0,
+      "institutional_change": 1.0,
+      "uncertainty_resolution": 1.0
+    },
+    "european energy transition": {
+      "threshold_proximity": 1.0,
+      "external_pressure": 1.0,
+      "tech_cycle_position": 1.0,
+      "institutional_change": 1.0,
+      "uncertainty_resolution": 1.0
+    },
+    "residential renewable": {
+      "threshold_proximity": 1.0,
+      "external_pressure": 1.0,
+      "tech_cycle_position": 1.0,
+      "institutional_change": 1.0,
+      "uncertainty_resolution": 1.0
+    },
+    "solar_technology": {
+      "threshold_proximity": 1.0,
+      "external_pressure": 1.0,
+      "tech_cycle_position": 1.0,
+      "institutional_change": 0.0,
+      "uncertainty_resolution": 0.5
+    },
+    "geopolitical_disruption": {
+      "threshold_proximity": 1.0,
+      "external_pressure": 1.0,
+      "tech_cycle_position": 1.0,
+      "institutional_change": 0.333,
+      "uncertainty_resolution": 1.0
+    },
+    "energy_security": {
+      "threshold_proximity": 1.0,
+      "external_pressure": 1.0,
+      "tech_cycle_position": 1.0,
+      "institutional_change": 0.5,
+      "uncertainty_resolution": 1.0
+    },
+    "supply_chain_shock": {
+      "threshold_proximity": 1.0,
+      "external_pressure": 1.0,
+      "tech_cycle_position": 1.0,
+      "institutional_change": 0.0,
+      "uncertainty_resolution": 1.0
+    },
+    "regulatory friction": {
+      "threshold_proximity": 1.0,
+      "external_pressure": 1.0,
+      "tech_cycle_position": 1.0,
+      "institutional_change": 1.0,
+      "uncertainty_resolution": 0.5
+    },
+    "laptop_performance": {
+      "threshold_proximity": 1.0,
+      "external_pressure": 0.5,
+      "tech_cycle_position": 1.0,
+      "institutional_change": 0.0,
+      "uncertainty_resolution": 1.0
+    },
+    "battery_technology": {
+      "threshold_proximity": 1.0,
+      "external_pressure": 0.75,
+      "tech_cycle_position": 1.0,
+      "institutional_change": 0.25,
+      "uncertainty_resolution": 0.75
+    },
+    "electric_vehicles": {
+      "threshold_proximity": 1.0,
+      "external_pressure": 1.0,
+      "tech_cycle_position": 1.0,
+      "institutional_change": 0.333,
+      "uncertainty_resolution": 0.667
+    },
+    "developer_tools": {
+      "threshold_proximity": 0.0,
+      "external_pressure": 0.0,
+      "tech_cycle_position": 0.5,
+      "institutional_change": 0.0,
+      "uncertainty_resolution": 0.0
+    },
+    "solid-state batteries": {
+      "threshold_proximity": 1.0,
+      "external_pressure": 1.0,
+      "tech_cycle_position": 1.0,
+      "institutional_change": 0.5,
+      "uncertainty_resolution": 0.5
+    },
+    "ai infrastructure": {
+      "threshold_proximity": 1.0,
+      "external_pressure": 0.75,
+      "tech_cycle_position": 1.0,
+      "institutional_change": 0.75,
+      "uncertainty_resolution": 0.75
+    },
+    "energy_infrastructure": {
+      "threshold_proximity": 0.75,
+      "external_pressure": 0.75,
+      "tech_cycle_position": 0.5,
+      "institutional_change": 0.75,
+      "uncertainty_resolution": 0.5
+    },
+    "circular_economy": {
+      "threshold_proximity": 1.0,
+      "external_pressure": 1.0,
+      "tech_cycle_position": 1.0,
+      "institutional_change": 0.0,
+      "uncertainty_resolution": 0.0
+    },
+    "waste_valorization": {
+      "threshold_proximity": 1.0,
+      "external_pressure": 1.0,
+      "tech_cycle_position": 1.0,
+      "institutional_change": 0.0,
+      "uncertainty_resolution": 0.0
+    },
+    "plasma physics": {
+      "threshold_proximity": 1.0,
+      "external_pressure": 1.0,
+      "tech_cycle_position": 1.0,
+      "institutional_change": 0.0,
+      "uncertainty_resolution": 1.0
+    },
+    "space technology": {
+      "threshold_proximity": 1.0,
+      "external_pressure": 1.0,
+      "tech_cycle_position": 1.0,
+      "institutional_change": 0.0,
+      "uncertainty_resolution": 1.0
+    },
+    "nuclear fusion": {
+      "threshold_proximity": 1.0,
+      "external_pressure": 1.0,
+      "tech_cycle_position": 1.0,
+      "institutional_change": 0.5,
+      "uncertainty_resolution": 1.0
+    },
+    "authentication": {
+      "threshold_proximity": 0.0,
+      "external_pressure": 0.5,
+      "tech_cycle_position": 0.5,
+      "institutional_change": 0.5,
+      "uncertainty_resolution": 0.0
+    },
+    "climate_tech": {
+      "threshold_proximity": 1.0,
+      "external_pressure": 1.0,
+      "tech_cycle_position": 1.0,
+      "institutional_change": 0.5,
+      "uncertainty_resolution": 0.0
+    },
+    "wind power": {
+      "threshold_proximity": 1.0,
+      "external_pressure": 1.0,
+      "tech_cycle_position": 1.0,
+      "institutional_change": 0.5,
+      "uncertainty_resolution": 1.0
+    },
+    "autonomous systems": {
+      "threshold_proximity": 1.0,
+      "external_pressure": 0.5,
+      "tech_cycle_position": 1.0,
+      "institutional_change": 0.0,
+      "uncertainty_resolution": 0.0
+    },
+    "charging_infrastructure": {
+      "threshold_proximity": 1.0,
+      "external_pressure": 1.0,
+      "tech_cycle_position": 1.0,
+      "institutional_change": 0.5,
+      "uncertainty_resolution": 0.5
+    },
+    "fast charging": {
+      "threshold_proximity": 1.0,
+      "external_pressure": 1.0,
+      "tech_cycle_position": 1.0,
+      "institutional_change": 0.0,
+      "uncertainty_resolution": 0.5
+    }
+  }
+}
