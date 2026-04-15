@@ -1,0 +1,49 @@
+domain_id: geopolitics
+domain_name_ja: "地政学・技術規制"
+domain_name_en: "Geopolitics & Technology Regulation"
+description: "輸出規制・デジタル主権・多極化・技術覇権競争・国際規制枠組みの構造変化を追跡"
+enabled: true
+
+sources:
+  openalex:
+    keywords:
+      # 技術覇権・輸出規制
+      - "semiconductor export control"
+      - "technology decoupling US China"
+      - "foreign direct product rule"
+      - "entity list technology restriction"
+      - "friend-shoring supply chain"
+      # デジタル主権・データ規制
+      - "digital sovereignty policy"
+      - "data localization regulation"
+      - "EU Data Act implementation"
+      - "eIDAS digital identity wallet"
+      - "cross-border data transfer"
+      # 多極化・新興プレーヤー
+      - "BRICS technology cooperation"
+      - "India semiconductor mission"
+      - "Gulf states AI investment"
+      - "technology non-alignment"
+      # AI・プラットフォーム規制
+      - "EU AI Act enforcement"
+      - "digital services act platform"
+      - "AI regulation comparison"
+      - "algorithmic accountability"
+      # 知的財産・標準化
+      - "standard essential patent"
+      - "technology standard setting geopolitics"
+      - "open source AI regulation"
+  hackernews:
+    keywords:
+      - "export control"
+      - "technology decoupling"
+      - "digital sovereignty"
+      - "EU AI Act"
+      - "BRICS technology"
+      - "CHIPS Act"
+      - "data localization"
+      - "tech regulation"
+      - "India tech policy"
+      - "eIDAS digital ID"
+      - "platform regulation"
+      - "AI governance"

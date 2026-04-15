@@ -1,0 +1,47 @@
+domain_id: defense_tech
+domain_name_ja: "防衛テック"
+domain_name_en: "Defense Technology"
+description: "デュアルユースAI・自律兵器・軍事ロボット・宇宙安全保障・サイバー戦争の構造変化を追跡"
+enabled: true
+
+sources:
+  openalex:
+    keywords:
+      # 技術コア
+      - "autonomous weapons system"
+      - "military drone swarm"
+      - "counter-unmanned aerial system"
+      - "electronic warfare AI"
+      - "hypersonic missile defense"
+      - "directed energy weapon"
+      - "military satellite constellation"
+      - "underwater autonomous vehicle defense"
+      - "cyber warfare offensive"
+      # 産業・市場
+      - "defense tech startup funding"
+      - "dual-use technology export"
+      - "defense industrial base modernization"
+      - "military AI procurement"
+      - "Anduril defense platform"
+      # 政策・制度
+      - "NATO technology strategy"
+      - "AUKUS defense technology"
+      - "lethal autonomous weapons regulation"
+      - "defense innovation unit"
+      # クロスドメイン
+      - "AI military ethics"
+      - "space militarization anti-satellite"
+      - "quantum sensing military application"
+  hackernews:
+    keywords:
+      - "defense tech startup"
+      - "Anduril"
+      - "Palantir defense"
+      - "military drone"
+      - "autonomous weapons"
+      - "AUKUS"
+      - "hypersonic weapon"
+      - "cyber warfare"
+      - "defense AI"
+      - "dual use technology"
+      - "electronic warfare"
