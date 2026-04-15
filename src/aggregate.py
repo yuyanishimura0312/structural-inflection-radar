@@ -132,8 +132,17 @@ def aggregate_themes(items: list[dict]) -> dict:
             for it in tag_items[:10]  # Max 10 per theme
         ]
 
+        # Determine primary domain by majority vote
+        domain_counts = defaultdict(int)
+        for it in tag_items:
+            d = it.get("domain") or it.get("domains", [""])[0] if isinstance(it.get("domains"), list) else it.get("domain", "")
+            if d:
+                domain_counts[d] += 1
+        primary_domain = max(domain_counts, key=domain_counts.get) if domain_counts else ""
+
         themes[tag] = {
             "name": tag,
+            "domain": primary_domain,
             "item_count": len(tag_items),
             "composite_score": round(composite, 3),
             "axes": axes_data,

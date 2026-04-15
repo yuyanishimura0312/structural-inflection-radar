@@ -191,6 +191,21 @@
         .q-low { background: var(--color-bg-secondary); color: var(--color-text-muted); border: 1px solid var(--color-border); }
         .q-mature { background: var(--color-bg-light); color: var(--color-text-secondary); border: 1px solid var(--color-border); }
 
+        .matrix-controls { margin-bottom: 12px; }
+        .matrix-filter-row {
+            display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 6px;
+        }
+        .matrix-domain-btn {
+            font-size: 11px; padding: 3px 10px; border-radius: 12px;
+            border: 1px solid #E0CCBB; background: #FFFAF6; color: #7A5A48;
+            cursor: pointer; transition: all 0.15s;
+        }
+        .matrix-domain-btn.active { background: #7A4033; color: #fff; border-color: #7A4033; }
+        .matrix-domain-btn:hover { border-color: #7A4033; }
+        .matrix-label-toggle {
+            font-size: 12px; color: #7A5A48; display: flex; align-items: center; gap: 4px; cursor: pointer;
+        }
+
         /* Radar comparison view */
         .radar-layout {
             display: grid;
@@ -461,7 +476,27 @@
         <div id="view-matrix" class="view-container" role="tabpanel" aria-label="マトリクス表示">
             <div class="chart-card">
                 <h2>加速度 x 総合スコア マトリクス</h2>
-                <p class="chart-desc">X軸: 総合スコア（構造変化の強度）、Y軸: 加速度（変化の勢い）、バブルサイズ: ソース件数。クリックで詳細を表示。</p>
+                <p class="chart-desc">X軸: 総合スコア（構造変化の強度）、Y軸: 加速度（変化の勢い）、バブルサイズ: ソース件数。クリックで詳細を表示。マウスホイールでズーム。</p>
+                <div class="matrix-controls">
+                    <div class="matrix-filter-row" id="matrix-domain-filters"></div>
+                    <div class="matrix-filter-row">
+                        <label class="matrix-label-toggle">
+                            <input type="checkbox" id="matrix-show-labels" checked onchange="updateBubbleLabels()">
+                            ラベル表示
+                        </label>
+                        <label class="matrix-label-toggle">
+                            <input type="checkbox" id="matrix-top-only" onchange="updateBubbleLabels()">
+                            上位のみ表示
+                        </label>
+                        <select id="matrix-top-n" onchange="updateBubbleLabels()" style="font-size:12px;padding:2px 6px;border:1px solid #E0CCBB;border-radius:4px;background:#FFFAF6;">
+                            <option value="10">Top 10</option>
+                            <option value="20" selected>Top 20</option>
+                            <option value="30">Top 30</option>
+                            <option value="50">Top 50</option>
+                        </select>
+                        <button onclick="resetBubbleZoom()" style="font-size:12px;padding:2px 10px;border:1px solid #E0CCBB;border-radius:4px;background:#FFFAF6;cursor:pointer;">ズームリセット</button>
+                    </div>
+                </div>
                 <div id="bubble-chart"></div>
                 <div class="quadrant-legend" role="list" aria-label="象限の説明">
                     <div class="q-label q-emerging" role="listitem">左上: 新興テーマ（低スコア・加速中）</div>
@@ -677,25 +712,130 @@
         }
 
         // --- Bubble matrix (ECharts) ---
+        let matrixActiveDomains = new Set(); // empty = show all
+        let matrixAllData = [];
+
         function initBubbleChart() {
             if (bubbleChart) { bubbleChart.resize(); return; }
 
             const el = document.getElementById('bubble-chart');
             bubbleChart = echarts.init(el);
 
+            // Build domain filter buttons
+            buildDomainFilters();
+
+            // Prepare data with domain and rank info
             const themes = THEMES_DATA.themes;
-            const data = themes.map((t, i) => ({
-                name: formatThemeName(t.name),
-                value: [
-                    t.composite_score,
-                    t.delta?.composite || 0,
-                    Math.max(t.item_count, 2),
-                    i  // index for modal
-                ],
-                itemStyle: {
-                    color: getThemeColor(t.composite_score, t.delta?.composite || 0),
-                }
-            }));
+            matrixAllData = themes.map((t, i) => {
+                const score = t.composite_score;
+                const delta = t.delta?.composite || 0;
+                // Importance rank: higher score + higher acceleration = more important
+                const importance = score * 0.6 + Math.max(delta, 0) * 0.4;
+                return {
+                    name: formatThemeName(t.name),
+                    value: [score, delta, Math.max(t.item_count, 2), i],
+                    domain: t.domain || '',
+                    importance: importance,
+                    itemStyle: { color: getThemeColor(score, delta) },
+                };
+            });
+            // Sort by importance to assign rank
+            const ranked = [...matrixAllData].sort((a, b) => b.importance - a.importance);
+            ranked.forEach((d, rank) => { d.rank = rank; });
+
+            applyBubbleChart();
+
+            // Click to open modal
+            bubbleChart.on('click', function(params) {
+                const idx = params.data.value[3];
+                const theme = THEMES_DATA.themes[idx];
+                if (theme) openModalByTheme(theme);
+            });
+
+            window.addEventListener('resize', () => { if (bubbleChart) bubbleChart.resize(); });
+        }
+
+        function buildDomainFilters() {
+            const container = document.getElementById('matrix-domain-filters');
+            if (!container || container.children.length > 0) return;
+
+            // Extract unique domains
+            const domains = new Set();
+            THEMES_DATA.themes.forEach(t => { if (t.domain) domains.add(t.domain); });
+
+            const allBtn = document.createElement('button');
+            allBtn.className = 'matrix-domain-btn active';
+            allBtn.textContent = '全て';
+            allBtn.onclick = () => {
+                matrixActiveDomains.clear();
+                container.querySelectorAll('.matrix-domain-btn').forEach(b => b.classList.remove('active'));
+                allBtn.classList.add('active');
+                applyBubbleChart();
+            };
+            container.appendChild(allBtn);
+
+            const domainNames = {
+                'ai_agents': 'AI', 'biotech': 'バイオ', 'cybersecurity': 'サイバー',
+                'defense_tech': '防衛', 'energy': 'エネルギー', 'geopolitics': '地政学',
+                'quantum': '量子', 'robotics': 'ロボ', 'semiconductors': '半導体', 'space': '宇宙',
+            };
+
+            [...domains].sort().forEach(domain => {
+                const btn = document.createElement('button');
+                btn.className = 'matrix-domain-btn';
+                btn.textContent = domainNames[domain] || domain;
+                btn.onclick = () => {
+                    allBtn.classList.remove('active');
+                    if (matrixActiveDomains.has(domain)) {
+                        matrixActiveDomains.delete(domain);
+                        btn.classList.remove('active');
+                    } else {
+                        matrixActiveDomains.add(domain);
+                        btn.classList.add('active');
+                    }
+                    if (matrixActiveDomains.size === 0) allBtn.classList.add('active');
+                    applyBubbleChart();
+                };
+                container.appendChild(btn);
+            });
+        }
+
+        function getFilteredBubbleData() {
+            let data = matrixAllData;
+            if (matrixActiveDomains.size > 0) {
+                data = data.filter(d => matrixActiveDomains.has(d.domain));
+            }
+            return data;
+        }
+
+        function applyBubbleChart() {
+            const data = getFilteredBubbleData();
+            const showLabels = document.getElementById('matrix-show-labels')?.checked ?? true;
+            const topOnly = document.getElementById('matrix-top-only')?.checked ?? false;
+            const topN = parseInt(document.getElementById('matrix-top-n')?.value || '20');
+
+            // Determine which items get labels
+            const topRanks = new Set();
+            if (topOnly) {
+                const sorted = [...data].sort((a, b) => b.importance - a.importance);
+                sorted.slice(0, topN).forEach(d => topRanks.add(d.value[3]));
+            }
+
+            const seriesData = data.map(d => {
+                const isLabeled = showLabels && (!topOnly || topRanks.has(d.value[3]));
+                return {
+                    ...d,
+                    label: {
+                        show: isLabeled,
+                        formatter: d.name.length > 8 ? d.name.slice(0, 8) + '...' : d.name,
+                        position: 'top',
+                        fontSize: 10,
+                        color: '#1a1a1a',
+                        textBorderColor: '#FFFAF6',
+                        textBorderWidth: 2,
+                    },
+                };
+            });
 
             const option = {
                 backgroundColor: 'transparent',
@@ -719,29 +859,39 @@
                     axisLabel: { color: '#7A5A48', formatter: v => (v >= 0 ? '+' : '') + (v * 100).toFixed(0) + '%' },
                     splitLine: { lineStyle: { color: '#F5EBE0', type: 'dashed' } },
                 },
+                dataZoom: [
+                    { type: 'inside', xAxisIndex: 0 },
+                    { type: 'inside', yAxisIndex: 0 },
+                ],
                 series: [{
                     type: 'scatter',
-                    data: data,
+                    data: seriesData,
                     symbolSize: function(val) {
-                        return Math.max(Math.sqrt(val[2]) * 12, 14);
+                        return Math.max(Math.sqrt(val[2]) * 10, 10);
                     },
-                    label: {
-                        show: true,
-                        formatter: p => p.data.name.length > 8 ? p.data.name.slice(0, 8) + '...' : p.data.name,
-                        position: 'top',
-                        fontSize: 10,
-                        color: '#1a1a1a',
+                    labelLayout: {
+                        hideOverlap: true,
+                        moveOverlap: 'shiftY',
                     },
                     emphasis: {
+                        focus: 'self',
                         itemStyle: { borderColor: '#7A4033', borderWidth: 2 },
-                        label: { fontSize: 12, fontWeight: 'bold', formatter: p => p.data.name },
+                        label: {
+                            show: true,
+                            fontSize: 13,
+                            fontWeight: 'bold',
+                            formatter: p => p.data.name,
+                            textBorderColor: '#FFFAF6',
+                            textBorderWidth: 3,
+                        },
+                    },
+                    blur: {
+                        itemStyle: { opacity: 0.25 },
+                        label: { show: false },
                     },
                 }],
-                // Quadrant divider lines
                 graphic: [
-                    // Vertical center line
-                    { type: 'line', shape: { x1: '50%', y1: 0, x2: '50%', y2: '100%' }, style: { stroke: '#E0CCBB', lineWidth: 1, lineDash: [4, 4] }, z: -1, },
-                    // Horizontal center line (y=0)
+                    { type: 'line', shape: { x1: '50%', y1: 0, x2: '50%', y2: '100%' }, style: { stroke: '#E0CCBB', lineWidth: 1, lineDash: [4, 4] }, z: -1 },
                 ],
                 tooltip: {
                     trigger: 'item',
@@ -752,33 +902,34 @@
                         const v = p.data.value;
                         const delta = v[1];
                         const arrow = delta > 0.01 ? '&uarr;' : delta < -0.01 ? '&darr;' : '&mdash;';
+                        const domainLabel = p.data.domain ? `<br/>ドメイン: ${p.data.domain}` : '';
                         return `<strong>${p.data.name}</strong><br/>
                             総合スコア: ${(v[0] * 100).toFixed(1)}%<br/>
                             加速度: ${arrow} ${(delta * 100).toFixed(1)}%<br/>
-                            ソース: ${v[2]}件`;
+                            ソース: ${v[2]}件${domainLabel}`;
                     }
                 },
             };
 
-            bubbleChart.setOption(option);
+            bubbleChart.setOption(option, true);
+        }
 
-            // Click to open modal
-            bubbleChart.on('click', function(params) {
-                const idx = params.data.value[3];
-                // Find theme in sorted order for modal
-                const theme = THEMES_DATA.themes[idx];
-                if (theme) openModalByTheme(theme);
-            });
+        function updateBubbleLabels() {
+            if (bubbleChart) applyBubbleChart();
+        }
 
-            window.addEventListener('resize', () => { if (bubbleChart) bubbleChart.resize(); });
+        function resetBubbleZoom() {
+            if (bubbleChart) {
+                bubbleChart.dispatchAction({ type: 'dataZoom', start: 0, end: 100 });
+            }
         }
 
         function getThemeColor(score, delta) {
-            // CI-compliant colors with clear quadrant differentiation
-            if (score > 0.5 && delta > 0.01) return 'rgba(122, 64, 51, 0.9)';    // Critical: CI No.12 deep brown
-            if (score <= 0.5 && delta > 0.01) return 'rgba(220, 135, 102, 0.8)';  // Emerging: CI No.9 terracotta
-            if (score > 0.5 && delta <= 0.01) return 'rgba(150, 109, 94, 0.65)'; // Mature: CI No.11 warm brown
-            return 'rgba(224, 204, 187, 0.5)';  // Low priority: lightest
+            // CI-compliant colors with visual hierarchy via opacity
+            if (score > 0.5 && delta > 0.01) return 'rgba(122, 64, 51, 0.85)';   // Critical: deep brown
+            if (score <= 0.5 && delta > 0.01) return 'rgba(220, 135, 102, 0.75)'; // Emerging: terracotta
+            if (score > 0.5 && delta <= 0.01) return 'rgba(150, 109, 94, 0.5)';  // Mature: warm brown, lighter
+            return 'rgba(224, 204, 187, 0.35)';  // Low priority: very light
         }
 
         // --- Radar comparison (ECharts) ---
