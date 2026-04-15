@@ -13,6 +13,7 @@
             --color-bg-secondary:   #FDF5EE;
             --color-bg-light:       #F5EBE0;
             --color-accent:         #7A4033;
+            --color-accent-hover:   #966D5E;
             --color-accent-dark:    #7A4033;
             --color-text-body:      #1a1a1a;
             --color-text-secondary: #7A5A48;
@@ -34,8 +35,8 @@
 
         .app-header {
             text-align: center;
-            margin-bottom: 32px;
-            padding-top: 20px;
+            margin-bottom: 40px;
+            padding-top: 32px;
         }
 
         .app-header h1 {
@@ -185,8 +186,8 @@
             text-align: center;
         }
 
-        .q-emerging { background: rgba(122, 64, 51, 0.08); color: var(--color-accent); border: 1px solid rgba(122, 64, 51, 0.2); }
-        .q-critical { background: rgba(122, 64, 51, 0.1); color: var(--color-accent-dark); border: 1px solid rgba(122, 64, 51, 0.25); font-weight: 700; }
+        .q-emerging { background: rgba(220, 135, 102, 0.1); color: #DC8766; border: 1px solid rgba(220, 135, 102, 0.25); }
+        .q-critical { background: rgba(122, 64, 51, 0.12); color: var(--color-accent); border: 1px solid rgba(122, 64, 51, 0.3); font-weight: 700; }
         .q-low { background: var(--color-bg-secondary); color: var(--color-text-muted); border: 1px solid var(--color-border); }
         .q-mature { background: var(--color-bg-light); color: var(--color-text-secondary); border: 1px solid var(--color-border); }
 
@@ -259,6 +260,21 @@
             border-bottom: 1px solid var(--color-border);
             margin-bottom: 4px;
         }
+
+        .radar-search {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid var(--color-border);
+            border-radius: 6px;
+            font-size: 0.78rem;
+            background: var(--color-bg-secondary);
+            color: var(--color-text-body);
+            margin-bottom: 8px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .radar-search:focus { border-color: var(--color-accent); }
+        .radar-search::placeholder { color: var(--color-text-muted); }
 
         /* Theme card styles (list view) */
         .theme-card {
@@ -345,7 +361,7 @@
             border-radius: 8px; font-size: 0.85rem; font-weight: 600;
             text-decoration: none; transition: background 0.2s;
         }
-        .scorer-link:hover { background: var(--color-accent-dark); }
+        .scorer-link:hover { background: var(--color-accent-hover); }
 
         /* Modal */
         .modal-overlay {
@@ -384,7 +400,7 @@
         .evidence-section h3 { font-size: 0.88rem; color: var(--color-accent-dark); margin-bottom: 10px; font-weight: 700; }
 
         .evidence-list { list-style: none; padding: 0; }
-        .evidence-list li { font-size: 0.83rem; color: var(--color-text-body); padding: 8px 0; border-bottom: 1px solid var(--color-border); line-height: 1.6; }
+        .evidence-list li { font-size: 0.83rem; color: var(--color-text-body); padding: 8px 0; border-bottom: 1px solid var(--color-border); line-height: 1.8; }
 
         .source-item { display: block; padding: 8px 0; border-bottom: 1px solid var(--color-border); }
         .source-item a { color: var(--color-accent); text-decoration: none; font-size: 0.85rem; font-weight: 500; }
@@ -757,11 +773,11 @@
         }
 
         function getThemeColor(score, delta) {
-            // Distinct colors per quadrant for clear visual separation
-            if (score > 0.5 && delta > 0.01) return 'rgba(92, 46, 36, 0.9)';    // Critical: darkest
-            if (score <= 0.5 && delta > 0.01) return 'rgba(176, 114, 86, 0.8)';  // Emerging: warm mid-tone
-            if (score > 0.5 && delta <= 0.01) return 'rgba(150, 109, 94, 0.65)'; // Mature: cool mid-tone
-            return 'rgba(224, 204, 187, 0.55)';  // Low priority: lightest
+            // CI-compliant colors with clear quadrant differentiation
+            if (score > 0.5 && delta > 0.01) return 'rgba(122, 64, 51, 0.9)';    // Critical: CI No.12 deep brown
+            if (score <= 0.5 && delta > 0.01) return 'rgba(220, 135, 102, 0.8)';  // Emerging: CI No.9 terracotta
+            if (score > 0.5 && delta <= 0.01) return 'rgba(150, 109, 94, 0.65)'; // Mature: CI No.11 warm brown
+            return 'rgba(224, 204, 187, 0.5)';  // Low priority: lightest
         }
 
         // --- Radar comparison (ECharts) ---
@@ -775,20 +791,32 @@
             window.addEventListener('resize', () => { if (radarChart) radarChart.resize(); });
         }
 
+        let radarSearchQuery = '';
+
         function renderRadarSelector() {
             const themes = getSortedThemes();
             const selector = document.getElementById('radar-selector');
             const count = selectedRadarThemes.length;
-            // Header showing selection count and limit feedback
+
+            // Search input
+            const searchHtml = `<input type="text" class="radar-search" placeholder="テーマを検索..."
+                value="${radarSearchQuery}" oninput="filterRadarThemes(this.value)">`;
+
+            // Header showing selection count
             let headerHtml = `<div class="radar-selector-header">${count}/4 件選択中</div>`;
             if (count >= 4) {
                 headerHtml += `<div class="radar-limit-msg">最大4件に達しました。他を選ぶには先に解除してください</div>`;
             }
-            const itemsHtml = themes.map((t, i) => {
+
+            // Filter themes by search query
+            const filtered = radarSearchQuery
+                ? themes.filter(t => formatThemeName(t.name).includes(radarSearchQuery) || t.name.includes(radarSearchQuery))
+                : themes;
+
+            const itemsHtml = filtered.map((t, i) => {
                 const isSelected = selectedRadarThemes.includes(t.name);
                 const colorIdx = selectedRadarThemes.indexOf(t.name);
                 const dotColor = isSelected ? RADAR_COLORS[colorIdx] : '#E0CCBB';
-                // Dim unselectable items when at limit
                 const dimmed = (!isSelected && count >= 4) ? ' style="opacity:0.45;cursor:default;"' : '';
                 return `<div class="radar-selector-item ${isSelected ? 'selected' : ''}"${dimmed}
                     onclick="toggleRadarTheme('${t.name}')" role="option" aria-selected="${isSelected}">
@@ -797,8 +825,16 @@
                     <span class="item-score">${(t.composite_score * 100).toFixed(0)}%</span>
                 </div>`;
             }).join('');
-            selector.innerHTML = headerHtml + itemsHtml;
+            selector.innerHTML = searchHtml + headerHtml + itemsHtml;
         }
+
+        window.filterRadarThemes = function(query) {
+            radarSearchQuery = query;
+            renderRadarSelector();
+            // Keep focus on search input after re-render
+            const input = document.querySelector('.radar-search');
+            if (input) { input.focus(); input.setSelectionRange(query.length, query.length); }
+        };
 
         window.toggleRadarTheme = function(name) {
             const idx = selectedRadarThemes.indexOf(name);
