@@ -954,7 +954,7 @@
 
             <!-- Visualization: Top accelerators bar chart -->
             <div class="viz-section">
-                <h3 class="viz-title">加速度ランキング Top 10</h3>
+                <h3 class="viz-title">加速度ランキング 上位10件</h3>
                 <p class="viz-subtitle">加速度が最も高いテーマ上位10件。バーの長さが加速度の大きさを表します。</p>
                 <div class="bar-chart" id="bar-chart"></div>
             </div>
@@ -991,7 +991,7 @@
         <div id="page-guide" class="page-section">
             <div class="guide-content">
                 <h2>構造変化点検出レーダーとは</h2>
-                <p>本ツールは、新興技術の<strong>構造的変化点（Structural Inflection Point）</strong>を早期に検出するための情報ダッシュボードです。学術論文（OpenAlex）とテックコミュニティ（HackerNews）から収集したデータを、AIが5つの軸でスコアリングし、スコアの<strong>加速度（変化の勢い）</strong>が高いテーマを「加速群」として可視化します。</p>
+                <p>本ツールは、新興技術の<strong>構造的変化点</strong>（Structural Inflection Point）を早期に検出するための情報ダッシュボードです。学術論文（OpenAlex）とテックコミュニティ（HackerNews）から収集したデータを、AIが5つの軸でスコアリングし、スコアの<strong>加速度</strong>（変化の勢い）が高いテーマを「加速群」として可視化します。</p>
 
                 <div class="info-box">
                     絶対スコアではなく「加速度」に注目するのがこのツールの特徴です。スコアが低くても急上昇しているテーマは、今後の重要変化を示唆する先行指標になります。
@@ -1011,7 +1011,7 @@
                 <h3>ドメイン別ヒートマップ</h3>
                 <p>10個のドメインごとに、加速中テーマの件数と平均加速度を表示します。セル下部の塗りの高さが平均加速度の強さを示しており、どのドメインで変化が活発かを一目で把握できます。セルをクリックすると、そのドメインで下の一覧をフィルタします。</p>
 
-                <h3>加速度ランキング Top 10</h3>
+                <h3>加速度ランキング 上位10件</h3>
                 <p>加速度が最も高い上位10テーマを水平バーチャートで表示します。バーの長さが加速度に比例しており、最も勢いのある技術テーマを視覚的に把握できます。</p>
 
                 <h3>加速テーマ一覧</h3>
@@ -1031,10 +1031,10 @@
                         <tr><th>フェーズ</th><th>加速度</th><th>意味</th></tr>
                     </thead>
                     <tbody>
-                        <tr><td><span class="phase-badge phase-surge">Surge</span></td><td>30%以上</td><td>急激な構造変化の兆候。最優先で注視すべきテーマ</td></tr>
-                        <tr><td><span class="phase-badge phase-rising">Rising</span></td><td>15〜30%</td><td>明確な上昇トレンド。投資・政策判断の参考に</td></tr>
-                        <tr><td><span class="phase-badge phase-moderate">Moderate</span></td><td>8〜15%</td><td>緩やかな加速。継続的なモニタリング推奨</td></tr>
-                        <tr><td><span class="phase-badge phase-emerging">Emerging</span></td><td>1〜8%</td><td>初期段階の変化兆候。今後の動向に注目</td></tr>
+                        <tr><td><span class="phase-badge phase-surge">急加速</span></td><td>30%以上</td><td>急激な構造変化の兆候。最優先で注視すべきテーマ</td></tr>
+                        <tr><td><span class="phase-badge phase-rising">上昇</span></td><td>15〜30%</td><td>明確な上昇トレンド。投資・政策判断の参考に</td></tr>
+                        <tr><td><span class="phase-badge phase-moderate">緩加速</span></td><td>8〜15%</td><td>緩やかな加速。継続的なモニタリング推奨</td></tr>
+                        <tr><td><span class="phase-badge phase-emerging">初動</span></td><td>1〜8%</td><td>初期段階の変化兆候。今後の動向に注目</td></tr>
                     </tbody>
                 </table>
 
@@ -1052,14 +1052,14 @@
 
                 <table class="guide-table">
                     <thead>
-                        <tr><th>軸</th><th>英名</th><th>説明</th><th>配点</th></tr>
+                        <tr><th>軸</th><th>説明</th><th>配点</th></tr>
                     </thead>
                     <tbody>
-                        <tr><td>閾値接近</td><td>Threshold Proximity</td><td>コスト/性能曲線の変曲点への接近度。技術的ブレークスルーの兆候</td><td>25%</td></tr>
-                        <tr><td>外圧/窓</td><td>External Pressure</td><td>地政学イベント、規制変更、サプライチェーンショックなどの外的要因</td><td>18.75%</td></tr>
-                        <tr><td>技術サイクル</td><td>Tech Cycle Position</td><td>VC投資ラウンド、大型買収、商用化フェーズなどの技術成熟度</td><td>18.75%</td></tr>
-                        <tr><td>制度変化</td><td>Institutional Change</td><td>規制マイルストーン、標準規格の採択、法制化の動き</td><td>18.75%</td></tr>
-                        <tr><td>不確実性解消</td><td>Uncertainty Resolution</td><td>大型契約、政策確定、不可逆的投資など、不確実性を減らすイベント</td><td>18.75%</td></tr>
+                        <tr><td>閾値接近<br><span style="font-size:0.7rem;color:var(--text-muted);">Threshold Proximity</span></td><td>コスト/性能曲線の変曲点への接近度。技術的ブレークスルーの兆候</td><td>25%</td></tr>
+                        <tr><td>外圧/窓<br><span style="font-size:0.7rem;color:var(--text-muted);">External Pressure</span></td><td>地政学イベント、規制変更、サプライチェーンショックなどの外的要因</td><td>18.75%</td></tr>
+                        <tr><td>技術サイクル<br><span style="font-size:0.7rem;color:var(--text-muted);">Tech Cycle Position</span></td><td>VC投資ラウンド、大型買収、商用化フェーズなどの技術成熟度</td><td>18.75%</td></tr>
+                        <tr><td>制度変化<br><span style="font-size:0.7rem;color:var(--text-muted);">Institutional Change</span></td><td>規制マイルストーン、標準規格の採択、法制化の動き</td><td>18.75%</td></tr>
+                        <tr><td>不確実性解消<br><span style="font-size:0.7rem;color:var(--text-muted);">Uncertainty Resolution</span></td><td>大型契約、政策確定、不可逆的投資など、不確実性を減らすイベント</td><td>18.75%</td></tr>
                     </tbody>
                 </table>
 
@@ -1086,10 +1086,10 @@
                 <h2>データパイプライン</h2>
                 <p>本ツールのデータは以下の4段階のパイプラインで生成されます。</p>
                 <ol>
-                    <li><strong>収集（Collect）</strong>：OpenAlex API（学術論文）とHackerNews Algolia API（テック記事）からキーワード検索で記事を取得。過去30日間、ドメインごとにキーワード別最大10件。</li>
-                    <li><strong>スコアリング（Score）</strong>：Claude Haiku 4.5が各記事を5軸で分析。テーマタグの付与と各軸のシグナル/エビデンスを生成。学術論文は信頼度1.0、テックメディアは0.7で重み付け。</li>
-                    <li><strong>集約（Aggregate）</strong>：テーマタグごとにスコアを集約。前回スナップショットとの差分（デルタ）を計算。2件未満のテーマはノイズとして除外。</li>
-                    <li><strong>エクスポート（Export）</strong>：集約結果をJavaScriptファイル（themes_data.js）として出力。GitHub Pagesで静的に公開。</li>
+                    <li><strong>収集</strong>：OpenAlex API（学術論文）とHackerNews Algolia API（テック記事）からキーワード検索で記事を取得。過去30日間、ドメインごとにキーワード別最大10件。</li>
+                    <li><strong>スコアリング</strong>：Claude Haiku 4.5が各記事を5軸で分析。テーマタグの付与と各軸のシグナル/エビデンスを生成。学術論文は信頼度1.0、テックメディアは0.7で重み付け。</li>
+                    <li><strong>集約</strong>：テーマタグごとにスコアを集約。前回スナップショットとの差分（デルタ）を計算。2件未満のテーマはノイズとして除外。</li>
+                    <li><strong>出力</strong>：集約結果をJavaScriptファイル（themes_data.js）として出力。GitHub Pagesで静的に公開。</li>
                 </ol>
 
                 <h2>データベース構造</h2>
@@ -1192,15 +1192,15 @@
 
                 <h3>データフロー図</h3>
                 <div class="schema-block" style="line-height:1.8;">
-domains + domain_keywords<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&#x2193; (キーワード定義)<br>
-<span class="tname">collect.py</span> → raw_items<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&#x2193; (AI分析)<br>
-<span class="tname">score.py</span> → scored_items + scored_item_tags<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&#x2193; (テーマ集約)<br>
-<span class="tname">aggregate.py</span> → themes + theme_scores + theme_axes<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&#x2193; (JS出力)<br>
-<span class="tname">export_js.py</span> → themes_data.js → <span class="pk">GitHub Pages公開</span>
+domains + domain_keywords （ドメインとキーワード定義）<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&#x2193;<br>
+<span class="tname">collect.py</span>（収集処理）→ raw_items<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&#x2193;<br>
+<span class="tname">score.py</span>（AI分析）→ scored_items + scored_item_tags<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&#x2193;<br>
+<span class="tname">aggregate.py</span>（テーマ集約）→ themes + theme_scores + theme_axes<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&#x2193;<br>
+<span class="tname">export_js.py</span>（JS出力）→ themes_data.js → <span class="pk">GitHub Pages 公開</span>
                 </div>
 
                 <h2>フィルタとソート</h2>
@@ -1213,7 +1213,7 @@ domains + domain_keywords<br>
     </main>
 
     <footer class="site-footer">
-        <p class="footer-text">Structural Inflection Radar &mdash; MIRA TUKU</p>
+        <p class="footer-text">構造変化点検出レーダー &mdash; MIRA TUKU</p>
     </footer>
 
     <!-- Modal -->
@@ -1300,6 +1300,121 @@ domains + domain_keywords<br>
             'air_defense_systems': '防空システム', 'commercial_space': '商業宇宙',
             'space_debris': '宇宙デブリ', 'ransomware': 'ランサムウェア',
             'satellite_constellation': '衛星コンステレーション',
+            // Policy & regulation
+            'energy_policy': 'エネルギー政策', 'autonomous_vehicles': '自動運転車',
+            'platform_regulation': 'プラットフォーム規制', 'startup_ecosystem': 'スタートアップエコシステム',
+            'policy_framework': '政策枠組み', 'operational_resilience': '運用レジリエンス',
+            'air_defense': '防空', 'arms_control': '武器管理',
+            'international_regulation': '国際規制', 'defense_policy': '防衛政策',
+            'government_policy': '政府政策', 'geopolitical_competition': '地政学的競争',
+            'industrial_policy': '産業政策', 'labor_market': '労働市場',
+            'data_governance': 'データガバナンス', 'eu_policy': 'EU政策',
+            'privacy_regulation': 'プライバシー規制', 'international_law': '国際法',
+            'social_policy': '社会政策', 'social_security_policy': '社会保障政策',
+            'corporate_strategy': '企業戦略', 'pandemic_response': 'パンデミック対応',
+            // AI & software
+            'developer_productivity': '開発者生産性', 'ai_agent': 'AIエージェント',
+            'llm_agents': '大規模言語モデルエージェント', 'real_time_inference': 'リアルタイム推論',
+            'ai_coding': 'AIコーディング', 'ai_inference': 'AI推論',
+            'compiler_optimization': 'コンパイラ最適化', 'ai_governance': 'AIガバナンス',
+            'gpu_optimization': 'GPU最適化', 'code_review': 'コードレビュー',
+            'labor_displacement': '雇用の変化', 'tool_use': 'ツール利用',
+            'agentic_ai': 'エージェント型AI', 'ai_chip_design': 'AIチップ設計',
+            'inference_efficiency': '推論効率', 'llm_inference_optimization': 'LLM推論最適化',
+            'edge_ai': 'エッジAI', 'open_source_ai': 'オープンソースAI',
+            'ai_agents': 'AIエージェント群', 'llm_optimization': 'LLM最適化',
+            'ai_security': 'AIセキュリティ', 'software_development': 'ソフトウェア開発',
+            'digital_transformation': 'デジタルトランスフォーメーション', 'devops_automation': 'DevOpsオートメーション',
+            'mcp_protocol': 'MCPプロトコル',
+            // Cybersecurity
+            'healthcare_cybersecurity': 'ヘルスケアサイバーセキュリティ', 'blockchain_security': 'ブロックチェーンセキュリティ',
+            'security_infrastructure': 'セキュリティインフラ', 'digital_identity': 'デジタルアイデンティティ',
+            'supply_chain_security': 'サプライチェーンセキュリティ', 'vulnerability_detection': '脆弱性検出',
+            'ransomware_detection': 'ランサムウェア検出', 'incident_response': 'インシデント対応',
+            'software_security': 'ソフトウェアセキュリティ', 'open_source_vulnerability': 'オープンソース脆弱性',
+            'software_vulnerability': 'ソフトウェア脆弱性', 'cybersecurity': 'サイバーセキュリティ',
+            'cryptography': '暗号', 'quantum_cryptography': '量子暗号',
+            'post_quantum_cryptography': '耐量子計算機暗号', 'cloud_security': 'クラウドセキュリティ',
+            // Defense & space
+            'autonomous_weapons': '自律兵器', 'military_technology': '軍事技術',
+            'defense_tech': '防衛技術', 'missile_defense': 'ミサイル防衛',
+            'drone_delivery': 'ドローン配送', 'satellite_imagery_analysis': '衛星画像解析',
+            'space_commerce': '宇宙商用化', 'orbital_mechanics': '軌道力学',
+            'lunar_exploration': '月面探査', 'artemis_program': 'アルテミス計画',
+            'space_infrastructure': '宇宙インフラ', 'space_security': '宇宙セキュリティ',
+            'international_relations': '国際関係',
+            // Quantum
+            'quantum_error_correction': '量子誤り訂正', 'quantum_information': '量子情報',
+            // Semiconductors
+            'semiconductor_manufacturing': '半導体製造', 'semiconductor_supply_chain': '半導体サプライチェーン',
+            'cloud_infrastructure': 'クラウドインフラ', 'cpu_architecture': 'CPUアーキテクチャ',
+            'risc_v': 'RISC-V',
+            // Robotics
+            'humanoid_robots': 'ヒューマノイドロボット', 'robotics': 'ロボティクス',
+            'industrial_automation': '産業オートメーション',
+            // Miscellaneous
+            'multiple_myeloma': '多発性骨髄腫', 'agricultural_technology': '農業技術',
+            'aluminum_recycling': 'アルミニウムリサイクル', 'lifecycle_assessment': 'ライフサイクル評価',
+            'skill_development': 'スキル開発', 'risk_assessment': 'リスク評価',
+            'digital_twin': 'デジタルツイン', 'digital_twins': 'デジタルツイン群',
+            'supply_chain_resilience': 'サプライチェーン強靭化', 'assistive_technology': '支援技術',
+            'computational_biology': '計算生物学', 'healthcare_ai': 'ヘルスケアAI',
+            'brain_computer_interface': 'ブレイン・コンピュータ・インタフェース', 'law_enforcement': '法執行',
+            'content_moderation': 'コンテンツモデレーション', 'edge_computing': 'エッジコンピューティング',
+            'digital_sovereignty': 'デジタル主権', 'political_economy': '政治経済',
+            'open_source': 'オープンソース',
+            // Extras (non-accelerating but common)
+            'smart_tv': 'スマートテレビ', 'privacy_preserving': 'プライバシー保護',
+            'federated_learning': 'フェデレーション学習', 'generative_ai': '生成AI',
+            'multimodal_ai': 'マルチモーダルAI', 'reinforcement_learning': '強化学習',
+            'deep_learning': 'ディープラーニング', 'computer_vision': 'コンピュータビジョン',
+            'natural_language_processing': '自然言語処理', 'neural_networks': 'ニューラルネットワーク',
+            'foundation_models': 'ファウンデーションモデル', 'large_language_models': '大規模言語モデル',
+            'prompt_engineering': 'プロンプトエンジニアリング', 'prompt_injection': 'プロンプトインジェクション',
+            'ai_safety': 'AIセーフティ', 'ai_alignment': 'AI整合性',
+            'ai_ethics': 'AI倫理', 'explainable_ai': '説明可能AI',
+            'trustworthy_ai': '信頼できるAI', 'multi_agent_systems': 'マルチエージェントシステム',
+            'iot_security': 'IoTセキュリティ', 'zero_trust_security': 'ゼロトラストセキュリティ',
+            'security': 'セキュリティ', 'hardware_security': 'ハードウェアセキュリティ',
+            'privacy_preserving_ml': 'プライバシー保護機械学習',
+            'synthetic_biology': '合成生物学', 'drug_discovery': '創薬',
+            'regenerative_medicine': '再生医療', 'personalized_medicine': '個別化医療',
+            'gene_therapy': '遺伝子治療', 'immunotherapy': '免疫療法',
+            'medical_imaging': '医療画像', 'mrna_vaccine': 'mRNAワクチン',
+            'mrna_therapeutics': 'mRNA治療薬', 'immunology': '免疫学',
+            'molecular_biology': '分子生物学', 'public_health': '公衆衛生',
+            'nanomedicine': 'ナノ医学', 'precision_agriculture': '精密農業',
+            'cancer_treatment': 'がん治療', 'cancer_biology': 'がん生物学',
+            'human_ai_collaboration': '人間とAIの協働', 'human_ai_interaction': '人間とAIの相互作用',
+            'ubiquitous_computing': 'ユビキタスコンピューティング',
+            'space_exploration': '宇宙探査', 'space_launch': '宇宙打上げ',
+            'space_economy': '宇宙経済', 'space_law': '宇宙法',
+            'space_propulsion': '宇宙推進', 'satellite_communications': '衛星通信',
+            'satellite_internet': '衛星インターネット', 'human_spaceflight': '有人宇宙飛行',
+            'hypersonic_weapons': '極超音速兵器', 'national_security': '国家安全保障',
+            'food_security': '食糧安全保障', 'food_safety': '食品安全',
+            'sustainable_agriculture': '持続可能な農業', 'water_treatment': '水処理',
+            'wastewater_treatment': '廃水処理', 'waste_management': '廃棄物管理',
+            'waste_recycling': '廃棄物リサイクル', 'direct_air_capture': '直接空気回収',
+            'hydrogen_production': '水素生産', 'euv_lithography': 'EUVリソグラフィ',
+            'photonic_computing': 'フォトニック計算',
+            'reusable_launch_system': '再利用可能打上げシステム',
+            'quantum_key_distribution': '量子鍵配送', 'quantum_sensing': '量子センシング',
+            'quantum_advantage': '量子優位性', 'quantum_materials': '量子材料',
+            'humanoid_robotics': 'ヒューマノイドロボティクス',
+            'collaborative_robotics': '協働ロボティクス', 'bipedal_robotics': '二足歩行ロボティクス',
+            'dexterous_manipulation': '精密操作', 'robotic_manipulation': 'ロボット操作',
+            'on_device_ai': 'オンデバイスAI', 'mobile_inference': 'モバイル推論',
+            'ai_accelerators': 'AIアクセラレータ', 'ai_hardware': 'AIハードウェア',
+            'neuromorphic_computing': 'ニューロモーフィック計算',
+            'theoretical_physics': '理論物理学', 'fundamental_physics': '基礎物理学',
+            'plasma_physics': 'プラズマ物理学', 'quantum_physics': '量子物理学',
+            'microfluidics': 'マイクロ流体工学', 'evolutionary_biology': '進化生物学',
+            'technical_debt': '技術的負債', 'technology_assessment': '技術評価',
+            'techno_economic_analysis': '技術経済分析', 'open_science': 'オープンサイエンス',
+            'research_methodology': '研究方法論', 'peer_review': '査読',
+            'legacy_systems': 'レガシーシステム', 'legacy_system_modernization': 'レガシーシステム近代化',
+            'geopolitics': '地政学',
         };
 
         const PHASE_LABELS = {
