@@ -4,526 +4,761 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="https://esse-sense.com/favicon.ico">
-    <title>構造変化レーダー — Structural Inflection Radar</title>
-    <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+    <title>Structural Inflection Radar — MIRA TUKU</title>
     <style>
         :root {
-            --color-bg-page:        #3A2A20;
-            --color-bg-card:        #FFFAF6;
-            --color-bg-secondary:   #FDF5EE;
-            --color-bg-light:       #F5EBE0;
-            --color-accent:         #7A4033;
-            --color-accent-hover:   #966D5E;
-            --color-accent-dark:    #7A4033;
-            --color-text-body:      #1a1a1a;
-            --color-text-secondary: #7A5A48;
-            --color-text-muted:     #B09A88;
-            --color-border:         #E0CCBB;
+            /* Miratuku CI Colors */
+            --ci-golden-orange: #F0A671;
+            --ci-light-beige: #F2C792;
+            --ci-warm-beige: #F1C189;
+            --ci-camel: #CEA26F;
+            --ci-pale-peach: #F8CDAC;
+            --ci-sand-gold: #F0BE83;
+            --ci-soft-salmon: #EFC4A4;
+            --ci-rose-peach: #F7BEA2;
+            --ci-terracotta: #DC8766;
+            --ci-amber-brown: #B07256;
+            --ci-warm-brown: #966D5E;
+            --ci-deep-brown: #7A4033;
+
+            /* App standard */
+            --accent: #783c28;
+            --accent-light: rgba(120, 60, 40, 0.08);
+            --accent-border: rgba(120, 60, 40, 0.18);
+            --bg: #faf8f5;
+            --bg-card: #ffffff;
+            --bg-secondary: #f5f0eb;
+            --text: #1a1a1a;
+            --text-secondary: #6b5b50;
+            --text-muted: #9a8a7e;
+            --border: #e8e0d8;
+            --border-light: #f0ebe5;
+
+            /* Font */
+            --font: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', system-ui, sans-serif;
+            --font-mono: 'SF Mono', 'Menlo', 'Monaco', monospace;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
-            background-color: var(--color-bg-page);
-            color: var(--color-text-body);
+            font-family: var(--font);
+            background: var(--bg);
+            color: var(--text);
             min-height: 100vh;
-            padding: 24px 32px;
+            -webkit-font-smoothing: antialiased;
         }
 
-        .container { max-width: 1000px; margin: 0 auto; }
-
-        .app-header {
-            text-align: center;
-            margin-bottom: 40px;
-            padding-top: 32px;
+        /* Header */
+        .site-header {
+            border-bottom: 1px solid var(--border);
+            background: var(--bg-card);
         }
 
-        .app-header h1 {
-            color: var(--color-bg-light);
-            font-size: 1.75rem;
-            font-weight: 800;
-            margin-bottom: 10px;
-            letter-spacing: 0.03em;
-        }
-
-        .app-header .subtitle {
-            color: var(--color-text-muted);
-            font-size: 0.9rem;
-            line-height: 1.5;
-            letter-spacing: 0.04em;
-        }
-
-        /* Meta bar with view tabs and sort controls */
-        .meta-bar {
+        .header-inner {
+            max-width: 1080px;
+            margin: 0 auto;
+            padding: 20px 32px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-bottom: 24px;
-            padding: 12px 20px;
-            background: rgba(26, 15, 10, 0.25);
-            border: 1px solid rgba(224, 204, 187, 0.15);
-            border-radius: 8px;
-            flex-wrap: wrap;
-            gap: 10px;
+            justify-content: space-between;
         }
 
-        .meta-bar span {
-            color: var(--color-text-muted);
-            font-size: 0.8rem;
-        }
-
-        .meta-right {
+        .header-left {
             display: flex;
             align-items: center;
             gap: 16px;
-            flex-wrap: wrap;
         }
 
-        .view-tabs {
+        .header-brand {
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            color: var(--ci-deep-brown);
+            text-transform: uppercase;
+        }
+
+        .header-divider {
+            width: 1px;
+            height: 20px;
+            background: var(--border);
+        }
+
+        .header-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text);
+            letter-spacing: 0.01em;
+        }
+
+        .header-right {
             display: flex;
-            gap: 4px;
-            background: rgba(26, 15, 10, 0.3);
-            border-radius: 6px;
-            padding: 3px;
+            align-items: center;
+            gap: 12px;
         }
 
-        .view-tab {
-            background: none;
-            border: none;
-            color: var(--color-text-muted);
-            padding: 7px 16px;
-            border-radius: 4px;
-            font-size: 0.82rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            white-space: nowrap;
-            min-height: 36px;
-        }
-
-        .view-tab:focus-visible {
-            outline: 2px solid var(--color-accent);
-            outline-offset: 2px;
-        }
-
-        .view-tab.active {
-            background: var(--color-accent);
-            color: var(--color-bg-card);
-        }
-
-        .view-tab:hover:not(.active) {
-            background: rgba(122, 64, 51, 0.3);
-        }
-
-        .sort-controls {
-            display: flex;
-            gap: 8px;
-        }
-
-        .sort-btn {
-            background: none;
-            border: 1px solid var(--color-accent);
-            color: var(--color-text-muted);
-            padding: 6px 14px;
-            border-radius: 4px;
+        .header-link {
             font-size: 0.78rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            min-height: 32px;
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            transition: all 0.15s;
         }
 
-        .sort-btn:focus-visible {
-            outline: 2px solid var(--color-accent);
-            outline-offset: 2px;
+        .header-link:hover {
+            color: var(--accent);
+            background: var(--accent-light);
         }
 
-        .sort-btn.active {
-            background: var(--color-accent);
-            color: var(--color-bg-card);
+        /* Main content */
+        .main {
+            max-width: 1080px;
+            margin: 0 auto;
+            padding: 32px 32px 64px;
         }
 
-        /* View containers */
-        .view-container { display: none; }
-        .view-container.active { display: block; }
-
-        /* Chart card wrapper */
-        .chart-card {
-            background: var(--color-bg-card);
-            border-radius: 12px;
-            padding: 24px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.2);
-            margin-bottom: 20px;
+        /* Summary stats */
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 32px;
         }
 
-        .chart-card h2 {
-            font-size: 1rem;
-            font-weight: 700;
-            color: var(--color-text-body);
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 18px 20px;
+        }
+
+        .stat-label {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            letter-spacing: 0.03em;
             margin-bottom: 6px;
         }
 
-        .chart-card .chart-desc {
-            font-size: 0.78rem;
-            color: var(--color-text-secondary);
-            margin-bottom: 16px;
-            line-height: 1.5;
-        }
-
-        #bubble-chart { width: 100%; height: 520px; }
-
-        /* Quadrant labels */
-        .quadrant-legend {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            margin-top: 12px;
-        }
-
-        .q-label {
-            font-size: 0.72rem;
-            padding: 6px 10px;
-            border-radius: 6px;
-            text-align: center;
-        }
-
-        .q-emerging { background: rgba(220, 135, 102, 0.1); color: #DC8766; border: 1px solid rgba(220, 135, 102, 0.25); }
-        .q-critical { background: rgba(122, 64, 51, 0.12); color: var(--color-accent); border: 1px solid rgba(122, 64, 51, 0.3); font-weight: 700; }
-        .q-low { background: var(--color-bg-secondary); color: var(--color-text-muted); border: 1px solid var(--color-border); }
-        .q-mature { background: var(--color-bg-light); color: var(--color-text-secondary); border: 1px solid var(--color-border); }
-
-        .matrix-controls { margin-bottom: 12px; }
-        .matrix-filter-row {
-            display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 6px;
-        }
-        .matrix-domain-btn {
-            font-size: 11px; padding: 3px 10px; border-radius: 12px;
-            border: 1px solid #E0CCBB; background: #FFFAF6; color: #7A5A48;
-            cursor: pointer; transition: all 0.15s;
-        }
-        .matrix-domain-btn.active { background: #7A4033; color: #fff; border-color: #7A4033; }
-        .matrix-domain-btn:hover { border-color: #7A4033; }
-        .matrix-label-toggle {
-            font-size: 12px; color: #7A5A48; display: flex; align-items: center; gap: 4px; cursor: pointer;
-        }
-
-        /* Radar comparison view */
-        .radar-layout {
-            display: grid;
-            grid-template-columns: 240px 1fr;
-            gap: 20px;
-        }
-
-        .radar-selector {
-            max-height: 480px;
-            overflow-y: auto;
-            padding-right: 8px;
-        }
-
-        .radar-selector-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 10px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            color: var(--color-text-body);
-            transition: background 0.15s;
-            border-bottom: 1px solid var(--color-bg-light);
-        }
-
-        .radar-selector-item:hover { background: var(--color-bg-secondary); }
-
-        .radar-selector-item.selected { background: var(--color-bg-light); font-weight: 600; }
-
-        .radar-selector-item .color-dot {
-            width: 10px; height: 10px;
-            border-radius: 50%;
-            flex-shrink: 0;
-        }
-
-        .radar-selector-item .item-score {
-            margin-left: auto;
-            font-size: 0.7rem;
-            color: var(--color-text-muted);
-        }
-
-        #radar-chart { width: 100%; height: 480px; }
-
-        .radar-hint {
-            font-size: 0.78rem;
-            color: var(--color-text-muted);
-            text-align: center;
-            padding: 10px;
-            line-height: 1.5;
-        }
-
-        .radar-limit-msg {
-            font-size: 0.75rem;
-            color: var(--color-accent);
-            text-align: center;
-            padding: 6px 12px;
-            background: rgba(122, 64, 51, 0.06);
-            border-radius: 6px;
-            margin-bottom: 8px;
-        }
-
-        .radar-selector-header {
-            font-size: 0.72rem;
-            color: var(--color-text-muted);
-            padding: 6px 10px 10px;
-            border-bottom: 1px solid var(--color-border);
-            margin-bottom: 4px;
-        }
-
-        .radar-search {
-            width: 100%;
-            padding: 8px 10px;
-            border: 1px solid var(--color-border);
-            border-radius: 6px;
-            font-size: 0.78rem;
-            background: var(--color-bg-secondary);
-            color: var(--color-text-body);
-            margin-bottom: 8px;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-        .radar-search:focus { border-color: var(--color-accent); }
-        .radar-search::placeholder { color: var(--color-text-muted); }
-
-        /* Theme card styles (list view) */
-        .theme-card {
-            background: var(--color-bg-card);
-            border-radius: 12px;
-            padding: 24px 28px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.2);
-            cursor: pointer;
-            transition: transform 0.15s, box-shadow 0.15s;
-        }
-
-        .theme-card:hover, .theme-card:focus-visible {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-        }
-
-        .theme-card:focus-visible {
-            outline: 2px solid var(--color-accent);
-            outline-offset: 2px;
-        }
-
-        .theme-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 16px;
-        }
-
-        .theme-name {
-            font-size: 1.15rem;
+        .stat-value {
+            font-size: 1.5rem;
             font-weight: 700;
-            color: var(--color-text-body);
-            line-height: 1.3;
+            color: var(--text);
+            font-feature-settings: 'tnum';
         }
 
-        .theme-meta {
-            font-size: 0.78rem;
-            color: var(--color-text-secondary);
-            margin-top: 5px;
+        .stat-value.accent {
+            color: var(--accent);
         }
 
-        .delta-badge {
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 700;
-            white-space: nowrap;
-        }
-
-        .delta-up { background: var(--color-accent-dark); color: var(--color-bg-card); }
-        .delta-down { background: var(--color-bg-secondary); color: var(--color-text-secondary); border: 1px solid var(--color-text-muted); }
-        .delta-neutral { background: transparent; color: var(--color-text-muted); border: 1px solid var(--color-border); }
-
-        .axes-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 12px;
-            padding-top: 16px;
-            border-top: 1px solid var(--color-border);
+        .stat-sub {
+            font-size: 0.72rem;
+            color: var(--text-muted);
             margin-top: 4px;
         }
 
-        .axis-item { text-align: center; }
+        /* Controls bar */
+        .controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
 
-        .axis-label {
+        .controls-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .section-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .filter-pills {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+
+        .pill {
             font-size: 0.72rem;
-            color: var(--color-text-secondary);
-            margin-bottom: 5px;
+            font-family: var(--font);
+            padding: 5px 12px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.15s;
+            white-space: nowrap;
+        }
+
+        .pill:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .pill.active {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+        }
+
+        .controls-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sort-select {
+            font-family: var(--font);
+            font-size: 0.78rem;
+            padding: 6px 28px 6px 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%239a8a7e' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+        }
+
+        .sort-select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .count-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* Acceleration list */
+        .accel-list {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .accel-item {
+            display: grid;
+            grid-template-columns: 36px 1fr 80px 80px 120px;
+            align-items: center;
+            gap: 16px;
+            padding: 14px 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.12s;
+        }
+
+        .accel-item:hover {
+            border-color: var(--accent-border);
+            box-shadow: 0 1px 4px rgba(120, 60, 40, 0.06);
+        }
+
+        .accel-item:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 1px;
+        }
+
+        .accel-rank {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-align: center;
+            font-feature-settings: 'tnum';
+        }
+
+        .accel-rank.top3 {
+            color: var(--accent);
+        }
+
+        .accel-info {
+            min-width: 0;
+        }
+
+        .accel-name {
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--text);
+            line-height: 1.3;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .accel-meta {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .domain-tag {
+            font-size: 0.65rem;
+            padding: 1px 7px;
+            border-radius: 3px;
+            font-weight: 500;
             letter-spacing: 0.02em;
         }
 
-        .axis-bar { height: 8px; background: var(--color-border); border-radius: 4px; overflow: hidden; }
-        .axis-fill { height: 100%; border-radius: 4px; transition: width 0.5s; }
-        .axis-fill.high { background: var(--color-accent); }
-        .axis-fill.mid { background: var(--color-text-muted); }
-        .axis-fill.low { background: var(--color-border); }
-
-        .axis-score { font-size: 0.72rem; color: var(--color-accent-dark); margin-top: 3px; font-weight: 700; }
-
-        .scorer-link {
-            display: block; width: 100%; text-align: center; margin-top: 16px;
-            padding: 10px 16px; background: var(--color-accent); color: var(--color-bg-card);
-            border-radius: 8px; font-size: 0.85rem; font-weight: 600;
-            text-decoration: none; transition: background 0.2s;
+        .accel-score {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-align: right;
+            font-feature-settings: 'tnum';
         }
-        .scorer-link:hover { background: var(--color-accent-hover); }
+
+        .accel-items-count {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-align: right;
+            font-feature-settings: 'tnum';
+        }
+
+        .accel-delta {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 6px;
+        }
+
+        .delta-bar-wrap {
+            width: 48px;
+            height: 6px;
+            background: var(--bg-secondary);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .delta-bar {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.4s ease;
+        }
+
+        .delta-bar.up { background: var(--accent); }
+        .delta-bar.down { background: var(--text-muted); }
+
+        .delta-value {
+            font-size: 0.78rem;
+            font-weight: 700;
+            font-feature-settings: 'tnum';
+            font-family: var(--font-mono);
+            min-width: 52px;
+            text-align: right;
+        }
+
+        .delta-value.up { color: var(--accent); }
+        .delta-value.down { color: var(--text-muted); }
+        .delta-value.neutral { color: var(--text-muted); }
+
+        /* Column headers */
+        .list-header {
+            display: grid;
+            grid-template-columns: 36px 1fr 80px 80px 120px;
+            align-items: center;
+            gap: 16px;
+            padding: 8px 20px 10px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 4px;
+        }
+
+        .list-header span {
+            font-size: 0.68rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        .list-header .col-right {
+            text-align: right;
+        }
+
+        /* 5-axis mini display (in expanded/modal view) */
+        .axes-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-light);
+        }
+
+        .axis-mini {
+            flex: 1;
+            text-align: center;
+        }
+
+        .axis-mini-label {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+            letter-spacing: 0.02em;
+        }
+
+        .axis-mini-bar {
+            height: 4px;
+            background: var(--bg-secondary);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .axis-mini-fill {
+            height: 100%;
+            border-radius: 2px;
+            background: var(--ci-terracotta);
+            transition: width 0.4s;
+        }
+
+        .axis-mini-fill.high { background: var(--accent); }
+        .axis-mini-fill.mid { background: var(--ci-camel); }
+        .axis-mini-fill.low { background: var(--border); }
+
+        .axis-mini-value {
+            font-size: 0.65rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-top: 3px;
+            font-feature-settings: 'tnum';
+        }
 
         /* Modal */
         .modal-overlay {
-            display: flex; position: fixed;
+            display: flex;
+            position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(58, 42, 32, 0.7); z-index: 100;
-            align-items: center; justify-content: center; padding: 20px;
-            opacity: 0; visibility: hidden;
-            transition: opacity 0.2s ease, visibility 0.2s ease;
+            background: rgba(26, 26, 26, 0.4);
+            backdrop-filter: blur(2px);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s, visibility 0.2s;
         }
-        .modal-overlay.active { opacity: 1; visibility: visible; }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
 
         .modal {
-            background: var(--color-bg-card); border-radius: 16px; padding: 32px;
-            max-width: 700px; width: 100%; max-height: 85vh; overflow-y: auto;
+            background: var(--bg-card);
+            border-radius: 14px;
+            padding: 36px;
+            max-width: 640px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
             position: relative;
-            transform: scale(0.95) translateY(8px); opacity: 0;
-            transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
+            border: 1px solid var(--border);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+            transform: scale(0.97) translateY(6px);
+            opacity: 0;
+            transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s;
         }
-        .modal-overlay.active .modal { transform: scale(1) translateY(0); opacity: 1; }
+
+        .modal-overlay.active .modal {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+        }
 
         .modal-close {
-            position: absolute; top: 16px; right: 16px;
-            width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
-            background: var(--color-bg-light); border: 1px solid var(--color-border);
-            border-radius: 50%; font-size: 1.1rem; cursor: pointer;
-            color: var(--color-text-secondary); transition: background 0.15s;
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: all 0.15s;
         }
-        .modal-close:hover { background: var(--color-border); }
 
-        .modal h2 { font-size: 1.2rem; color: var(--color-text-body); margin-bottom: 8px; }
-        .modal-subtitle { color: var(--color-text-muted); font-size: 0.8rem; margin-bottom: 20px; }
+        .modal-close:hover {
+            background: var(--border);
+            color: var(--text);
+        }
 
-        .evidence-section { margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--color-bg-light); }
-        .evidence-section:last-of-type { border-bottom: none; }
-        .evidence-section h3 { font-size: 0.88rem; color: var(--color-accent-dark); margin-bottom: 10px; font-weight: 700; }
+        .modal-header {
+            margin-bottom: 24px;
+        }
 
-        .evidence-list { list-style: none; padding: 0; }
-        .evidence-list li { font-size: 0.83rem; color: var(--color-text-body); padding: 8px 0; border-bottom: 1px solid var(--color-border); line-height: 1.8; }
+        .modal h2 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 6px;
+        }
 
-        .source-item { display: block; padding: 8px 0; border-bottom: 1px solid var(--color-border); }
-        .source-item a { color: var(--color-accent); text-decoration: none; font-size: 0.85rem; font-weight: 500; }
-        .source-item a:hover { text-decoration: underline; }
-        .source-item .source-meta { font-size: 0.7rem; color: var(--color-text-muted); margin-top: 2px; }
+        .modal-subtitle {
+            color: var(--text-muted);
+            font-size: 0.78rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
 
-        .empty-state { text-align: center; padding: 60px 20px; color: var(--color-text-muted); }
-        .empty-state h2 { color: var(--color-bg-light); margin-bottom: 12px; }
+        .modal-delta {
+            font-weight: 700;
+            font-family: var(--font-mono);
+            font-size: 0.82rem;
+        }
 
-        @media (max-width: 600px) {
-            body { padding: 16px; }
-            .axes-grid { grid-template-columns: repeat(3, 1fr); }
-            .theme-header { flex-direction: column; gap: 8px; }
-            .theme-card { padding: 18px; }
-            .modal { padding: 20px; }
-            .meta-right { width: 100%; justify-content: space-between; }
-            .radar-layout { grid-template-columns: 1fr; }
-            .radar-selector { max-height: 200px; }
-            #bubble-chart { height: 400px; }
-            #radar-chart { height: 360px; }
-            /* Larger touch targets on mobile */
-            .view-tab { padding: 9px 14px; font-size: 0.85rem; min-height: 40px; }
-            .sort-btn { padding: 8px 14px; min-height: 36px; }
-            .radar-selector-item { padding: 10px 12px; min-height: 40px; }
+        .modal-delta.up { color: var(--accent); }
+
+        .evidence-section {
+            margin-bottom: 20px;
+            padding-bottom: 18px;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .evidence-section:last-of-type {
+            border-bottom: none;
+        }
+
+        .evidence-section h3 {
+            font-size: 0.82rem;
+            color: var(--accent);
+            margin-bottom: 8px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .evidence-score {
+            font-size: 0.72rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            background: var(--bg-secondary);
+            padding: 1px 6px;
+            border-radius: 3px;
+        }
+
+        .evidence-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .evidence-list li {
+            font-size: 0.82rem;
+            color: var(--text);
+            padding: 7px 0;
+            border-bottom: 1px solid var(--border-light);
+            line-height: 1.7;
+        }
+
+        .evidence-list li:last-child {
+            border-bottom: none;
+        }
+
+        .source-item {
+            display: block;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .source-item a {
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 0.82rem;
+            font-weight: 500;
+        }
+
+        .source-item a:hover {
+            text-decoration: underline;
+        }
+
+        .source-item .source-meta {
+            font-size: 0.68rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .scorer-link {
+            display: block;
+            width: 100%;
+            text-align: center;
+            margin-top: 20px;
+            padding: 10px 16px;
+            background: var(--accent);
+            color: #fff;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: opacity 0.15s;
+        }
+
+        .scorer-link:hover {
+            opacity: 0.85;
+        }
+
+        /* Domain colors */
+        .domain-ai_agents { background: rgba(240, 166, 113, 0.15); color: #a06020; }
+        .domain-biotech { background: rgba(220, 135, 102, 0.15); color: #8a4520; }
+        .domain-cybersecurity { background: rgba(150, 109, 94, 0.15); color: #6b4a3e; }
+        .domain-defense_tech { background: rgba(176, 114, 86, 0.15); color: #7a4a30; }
+        .domain-energy { background: rgba(206, 162, 111, 0.15); color: #8a6a30; }
+        .domain-geopolitics { background: rgba(122, 64, 51, 0.12); color: #7A4033; }
+        .domain-quantum { background: rgba(241, 193, 137, 0.2); color: #8a6520; }
+        .domain-robotics { background: rgba(239, 196, 164, 0.2); color: #8a5a30; }
+        .domain-semiconductors { background: rgba(247, 190, 162, 0.2); color: #9a4a28; }
+        .domain-space { background: rgba(242, 199, 146, 0.18); color: #7a5a20; }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-state h2 {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+        }
+
+        /* Footer */
+        .site-footer {
+            max-width: 1080px;
+            margin: 0 auto;
+            padding: 0 32px 48px;
+            text-align: center;
+        }
+
+        .footer-text {
+            font-size: 0.68rem;
+            color: var(--text-muted);
+            letter-spacing: 0.02em;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .summary { grid-template-columns: repeat(2, 1fr); }
+            .accel-item {
+                grid-template-columns: 28px 1fr 60px;
+                gap: 10px;
+                padding: 12px 14px;
+            }
+            .accel-items-count, .accel-score { display: none; }
+            .list-header {
+                grid-template-columns: 28px 1fr 60px;
+            }
+            .list-header .hide-mobile { display: none; }
+            .header-inner { padding: 16px 20px; }
+            .main { padding: 20px 16px 48px; }
+            .axes-row { flex-wrap: wrap; gap: 8px; }
+            .axis-mini { min-width: 70px; }
+        }
+
+        @media (max-width: 480px) {
+            .summary { grid-template-columns: 1fr 1fr; gap: 10px; }
+            .stat-card { padding: 14px 16px; }
+            .stat-value { font-size: 1.2rem; }
+            .header-title { font-size: 0.82rem; }
+            .controls { flex-direction: column; align-items: flex-start; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="app-header" style="position:relative;">
-            <a href="dashboard.html" style="position:absolute;top:28px;right:0;color:var(--color-text-muted);text-decoration:none;font-size:0.85rem;transition:color 0.2s;" onmouseover="this.style.color='var(--color-bg-light)'" onmouseout="this.style.color='var(--color-text-muted)'">管理 &rarr;</a>
-            <h1>構造変化レーダー</h1>
-            <p class="subtitle">構造的変化点の加速度で新興技術を検出する</p>
+    <header class="site-header">
+        <div class="header-inner">
+            <div class="header-left">
+                <span class="header-brand">MIRA TUKU</span>
+                <span class="header-divider"></span>
+                <span class="header-title">Structural Inflection Radar</span>
+            </div>
+            <div class="header-right">
+                <a href="dashboard.html" class="header-link">Admin</a>
+            </div>
         </div>
+    </header>
 
-        <div class="meta-bar">
-            <span id="meta-info">読み込み中...</span>
-            <div class="meta-right">
-                <div class="view-tabs" role="tablist" aria-label="表示切替">
-                    <button class="view-tab active" role="tab" aria-selected="true" aria-controls="view-list" onclick="switchView('list')">一覧</button>
-                    <button class="view-tab" role="tab" aria-selected="false" aria-controls="view-matrix" onclick="switchView('matrix')">マトリクス</button>
-                    <button class="view-tab" role="tab" aria-selected="false" aria-controls="view-radar" onclick="switchView('radar')">レーダー比較</button>
-                </div>
-                <div class="sort-controls" id="sort-controls">
-                    <button class="sort-btn active" onclick="sortBy('delta')">加速度順</button>
-                    <button class="sort-btn" onclick="sortBy('score')">スコア順</button>
-                    <button class="sort-btn" onclick="sortBy('count')">件数順</button>
-                </div>
+    <main class="main">
+        <!-- Summary KPIs -->
+        <div class="summary" id="summary">
+            <div class="stat-card">
+                <div class="stat-label">Accelerating</div>
+                <div class="stat-value accent" id="stat-accel">--</div>
+                <div class="stat-sub">themes</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Total Themes</div>
+                <div class="stat-value" id="stat-total">--</div>
+                <div class="stat-sub">across 10 domains</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Sources</div>
+                <div class="stat-value" id="stat-sources">--</div>
+                <div class="stat-sub">items analyzed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Last Updated</div>
+                <div class="stat-value" id="stat-date" style="font-size:1.1rem;">--</div>
+                <div class="stat-sub" id="stat-date-sub"></div>
             </div>
         </div>
 
-        <!-- List view -->
-        <div id="view-list" class="view-container active" role="tabpanel" aria-label="一覧表示">
-            <div id="themes-list"></div>
-        </div>
-
-        <!-- Bubble matrix view -->
-        <div id="view-matrix" class="view-container" role="tabpanel" aria-label="マトリクス表示">
-            <div class="chart-card">
-                <h2>加速度 x 総合スコア マトリクス</h2>
-                <p class="chart-desc">X軸: 総合スコア（構造変化の強度）、Y軸: 加速度（変化の勢い）、バブルサイズ: ソース件数。クリックで詳細を表示。マウスホイールでズーム。</p>
-                <div class="matrix-controls">
-                    <div class="matrix-filter-row" id="matrix-domain-filters"></div>
-                    <div class="matrix-filter-row">
-                        <label class="matrix-label-toggle">
-                            <input type="checkbox" id="matrix-show-labels" checked onchange="updateBubbleLabels()">
-                            ラベル表示
-                        </label>
-                        <label class="matrix-label-toggle">
-                            <input type="checkbox" id="matrix-top-only" checked onchange="updateBubbleLabels()">
-                            上位のみ表示
-                        </label>
-                        <select id="matrix-top-n" onchange="updateBubbleLabels()" style="font-size:12px;padding:2px 6px;border:1px solid #E0CCBB;border-radius:4px;background:#FFFAF6;">
-                            <option value="10">Top 10</option>
-                            <option value="20" selected>Top 20</option>
-                            <option value="30">Top 30</option>
-                            <option value="50">Top 50</option>
-                        </select>
-                        <button onclick="resetBubbleZoom()" style="font-size:12px;padding:2px 10px;border:1px solid #E0CCBB;border-radius:4px;background:#FFFAF6;cursor:pointer;">ズームリセット</button>
-                    </div>
-                </div>
-                <div id="bubble-chart"></div>
-                <div class="quadrant-legend" role="list" aria-label="象限の説明">
-                    <div class="q-label q-emerging" role="listitem">左上: 新興テーマ（低スコア・加速中）</div>
-                    <div class="q-label q-critical" role="listitem">右上: 最重要テーマ（高スコア・加速中）</div>
-                    <div class="q-label q-low" role="listitem">左下: 低優先テーマ</div>
-                    <div class="q-label q-mature" role="listitem">右下: 成熟テーマ（高スコア・安定）</div>
-                </div>
+        <!-- Controls -->
+        <div class="controls">
+            <div class="controls-left">
+                <h2 class="section-title">Acceleration Group</h2>
+                <div class="filter-pills" id="domain-filters"></div>
+            </div>
+            <div class="controls-right">
+                <span class="count-label" id="count-label"></span>
+                <select class="sort-select" id="sort-select" onchange="handleSort(this.value)">
+                    <option value="delta">Acceleration</option>
+                    <option value="score">Score</option>
+                    <option value="count">Sources</option>
+                </select>
             </div>
         </div>
 
-        <!-- Radar comparison view -->
-        <div id="view-radar" class="view-container" role="tabpanel" aria-label="レーダー比較表示">
-            <div class="chart-card">
-                <h2>5軸レーダー比較</h2>
-                <p class="chart-desc">左のリストからテーマを選択すると、5軸のスコアをレーダーチャートで比較できます（最大4件）。</p>
-                <div class="radar-layout">
-                    <div class="radar-selector" id="radar-selector"></div>
-                    <div id="radar-chart"></div>
-                </div>
-                <p class="radar-hint" id="radar-hint">テーマを選択してください</p>
-            </div>
+        <!-- List header -->
+        <div class="list-header">
+            <span>#</span>
+            <span>Theme</span>
+            <span class="col-right hide-mobile">Score</span>
+            <span class="col-right hide-mobile">Sources</span>
+            <span class="col-right">Acceleration</span>
         </div>
-    </div>
 
-    <div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)" role="dialog" aria-modal="true" aria-label="テーマ詳細">
+        <!-- Acceleration list -->
+        <div class="accel-list" id="accel-list"></div>
+    </main>
+
+    <footer class="site-footer">
+        <p class="footer-text">Structural Inflection Radar &mdash; Detecting acceleration in emerging technologies</p>
+    </footer>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)" role="dialog" aria-modal="true" aria-label="Theme details">
         <div class="modal" id="modal-content">
-            <button class="modal-close" onclick="closeModal()" aria-label="閉じる">&times;</button>
+            <button class="modal-close" onclick="closeModal()" aria-label="Close">&times;</button>
             <div id="modal-body"></div>
         </div>
     </div>
@@ -535,13 +770,26 @@
 
         const SCORER_URL = 'https://yuyanishimura0312.github.io/structural-inflection-scorer/';
         const AXIS_LABELS = {
-            threshold_proximity: '閾値接近',
-            external_pressure: '外圧/窓',
-            tech_cycle_position: '技術革命',
-            institutional_change: '制度変化',
-            uncertainty_resolution: '不確実性解消',
+            threshold_proximity: 'Threshold',
+            external_pressure: 'External',
+            tech_cycle_position: 'Tech Cycle',
+            institutional_change: 'Institutional',
+            uncertainty_resolution: 'Uncertainty',
         };
         const AXIS_KEYS = Object.keys(AXIS_LABELS);
+
+        const DOMAIN_NAMES = {
+            'ai_agents': 'AI',
+            'biotech': 'Biotech',
+            'cybersecurity': 'Cyber',
+            'defense_tech': 'Defense',
+            'energy': 'Energy',
+            'geopolitics': 'Geopolitics',
+            'quantum': 'Quantum',
+            'robotics': 'Robotics',
+            'semiconductors': 'Semicon',
+            'space': 'Space',
+        };
 
         const THEME_NAMES_JA = {
             'fundamental_research': '基礎研究', 'academic_research': '学術研究',
@@ -587,15 +835,25 @@
             'terminal_ui': 'ターミナルUI', 'theoretical_physics': '理論物理学',
             'uk_policy': '英国政策', 'waste_valorization': '廃棄物高付加価値化',
             'window_technology': '窓技術',
+            'semiconductor': '半導体', 'renewable_energy_policy': '再エネ政策',
+            'offshore_wind': '洋上風力', 'eu_ai_regulation': 'EU AI規制',
+            'cost_reduction': 'コスト削減', 'eu_ai_act': 'EU AI法',
+            'regulatory_approval': '規制認可', 'urban_deployment': '都市展開',
+            'ai_coding_tools': 'AIコーディング', 'regulatory_enforcement': '規制執行',
+            'eu_regulation': 'EU規制', 'regulatory_compliance': '規制遵守',
+            'regulation': '規制', 'us_china_tech_competition': '米中テック競争',
+            'quantum_security': '量子セキュリティ', 'law_enforcement': '法執行',
+            'geopolitical_tech': '地政学テック', 'photonic_computing': 'フォトニック計算',
+            'geopolitical_risk': '地政学リスク', 'ai_regulation': 'AI規制',
+            'model_compression': 'モデル圧縮', 'nuclear_energy': '原子力',
+            'eu_compliance': 'EUコンプライアンス', 'military_doctrine': '軍事ドクトリン',
+            'air_defense_systems': '防空システム', 'commercial_space': '商業宇宙',
+            'space_debris': '宇宙デブリ', 'ransomware': 'ランサムウェア',
+            'satellite_constellation': '衛星コンステレーション',
         };
 
-        const RADAR_COLORS = ['#7A4033', '#B07256', '#DC8766', '#966D5E'];
-
         let currentSort = 'delta';
-        let currentView = 'list';
-        let bubbleChart = null;
-        let radarChart = null;
-        let selectedRadarThemes = [];
+        let activeDomains = new Set();
 
         function formatThemeName(name) {
             return THEME_NAMES_JA[name] || name.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
@@ -604,481 +862,160 @@
         // --- Init ---
         function init() {
             if (typeof THEMES_DATA === 'undefined' || !THEMES_DATA.themes || THEMES_DATA.themes.length === 0) {
-                document.getElementById('themes-list').innerHTML =
-                    '<div class="empty-state"><h2>データがありません</h2><p>run_pipeline.py を実行してデータを生成してください。</p></div>';
+                document.getElementById('accel-list').innerHTML =
+                    '<div class="empty-state"><h2>No data available</h2><p>Run the pipeline to generate data.</p></div>';
                 return;
             }
 
-            const info = document.getElementById('meta-info');
-            const date = new Date(THEMES_DATA.generated_at).toLocaleDateString('ja-JP');
-            info.textContent = `${date} 更新 / ${THEMES_DATA.total_themes} テーマ / ${THEMES_DATA.total_source_items} 件のソース`;
+            // Summary stats
+            const accelCount = THEMES_DATA.themes.filter(t => (t.delta?.composite || 0) > 0.01).length;
+            document.getElementById('stat-accel').textContent = accelCount;
+            document.getElementById('stat-total').textContent = THEMES_DATA.total_themes;
+            document.getElementById('stat-sources').textContent = THEMES_DATA.total_source_items.toLocaleString();
 
-            renderThemes();
+            const date = new Date(THEMES_DATA.generated_at);
+            document.getElementById('stat-date').textContent = date.toLocaleDateString('ja-JP', { month: 'short', day: 'numeric' });
+            document.getElementById('stat-date-sub').textContent = date.toLocaleDateString('ja-JP', { year: 'numeric' });
 
-            // Handle URL hash for view state
-            const hash = location.hash.replace('#', '');
-            if (['list', 'matrix', 'radar'].includes(hash)) {
-                switchView(hash, true);
-            }
+            buildDomainFilters();
+            render();
         }
 
-        // --- View switching ---
-        window.switchView = function(view, skipHash) {
-            currentView = view;
-            document.querySelectorAll('.view-container').forEach(v => v.classList.remove('active'));
-            document.querySelectorAll('.view-tab').forEach(t => {
-                t.classList.remove('active');
-                t.setAttribute('aria-selected', 'false');
+        function buildDomainFilters() {
+            const container = document.getElementById('domain-filters');
+            const domains = new Set();
+            THEMES_DATA.themes.forEach(t => { if (t.domain) domains.add(t.domain); });
+
+            // "All" pill
+            const allPill = document.createElement('button');
+            allPill.className = 'pill active';
+            allPill.textContent = 'All';
+            allPill.onclick = () => {
+                activeDomains.clear();
+                container.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+                allPill.classList.add('active');
+                render();
+            };
+            container.appendChild(allPill);
+
+            [...domains].sort().forEach(domain => {
+                const pill = document.createElement('button');
+                pill.className = 'pill';
+                pill.textContent = DOMAIN_NAMES[domain] || domain;
+                pill.onclick = () => {
+                    allPill.classList.remove('active');
+                    if (activeDomains.has(domain)) {
+                        activeDomains.delete(domain);
+                        pill.classList.remove('active');
+                    } else {
+                        activeDomains.add(domain);
+                        pill.classList.add('active');
+                    }
+                    if (activeDomains.size === 0) allPill.classList.add('active');
+                    render();
+                };
+                container.appendChild(pill);
             });
-            document.getElementById('view-' + view).classList.add('active');
-            const activeTab = document.querySelector(`.view-tab[onclick*="${view}"]`);
-            activeTab.classList.add('active');
-            activeTab.setAttribute('aria-selected', 'true');
+        }
 
-            // Show sort controls only in list view
-            document.getElementById('sort-controls').style.display = view === 'list' ? 'flex' : 'none';
-
-            if (!skipHash) location.hash = view === 'list' ? '' : view;
-
-            // Lazy-init charts
-            if (view === 'matrix') initBubbleChart();
-            if (view === 'radar') initRadarView();
-        };
-
-        // Keyboard navigation for tabs (arrow keys per WAI-ARIA tablist pattern)
-        document.querySelector('.view-tabs').addEventListener('keydown', function(e) {
-            const tabs = Array.from(this.querySelectorAll('.view-tab'));
-            const current = tabs.findIndex(t => t.classList.contains('active'));
-            let next = current;
-            if (e.key === 'ArrowRight') next = (current + 1) % tabs.length;
-            else if (e.key === 'ArrowLeft') next = (current - 1 + tabs.length) % tabs.length;
-            else return;
-            e.preventDefault();
-            tabs[next].focus();
-            tabs[next].click();
-        });
-
-        // --- Sort ---
-        window.sortBy = function(type) {
-            currentSort = type;
-            document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
-            event.target.classList.add('active');
-            renderThemes();
-        };
-
-        function getSortedThemes() {
-            const themes = [...THEMES_DATA.themes];
+        function getFilteredThemes() {
+            let themes = THEMES_DATA.themes.filter(t => (t.delta?.composite || 0) > 0.01);
+            if (activeDomains.size > 0) {
+                themes = themes.filter(t => activeDomains.has(t.domain));
+            }
             if (currentSort === 'delta') themes.sort((a, b) => (b.delta?.composite || 0) - (a.delta?.composite || 0));
             else if (currentSort === 'score') themes.sort((a, b) => b.composite_score - a.composite_score);
             else themes.sort((a, b) => b.item_count - a.item_count);
             return themes;
         }
 
-        // --- List view ---
-        function renderThemes() {
-            const themes = getSortedThemes();
-            document.getElementById('themes-list').innerHTML = themes.map((t, i) => renderCard(t, i)).join('');
-        }
+        function render() {
+            const themes = getFilteredThemes();
+            document.getElementById('count-label').textContent = `${themes.length} themes`;
 
-        function renderCard(theme, index) {
-            const delta = theme.delta?.composite || 0;
-            const deltaClass = delta > 0.01 ? 'delta-up' : delta < -0.01 ? 'delta-down' : 'delta-neutral';
-            const deltaIcon = delta > 0.01 ? '\u2191' : delta < -0.01 ? '\u2193' : '\u2014';
-            const deltaText = delta > 0 ? `${deltaIcon} +${(delta * 100).toFixed(1)}%` : delta < 0 ? `${deltaIcon} ${(delta * 100).toFixed(1)}%` : `${deltaIcon} 0%`;
-            const displayName = formatThemeName(theme.name);
+            // Find max delta for bar scaling
+            const maxDelta = Math.max(...themes.map(t => t.delta?.composite || 0), 0.01);
 
-            const axesBars = Object.entries(theme.axes).map(([key, axis]) => {
-                const pct = Math.round(axis.score * 100);
-                const level = pct >= 60 ? 'high' : pct >= 30 ? 'mid' : 'low';
-                return `<div class="axis-item">
-                    <div class="axis-label">${AXIS_LABELS[key] || key}</div>
-                    <div class="axis-bar"><div class="axis-fill ${level}" style="width:${pct}%"></div></div>
-                    <div class="axis-score">${pct}%</div>
-                </div>`;
-            }).join('');
-
-            return `<div class="theme-card" onclick="openModal(${index})" tabindex="0" role="button"
-                aria-label="${displayName} - 総合スコア ${(theme.composite_score * 100).toFixed(0)}%"
-                onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openModal(${index})}">
-                <div class="theme-header">
-                    <div>
-                        <div class="theme-name">${displayName}</div>
-                        <div class="theme-meta">${theme.item_count} 件 / 総合スコア: ${(theme.composite_score * 100).toFixed(0)}%</div>
-                    </div>
-                    <span class="delta-badge ${deltaClass}">${deltaText}</span>
-                </div>
-                <div class="axes-grid">${axesBars}</div>
-            </div>`;
-        }
-
-        // --- Bubble matrix (ECharts) ---
-        let matrixActiveDomains = new Set(); // empty = show all
-        let matrixAllData = [];
-
-        function initBubbleChart() {
-            if (bubbleChart) { bubbleChart.resize(); return; }
-
-            const el = document.getElementById('bubble-chart');
-            bubbleChart = echarts.init(el);
-
-            // Build domain filter buttons
-            buildDomainFilters();
-
-            // Prepare data with domain and rank info
-            const themes = THEMES_DATA.themes;
-            matrixAllData = themes.map((t, i) => {
-                const score = t.composite_score;
+            const html = themes.map((t, i) => {
                 const delta = t.delta?.composite || 0;
-                // Importance rank: higher score + higher acceleration = more important
-                const importance = score * 0.6 + Math.max(delta, 0) * 0.4;
-                return {
-                    name: formatThemeName(t.name),
-                    value: [score, delta, Math.max(t.item_count, 2), i],
-                    domain: t.domain || '',
-                    importance: importance,
-                    itemStyle: { color: getThemeColor(score, delta) },
-                };
-            });
-            // Sort by importance to assign rank
-            const ranked = [...matrixAllData].sort((a, b) => b.importance - a.importance);
-            ranked.forEach((d, rank) => { d.rank = rank; });
+                const pct = Math.round((delta / maxDelta) * 100);
+                const deltaStr = `+${(delta * 100).toFixed(1)}%`;
+                const displayName = formatThemeName(t.name);
+                const domain = t.domain || '';
 
-            applyBubbleChart();
+                // 5-axis mini bars
+                const axesHtml = AXIS_KEYS.map(key => {
+                    const score = t.axes[key]?.score || 0;
+                    const scorePct = Math.round(score * 100);
+                    const level = scorePct >= 60 ? 'high' : scorePct >= 30 ? 'mid' : 'low';
+                    return `<div class="axis-mini">
+                        <div class="axis-mini-label">${AXIS_LABELS[key]}</div>
+                        <div class="axis-mini-bar"><div class="axis-mini-fill ${level}" style="width:${scorePct}%"></div></div>
+                        <div class="axis-mini-value">${scorePct}%</div>
+                    </div>`;
+                }).join('');
 
-            // Click to open modal
-            bubbleChart.on('click', function(params) {
-                const idx = params.data.value[3];
-                const theme = THEMES_DATA.themes[idx];
-                if (theme) openModalByTheme(theme);
-            });
-
-            window.addEventListener('resize', () => { if (bubbleChart) bubbleChart.resize(); });
-        }
-
-        function buildDomainFilters() {
-            const container = document.getElementById('matrix-domain-filters');
-            if (!container || container.children.length > 0) return;
-
-            // Extract unique domains
-            const domains = new Set();
-            THEMES_DATA.themes.forEach(t => { if (t.domain) domains.add(t.domain); });
-
-            const allBtn = document.createElement('button');
-            allBtn.className = 'matrix-domain-btn active';
-            allBtn.textContent = '全て';
-            allBtn.onclick = () => {
-                matrixActiveDomains.clear();
-                container.querySelectorAll('.matrix-domain-btn').forEach(b => b.classList.remove('active'));
-                allBtn.classList.add('active');
-                applyBubbleChart();
-            };
-            container.appendChild(allBtn);
-
-            const domainNames = {
-                'ai_agents': 'AI', 'biotech': 'バイオ', 'cybersecurity': 'サイバー',
-                'defense_tech': '防衛', 'energy': 'エネルギー', 'geopolitics': '地政学',
-                'quantum': '量子', 'robotics': 'ロボ', 'semiconductors': '半導体', 'space': '宇宙',
-            };
-
-            [...domains].sort().forEach(domain => {
-                const btn = document.createElement('button');
-                btn.className = 'matrix-domain-btn';
-                btn.textContent = domainNames[domain] || domain;
-                btn.onclick = () => {
-                    allBtn.classList.remove('active');
-                    if (matrixActiveDomains.has(domain)) {
-                        matrixActiveDomains.delete(domain);
-                        btn.classList.remove('active');
-                    } else {
-                        matrixActiveDomains.add(domain);
-                        btn.classList.add('active');
-                    }
-                    if (matrixActiveDomains.size === 0) allBtn.classList.add('active');
-                    applyBubbleChart();
-                };
-                container.appendChild(btn);
-            });
-        }
-
-        function getFilteredBubbleData() {
-            let data = matrixAllData;
-            if (matrixActiveDomains.size > 0) {
-                data = data.filter(d => matrixActiveDomains.has(d.domain));
-            }
-            return data;
-        }
-
-        function applyBubbleChart() {
-            const data = getFilteredBubbleData();
-            const showLabels = document.getElementById('matrix-show-labels')?.checked ?? true;
-            const topOnly = document.getElementById('matrix-top-only')?.checked ?? false;
-            const topN = parseInt(document.getElementById('matrix-top-n')?.value || '20');
-
-            // Determine which items get labels
-            const topRanks = new Set();
-            if (topOnly) {
-                const sorted = [...data].sort((a, b) => b.importance - a.importance);
-                sorted.slice(0, topN).forEach(d => topRanks.add(d.value[3]));
-            }
-
-            const seriesData = data.map(d => {
-                const isLabeled = showLabels && (!topOnly || topRanks.has(d.value[3]));
-                return {
-                    ...d,
-                    label: {
-                        show: isLabeled,
-                        formatter: d.name.length > 8 ? d.name.slice(0, 8) + '...' : d.name,
-                        position: 'top',
-                        fontSize: 10,
-                        color: '#1a1a1a',
-                        textBorderColor: '#FFFAF6',
-                        textBorderWidth: 2,
-                    },
-                };
-            });
-
-            const option = {
-                backgroundColor: 'transparent',
-                grid: { left: 60, right: 30, top: 40, bottom: 50 },
-                xAxis: {
-                    name: '総合スコア',
-                    nameLocation: 'center',
-                    nameGap: 35,
-                    nameTextStyle: { color: '#7A5A48', fontSize: 12 },
-                    min: 0, max: 1,
-                    axisLine: { lineStyle: { color: '#E0CCBB' } },
-                    axisLabel: { color: '#7A5A48', formatter: v => (v * 100).toFixed(0) + '%' },
-                    splitLine: { lineStyle: { color: '#F5EBE0', type: 'dashed' } },
-                },
-                yAxis: {
-                    name: '加速度',
-                    nameLocation: 'center',
-                    nameGap: 45,
-                    nameTextStyle: { color: '#7A5A48', fontSize: 12 },
-                    axisLine: { lineStyle: { color: '#E0CCBB' } },
-                    axisLabel: { color: '#7A5A48', formatter: v => (v >= 0 ? '+' : '') + (v * 100).toFixed(0) + '%' },
-                    splitLine: { lineStyle: { color: '#F5EBE0', type: 'dashed' } },
-                },
-                dataZoom: [
-                    { type: 'inside', xAxisIndex: 0 },
-                    { type: 'inside', yAxisIndex: 0 },
-                ],
-                series: [{
-                    type: 'scatter',
-                    data: seriesData,
-                    symbolSize: function(val) {
-                        return Math.min(Math.max(Math.sqrt(val[2]) * 8, 8), 28);
-                    },
-                    labelLayout: {
-                        hideOverlap: true,
-                        moveOverlap: 'shiftY',
-                    },
-                    emphasis: {
-                        focus: 'self',
-                        itemStyle: { borderColor: '#7A4033', borderWidth: 2 },
-                        label: {
-                            show: true,
-                            fontSize: 13,
-                            fontWeight: 'bold',
-                            formatter: p => p.data.name,
-                            textBorderColor: '#FFFAF6',
-                            textBorderWidth: 3,
-                        },
-                    },
-                    blur: {
-                        itemStyle: { opacity: 0.25 },
-                        label: { show: false },
-                    },
-                }],
-                graphic: [
-                    { type: 'line', shape: { x1: '50%', y1: 0, x2: '50%', y2: '100%' }, style: { stroke: '#E0CCBB', lineWidth: 1, lineDash: [4, 4] }, z: -1 },
-                ],
-                tooltip: {
-                    trigger: 'item',
-                    backgroundColor: 'rgba(58, 42, 32, 0.92)',
-                    borderColor: '#7A4033',
-                    borderWidth: 1,
-                    textStyle: { color: '#F5EBE0', fontSize: 12 },
-                    extraCssText: 'box-shadow: 0 4px 16px rgba(0,0,0,0.3); border-radius: 8px;',
-                    formatter: function(p) {
-                        const v = p.data.value;
-                        const delta = v[1];
-                        const arrow = delta > 0.01 ? '&#9650;' : delta < -0.01 ? '&#9660;' : '&#9644;';
-                        const quadrant = (v[0] > 0.5 && delta > 0.01) ? '最重要' :
-                                         (v[0] <= 0.5 && delta > 0.01) ? '新興' :
-                                         (v[0] > 0.5) ? '成熟' : '低優先';
-                        const domainLabel = p.data.domain ? ` / ${p.data.domain}` : '';
-                        return `<div style="font-weight:700;margin-bottom:4px;font-size:13px">${p.data.name}</div>
-                            <div style="color:#DC8766;font-size:10px;margin-bottom:6px">${quadrant}${domainLabel}</div>
-                            <div>総合スコア: <strong>${(v[0] * 100).toFixed(1)}%</strong></div>
-                            <div>加速度: <strong>${arrow} ${(delta * 100).toFixed(1)}%</strong></div>
-                            <div style="color:#B09A88">ソース: ${v[2]}件</div>
-                            <div style="font-size:10px;color:#999;margin-top:4px">クリックで詳細</div>`;
-                    }
-                },
-            };
-
-            bubbleChart.setOption(option, true);
-        }
-
-        function updateBubbleLabels() {
-            if (bubbleChart) applyBubbleChart();
-        }
-
-        function resetBubbleZoom() {
-            if (bubbleChart) {
-                bubbleChart.dispatchAction({ type: 'dataZoom', start: 0, end: 100 });
-            }
-        }
-
-        function getThemeColor(score, delta) {
-            // CI-compliant colors with visual hierarchy via opacity
-            if (score > 0.5 && delta > 0.01) return 'rgba(122, 64, 51, 0.85)';   // Critical: deep brown
-            if (score <= 0.5 && delta > 0.01) return 'rgba(220, 135, 102, 0.75)'; // Emerging: terracotta
-            if (score > 0.5 && delta <= 0.01) return 'rgba(150, 109, 94, 0.5)';  // Mature: warm brown, lighter
-            return 'rgba(224, 204, 187, 0.35)';  // Low priority: very light
-        }
-
-        // --- Radar comparison (ECharts) ---
-        function initRadarView() {
-            renderRadarSelector();
-            if (radarChart) { radarChart.resize(); return; }
-
-            const el = document.getElementById('radar-chart');
-            radarChart = echarts.init(el);
-            updateRadarChart();
-            window.addEventListener('resize', () => { if (radarChart) radarChart.resize(); });
-        }
-
-        let radarSearchQuery = '';
-
-        function renderRadarSelector() {
-            const themes = getSortedThemes();
-            const selector = document.getElementById('radar-selector');
-            const count = selectedRadarThemes.length;
-
-            // Search input
-            const searchHtml = `<input type="text" class="radar-search" placeholder="テーマを検索..."
-                value="${radarSearchQuery}" oninput="filterRadarThemes(this.value)">`;
-
-            // Header showing selection count
-            let headerHtml = `<div class="radar-selector-header">${count}/4 件選択中</div>`;
-            if (count >= 4) {
-                headerHtml += `<div class="radar-limit-msg">最大4件に達しました。他を選ぶには先に解除してください</div>`;
-            }
-
-            // Filter themes by search query
-            const filtered = radarSearchQuery
-                ? themes.filter(t => formatThemeName(t.name).includes(radarSearchQuery) || t.name.includes(radarSearchQuery))
-                : themes;
-
-            const itemsHtml = filtered.map((t, i) => {
-                const isSelected = selectedRadarThemes.includes(t.name);
-                const colorIdx = selectedRadarThemes.indexOf(t.name);
-                const dotColor = isSelected ? RADAR_COLORS[colorIdx] : '#E0CCBB';
-                const dimmed = (!isSelected && count >= 4) ? ' style="opacity:0.45;cursor:default;"' : '';
-                return `<div class="radar-selector-item ${isSelected ? 'selected' : ''}"${dimmed}
-                    onclick="toggleRadarTheme('${t.name}')" role="option" aria-selected="${isSelected}">
-                    <span class="color-dot" style="background:${dotColor}"></span>
-                    ${formatThemeName(t.name)}
-                    <span class="item-score">${(t.composite_score * 100).toFixed(0)}%</span>
+                return `<div class="accel-item" tabindex="0" role="button"
+                    aria-label="${displayName} - acceleration ${deltaStr}"
+                    onclick="openModal('${t.name}')"
+                    onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openModal('${t.name}')}">
+                    <span class="accel-rank ${i < 3 ? 'top3' : ''}">${i + 1}</span>
+                    <div class="accel-info">
+                        <div class="accel-name">${displayName}</div>
+                        <div class="accel-meta">
+                            <span class="domain-tag domain-${domain}">${DOMAIN_NAMES[domain] || domain}</span>
+                            <span>${t.item_count} sources</span>
+                        </div>
+                    </div>
+                    <div class="accel-score">${(t.composite_score * 100).toFixed(0)}%</div>
+                    <div class="accel-items-count">${t.item_count}</div>
+                    <div class="accel-delta">
+                        <div class="delta-bar-wrap">
+                            <div class="delta-bar up" style="width:${pct}%"></div>
+                        </div>
+                        <span class="delta-value up">${deltaStr}</span>
+                    </div>
                 </div>`;
             }).join('');
-            selector.innerHTML = searchHtml + headerHtml + itemsHtml;
+
+            document.getElementById('accel-list').innerHTML = html || '<div class="empty-state"><p>No accelerating themes found for this filter.</p></div>';
         }
 
-        window.filterRadarThemes = function(query) {
-            radarSearchQuery = query;
-            renderRadarSelector();
-            // Keep focus on search input after re-render
-            const input = document.querySelector('.radar-search');
-            if (input) { input.focus(); input.setSelectionRange(query.length, query.length); }
+        // --- Sort ---
+        window.handleSort = function(type) {
+            currentSort = type;
+            render();
         };
-
-        window.toggleRadarTheme = function(name) {
-            const idx = selectedRadarThemes.indexOf(name);
-            if (idx >= 0) {
-                selectedRadarThemes.splice(idx, 1);
-            } else if (selectedRadarThemes.length < 4) {
-                selectedRadarThemes.push(name);
-            }
-            renderRadarSelector();
-            updateRadarChart();
-        };
-
-        function updateRadarChart() {
-            if (!radarChart) return;
-
-            const hint = document.getElementById('radar-hint');
-            if (selectedRadarThemes.length === 0) {
-                hint.style.display = 'block';
-                hint.textContent = '左のリストからテーマをクリックして選択してください（最大4件）';
-            } else if (selectedRadarThemes.length === 1) {
-                hint.style.display = 'block';
-                hint.textContent = '比較するにはもう1件以上テーマを選択してください';
-            } else {
-                hint.style.display = 'none';
-            }
-
-            const themeMap = {};
-            THEMES_DATA.themes.forEach(t => themeMap[t.name] = t);
-
-            const series = selectedRadarThemes.map((name, i) => {
-                const t = themeMap[name];
-                if (!t) return null;
-                return {
-                    name: formatThemeName(name),
-                    type: 'radar',
-                    data: [{
-                        value: AXIS_KEYS.map(k => t.axes[k]?.score || 0),
-                        name: formatThemeName(name),
-                        areaStyle: { opacity: 0.15 },
-                        lineStyle: { width: 2 },
-                        itemStyle: { color: RADAR_COLORS[i] },
-                    }],
-                };
-            }).filter(Boolean);
-
-            radarChart.setOption({
-                backgroundColor: 'transparent',
-                legend: {
-                    data: selectedRadarThemes.map(formatThemeName),
-                    bottom: 0,
-                    textStyle: { color: '#7A5A48', fontSize: 11 },
-                },
-                radar: {
-                    indicator: AXIS_KEYS.map(k => ({ name: AXIS_LABELS[k], max: 1 })),
-                    shape: 'polygon',
-                    splitArea: { areaStyle: { color: ['#FFFAF6', '#FDF5EE', '#F5EBE0', '#E0CCBB'] } },
-                    axisLine: { lineStyle: { color: '#E0CCBB' } },
-                    splitLine: { lineStyle: { color: '#E0CCBB' } },
-                    axisName: { color: '#7A5A48', fontSize: 11, fontWeight: 500 },
-                },
-                tooltip: {
-                    trigger: 'item',
-                    backgroundColor: '#FFFAF6',
-                    borderColor: '#E0CCBB',
-                    textStyle: { color: '#1a1a1a', fontSize: 12 },
-                },
-                series: series,
-            }, true);
-        }
 
         // --- Modal ---
-        window.openModal = function(index) {
-            const theme = getSortedThemes()[index];
+        window.openModal = function(themeName) {
+            const theme = THEMES_DATA.themes.find(t => t.name === themeName);
             if (!theme) return;
-            openModalByTheme(theme);
-        };
 
-        function openModalByTheme(theme) {
             const displayName = formatThemeName(theme.name);
+            const delta = theme.delta?.composite || 0;
+            const deltaStr = delta > 0 ? `+${(delta * 100).toFixed(1)}%` : `${(delta * 100).toFixed(1)}%`;
+            const domain = theme.domain || '';
 
+            // 5-axis section
+            const axesHtml = AXIS_KEYS.map(key => {
+                const score = theme.axes[key]?.score || 0;
+                const scorePct = Math.round(score * 100);
+                const level = scorePct >= 60 ? 'high' : scorePct >= 30 ? 'mid' : 'low';
+                return `<div class="axis-mini">
+                    <div class="axis-mini-label">${AXIS_LABELS[key]}</div>
+                    <div class="axis-mini-bar"><div class="axis-mini-fill ${level}" style="width:${scorePct}%"></div></div>
+                    <div class="axis-mini-value">${scorePct}%</div>
+                </div>`;
+            }).join('');
+
+            // Evidence
             let evidenceHtml = '';
             for (const [key, axis] of Object.entries(theme.axes)) {
                 if (axis.evidence && axis.evidence.length > 0) {
+                    const scorePct = Math.round(axis.score * 100);
                     evidenceHtml += `<div class="evidence-section">
-                        <h3>${AXIS_LABELS[key] || key} (${Math.round(axis.score * 100)}%)</h3>
+                        <h3>${AXIS_LABELS[key] || key} <span class="evidence-score">${scorePct}%</span></h3>
                         <ul class="evidence-list">
                             ${axis.evidence.map(e => `<li>${e}</li>`).join('')}
                         </ul>
@@ -1086,29 +1023,38 @@
                 }
             }
 
+            // Sources
             let sourcesHtml = '';
             if (theme.source_items && theme.source_items.length > 0) {
-                sourcesHtml = '<h3 style="margin-top:20px;font-size:0.9rem;color:var(--color-text-body);">情報ソース</h3>';
+                sourcesHtml = '<h3 style="margin-top:20px;font-size:0.82rem;font-weight:600;color:var(--text);margin-bottom:10px;">Sources</h3>';
                 sourcesHtml += theme.source_items.map(s => `<div class="source-item">
-                    <a href="${s.url}" target="_blank" rel="noopener">${s.title || '無題'}</a>
-                    <div class="source-meta">${s.source} / ${s.date || '日付不明'}</div>
+                    <a href="${s.url}" target="_blank" rel="noopener">${s.title || 'Untitled'}</a>
+                    <div class="source-meta">${s.source} / ${s.date || 'unknown'}</div>
                 </div>`).join('');
             }
 
             const scorerQuery = encodeURIComponent(theme.name);
             document.getElementById('modal-body').innerHTML = `
-                <h2>${displayName}</h2>
-                <p class="modal-subtitle">${theme.item_count} 件 / 総合スコア: ${(theme.composite_score * 100).toFixed(1)}%</p>
-                ${evidenceHtml}
+                <div class="modal-header">
+                    <h2>${displayName}</h2>
+                    <div class="modal-subtitle">
+                        <span class="domain-tag domain-${domain}">${DOMAIN_NAMES[domain] || domain}</span>
+                        <span>${theme.item_count} sources</span>
+                        <span>Score: ${(theme.composite_score * 100).toFixed(1)}%</span>
+                        <span class="modal-delta ${delta > 0 ? 'up' : ''}">${deltaStr}</span>
+                    </div>
+                </div>
+                <div class="axes-row">${axesHtml}</div>
+                <div style="margin-top:24px">${evidenceHtml}</div>
                 ${sourcesHtml}
-                <a href="${SCORER_URL}?q=${scorerQuery}" target="_blank" rel="noopener" class="scorer-link">詳細スコアリングを実行</a>
+                <a href="${SCORER_URL}?q=${scorerQuery}" target="_blank" rel="noopener" class="scorer-link">Open in Structural Inflection Scorer</a>
             `;
+
             document.getElementById('modal-overlay').classList.add('active');
             document.body.style.overflow = 'hidden';
-            // Move focus to close button for keyboard/screen reader users
             setTimeout(() => document.querySelector('.modal-close').focus(), 100);
             history.pushState({ modalOpen: true }, '', location.href);
-        }
+        };
 
         window._doCloseModal = function() {
             document.getElementById('modal-overlay').classList.remove('active');
@@ -1130,7 +1076,6 @@
             const overlay = document.getElementById('modal-overlay');
             if (!overlay.classList.contains('active')) return;
             if (e.key === 'Escape') { history.back(); return; }
-            // Focus trap: keep Tab within modal
             if (e.key === 'Tab') {
                 const modal = document.getElementById('modal-content');
                 const focusable = modal.querySelectorAll('button, a[href], [tabindex]:not([tabindex="-1"])');
