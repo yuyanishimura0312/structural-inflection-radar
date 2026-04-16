@@ -248,6 +248,195 @@
             margin-top: 2px;
         }
 
+        /* === Quadrant Matrix (SVG scatter) === */
+        .quadrant-wrapper {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 20px;
+            position: relative;
+        }
+
+        .quadrant-svg {
+            width: 100%;
+            height: 380px;
+            display: block;
+        }
+
+        .quadrant-labels {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+        }
+
+        .q-label {
+            position: absolute;
+            font-size: 0.68rem;
+            color: var(--text-muted);
+            background: rgba(250, 248, 245, 0.92);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        .q-label strong {
+            display: block;
+            color: var(--accent);
+            font-size: 0.7rem;
+            font-weight: 700;
+            margin-bottom: 1px;
+        }
+
+        .q-tl { top: 32px; left: 48px; }
+        .q-tr { top: 32px; right: 20px; }
+        .q-bl { bottom: 42px; left: 48px; }
+        .q-br { bottom: 42px; right: 20px; }
+
+        .dot {
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .dot:hover {
+            stroke: var(--accent);
+            stroke-width: 2;
+        }
+
+        .dot.highlighted {
+            stroke: var(--accent);
+            stroke-width: 2;
+        }
+
+        .quadrant-tooltip {
+            position: absolute;
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-size: 0.72rem;
+            color: var(--text);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.15s;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            z-index: 10;
+            white-space: nowrap;
+        }
+
+        .quadrant-tooltip.active { opacity: 1; }
+
+        .quadrant-tooltip .name {
+            font-weight: 700;
+            margin-bottom: 3px;
+        }
+
+        .quadrant-tooltip .meta {
+            color: var(--text-muted);
+            font-size: 0.68rem;
+            line-height: 1.4;
+        }
+
+        .quadrant-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-light);
+            justify-content: center;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.68rem;
+            color: var(--text-secondary);
+        }
+
+        .legend-dot {
+            width: 10px; height: 10px;
+            border-radius: 50%;
+        }
+
+        /* === Phase × Domain Matrix === */
+        .matrix-grid {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+        }
+
+        .matrix-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 4px;
+            min-width: 560px;
+        }
+
+        .matrix-table th {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            padding: 6px 10px;
+            text-align: center;
+        }
+
+        .matrix-table th.row-label {
+            text-align: left;
+            padding-left: 4px;
+            width: 100px;
+        }
+
+        .matrix-table td {
+            padding: 0;
+        }
+
+        .matrix-row-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text);
+            padding: 8px 4px;
+            white-space: nowrap;
+        }
+
+        .matrix-cell {
+            width: 100%;
+            min-height: 36px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.15s;
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-feature-settings: 'tnum';
+        }
+
+        .matrix-cell.c0 { background: var(--bg-secondary); color: var(--text-muted); font-weight: 400; }
+        .matrix-cell.c1 { background: rgba(240, 190, 131, 0.15); color: var(--text); }
+        .matrix-cell.c2 { background: rgba(240, 166, 113, 0.28); color: var(--text); }
+        .matrix-cell.c3 { background: rgba(220, 135, 102, 0.45); color: #fff; }
+        .matrix-cell.c4 { background: rgba(176, 114, 86, 0.75); color: #fff; }
+        .matrix-cell.c5 { background: var(--accent); color: #fff; }
+
+        .matrix-cell:hover { transform: scale(1.05); }
+
+        .matrix-header-cell {
+            font-size: 0.72rem;
+            font-weight: 600;
+            padding: 6px 10px;
+            border-radius: 4px;
+        }
+
+        .matrix-total-row { font-weight: 700; }
+        .matrix-total-row td .matrix-cell { background: var(--bg-expanded); font-weight: 700; color: var(--accent); }
+
         /* Horizontal bar chart */
         .bar-chart {
             background: var(--bg-card);
@@ -959,6 +1148,30 @@
                 <div class="bar-chart" id="bar-chart"></div>
             </div>
 
+            <!-- Visualization: Quadrant matrix (Score x Acceleration) -->
+            <div class="viz-section">
+                <h3 class="viz-title">戦略象限マトリクス（スコア × 加速度）</h3>
+                <p class="viz-subtitle">横軸=総合スコア（変化の強度）、縦軸=加速度（変化の勢い）、ドットサイズ=ソース件数、色=ドメイン。4象限で技術の戦略的位置づけを俯瞰できます。ドットにマウスを重ねると詳細、クリックで展開。</p>
+                <div class="quadrant-wrapper">
+                    <div class="quadrant-labels">
+                        <div class="q-label q-tl"><strong>新興テーマ</strong>低スコア・高加速</div>
+                        <div class="q-label q-tr"><strong>最重要テーマ</strong>高スコア・高加速</div>
+                        <div class="q-label q-bl">低優先</div>
+                        <div class="q-label q-br"><strong>成熟テーマ</strong>高スコア・安定</div>
+                    </div>
+                    <svg class="quadrant-svg" id="quadrant-svg" viewBox="0 0 800 380" preserveAspectRatio="none"></svg>
+                    <div class="quadrant-tooltip" id="quadrant-tooltip"></div>
+                    <div class="quadrant-legend" id="quadrant-legend"></div>
+                </div>
+            </div>
+
+            <!-- Visualization: Phase x Domain matrix -->
+            <div class="viz-section">
+                <h3 class="viz-title">ドメイン × フェーズ 分布</h3>
+                <p class="viz-subtitle">各ドメインに各加速フェーズのテーマが何件あるかを示す分布表。セルの色が濃いほど件数が多く、どのドメインで急加速が集中しているかを俯瞰できます。セルをクリックするとその条件で一覧をフィルタ。</p>
+                <div class="matrix-grid" id="phase-domain-matrix"></div>
+            </div>
+
             <!-- Controls -->
             <div class="controls">
                 <div class="controls-left">
@@ -1013,6 +1226,19 @@
 
                 <h3>加速度ランキング 上位10件</h3>
                 <p>加速度が最も高い上位10テーマを水平バーチャートで表示します。バーの長さが加速度に比例しており、最も勢いのある技術テーマを視覚的に把握できます。</p>
+
+                <h3>戦略象限マトリクス（スコア × 加速度）</h3>
+                <p>2次元散布図で、全加速テーマを横軸「総合スコア」と縦軸「加速度」に配置します。ドットの大きさがソース件数、色がドメインを示します。この図は<strong>4つの戦略象限</strong>で技術を位置づける、BCGマトリクス型の分析手法です。</p>
+                <ul>
+                    <li><strong>右上（最重要テーマ）</strong>：構造変化が既に進行中で、さらに勢いが加速しているテーマ。最優先で取り組むべき領域</li>
+                    <li><strong>左上（新興テーマ）</strong>：現在のスコアは低いが急上昇中。将来の重要テーマになる可能性が高い先行指標</li>
+                    <li><strong>右下（成熟テーマ）</strong>：高スコアだが加速は緩やか。既に定着しており、安定した重要領域</li>
+                    <li><strong>左下（低優先）</strong>：現時点ではモニタリング優先度が低い領域</li>
+                </ul>
+                <p>ドットにマウスを重ねると詳細が表示され、クリックすると詳細モーダルが開きます。</p>
+
+                <h3>ドメイン × フェーズ 分布</h3>
+                <p>行がドメイン、列が加速フェーズ（急加速/上昇/緩加速/初動）のマトリクス表です。セルの数値はそのドメイン×フェーズに該当するテーマの件数を示し、セルの色が濃いほど件数が多いことを表します。この表により、<strong>どのドメインで急加速が集中しているか</strong>、<strong>どのフェーズが最も多いか</strong>を俯瞰的に把握できます。セルをクリックするとそのドメインで下の一覧がフィルタされます。</p>
 
                 <h3>加速テーマ一覧</h3>
                 <p>加速度がプラスの全テーマをリスト表示します。各行には以下の情報が含まれます。</p>
@@ -1467,6 +1693,8 @@ domains + domain_keywords （ドメインとキーワード定義）<br>
 
             buildDomainHeatmap();
             buildBarChart();
+            buildQuadrantMatrix();
+            buildPhaseDomainMatrix();
             buildDomainFilters();
             renderList();
 
@@ -1541,6 +1769,199 @@ domains + domain_keywords （ドメインとキーワード定義）<br>
                 </div>`;
             }).join('');
         }
+
+        // --- Quadrant matrix (Score × Acceleration) ---
+        function buildQuadrantMatrix() {
+            const svg = document.getElementById('quadrant-svg');
+            const tooltip = document.getElementById('quadrant-tooltip');
+            const themes = THEMES_DATA.themes; // show ALL themes, not just accelerating
+            const maxScore = 1.0;
+            const maxDelta = Math.max(...themes.map(t => t.delta?.composite || 0), 0.6);
+
+            // SVG viewBox: 800 × 380
+            // Plot area: leave padding for axis labels
+            const W = 800, H = 380;
+            const PAD_L = 48, PAD_R = 20, PAD_T = 20, PAD_B = 36;
+            const plotW = W - PAD_L - PAD_R;
+            const plotH = H - PAD_T - PAD_B;
+
+            const xScale = v => PAD_L + (v / maxScore) * plotW;
+            const yScale = v => PAD_T + plotH - (v / maxDelta) * plotH;
+
+            // Build SVG content
+            const parts = [];
+
+            // Grid lines
+            parts.push(`<rect x="${PAD_L}" y="${PAD_T}" width="${plotW}" height="${plotH}" fill="#fdfbf9" stroke="none"/>`);
+
+            // Quadrant dividers (50% score, middle delta)
+            const midX = xScale(0.5);
+            const midY = yScale(maxDelta * 0.33); // ~8% threshold (moderate phase boundary)
+            parts.push(`<line x1="${midX}" y1="${PAD_T}" x2="${midX}" y2="${PAD_T + plotH}" stroke="#e8e0d8" stroke-dasharray="4 4"/>`);
+            parts.push(`<line x1="${PAD_L}" y1="${midY}" x2="${PAD_L + plotW}" y2="${midY}" stroke="#e8e0d8" stroke-dasharray="4 4"/>`);
+
+            // Axis lines
+            parts.push(`<line x1="${PAD_L}" y1="${PAD_T + plotH}" x2="${PAD_L + plotW}" y2="${PAD_T + plotH}" stroke="#c8beb4"/>`);
+            parts.push(`<line x1="${PAD_L}" y1="${PAD_T}" x2="${PAD_L}" y2="${PAD_T + plotH}" stroke="#c8beb4"/>`);
+
+            // X-axis ticks
+            for (let i = 0; i <= 5; i++) {
+                const x = xScale(i / 5);
+                const label = (i * 20) + '%';
+                parts.push(`<text x="${x}" y="${PAD_T + plotH + 18}" fill="#9a8a7e" font-size="10" text-anchor="middle">${label}</text>`);
+            }
+            parts.push(`<text x="${PAD_L + plotW / 2}" y="${H - 4}" fill="#6b5b50" font-size="11" text-anchor="middle" font-weight="600">総合スコア →</text>`);
+
+            // Y-axis ticks
+            const yStep = maxDelta / 4;
+            for (let i = 0; i <= 4; i++) {
+                const v = yStep * i;
+                const y = yScale(v);
+                parts.push(`<text x="${PAD_L - 6}" y="${y + 3}" fill="#9a8a7e" font-size="10" text-anchor="end">+${Math.round(v * 100)}%</text>`);
+            }
+            parts.push(`<text x="14" y="${PAD_T + plotH / 2}" fill="#6b5b50" font-size="11" text-anchor="middle" font-weight="600" transform="rotate(-90, 14, ${PAD_T + plotH / 2})">加速度 ↑</text>`);
+
+            // Dots
+            themes.forEach(t => {
+                const s = t.composite_score;
+                const d = t.delta?.composite || 0;
+                const n = t.item_count;
+                if (d <= 0) return; // skip non-accelerating (too cluttered)
+                const cx = xScale(s);
+                const cy = yScale(d);
+                const r = Math.max(3, Math.min(10, Math.sqrt(n) * 2.5));
+                const color = DOMAIN_COLORS[t.domain] || '#CEA26F';
+                parts.push(`<circle class="dot" cx="${cx}" cy="${cy}" r="${r}" fill="${color}" fill-opacity="0.65" stroke="${color}" stroke-width="1" data-theme="${t.name}"/>`);
+            });
+
+            svg.innerHTML = parts.join('');
+
+            // Interactions
+            svg.querySelectorAll('.dot').forEach(dot => {
+                dot.addEventListener('mouseenter', e => {
+                    const name = e.target.dataset.theme;
+                    const theme = THEMES_DATA.themes.find(x => x.name === name);
+                    if (!theme) return;
+                    const delta = theme.delta?.composite || 0;
+                    tooltip.innerHTML = `
+                        <div class="name">${formatThemeName(theme.name)}</div>
+                        <div class="meta">${DOMAIN_NAMES[theme.domain] || theme.domain} / ${theme.item_count}件<br>
+                        スコア ${(theme.composite_score * 100).toFixed(0)}% / 加速度 +${(delta * 100).toFixed(1)}%</div>
+                    `;
+                    const rect = svg.getBoundingClientRect();
+                    const wrapperRect = svg.parentElement.getBoundingClientRect();
+                    const cx = parseFloat(e.target.getAttribute('cx'));
+                    const cy = parseFloat(e.target.getAttribute('cy'));
+                    const scaleX = rect.width / W;
+                    const scaleY = rect.height / H;
+                    const tipX = (cx * scaleX) + 12;
+                    const tipY = (cy * scaleY) - 10;
+                    tooltip.style.left = tipX + 'px';
+                    tooltip.style.top = tipY + 'px';
+                    tooltip.classList.add('active');
+                });
+                dot.addEventListener('mouseleave', () => tooltip.classList.remove('active'));
+                dot.addEventListener('click', e => {
+                    const name = e.target.dataset.theme;
+                    openModal(name);
+                });
+            });
+
+            // Legend
+            const legendContainer = document.getElementById('quadrant-legend');
+            const accelDomains = new Set();
+            themes.forEach(t => { if ((t.delta?.composite || 0) > 0) accelDomains.add(t.domain); });
+            legendContainer.innerHTML = [...accelDomains].sort().map(d =>
+                `<div class="legend-item"><span class="legend-dot" style="background:${DOMAIN_COLORS[d]}"></span>${DOMAIN_NAMES[d] || d}</div>`
+            ).join('');
+        }
+
+        // --- Phase × Domain matrix ---
+        function buildPhaseDomainMatrix() {
+            const accel = getAccelThemes();
+            const phases = ['surge', 'rising', 'moderate', 'emerging'];
+            const phaseLabels = { surge: '急加速', rising: '上昇', moderate: '緩加速', emerging: '初動' };
+
+            // Collect domains sorted by total count
+            const domainTotals = {};
+            accel.forEach(t => {
+                domainTotals[t.domain] = (domainTotals[t.domain] || 0) + 1;
+            });
+            const domains = Object.keys(domainTotals).sort((a, b) => domainTotals[b] - domainTotals[a]);
+
+            // Build phase × domain counts
+            const counts = {}; // counts[domain][phase] = n
+            domains.forEach(d => { counts[d] = { surge: 0, rising: 0, moderate: 0, emerging: 0, total: 0 }; });
+            accel.forEach(t => {
+                const phase = getPhase(t.delta?.composite || 0).key;
+                if (counts[t.domain]) {
+                    counts[t.domain][phase]++;
+                    counts[t.domain].total++;
+                }
+            });
+
+            // Find max cell value for color scaling
+            let maxCell = 0;
+            domains.forEach(d => {
+                phases.forEach(p => { if (counts[d][p] > maxCell) maxCell = counts[d][p]; });
+            });
+
+            const getCellClass = n => {
+                if (n === 0) return 'c0';
+                const ratio = n / maxCell;
+                if (ratio >= 0.8) return 'c5';
+                if (ratio >= 0.6) return 'c4';
+                if (ratio >= 0.4) return 'c3';
+                if (ratio >= 0.2) return 'c2';
+                return 'c1';
+            };
+
+            // Column totals
+            const phaseTotals = { surge: 0, rising: 0, moderate: 0, emerging: 0, all: 0 };
+            domains.forEach(d => {
+                phases.forEach(p => { phaseTotals[p] += counts[d][p]; });
+                phaseTotals.all += counts[d].total;
+            });
+
+            // Render
+            let html = '<table class="matrix-table"><thead><tr><th class="row-label">ドメイン</th>';
+            phases.forEach(p => {
+                const cls = 'phase-' + p;
+                html += `<th><span class="phase-badge ${cls}">${phaseLabels[p]}</span></th>`;
+            });
+            html += '<th>合計</th></tr></thead><tbody>';
+
+            domains.forEach(d => {
+                html += `<tr><td class="matrix-row-label">${DOMAIN_NAMES[d] || d}</td>`;
+                phases.forEach(p => {
+                    const n = counts[d][p];
+                    html += `<td><div class="matrix-cell ${getCellClass(n)}" onclick="filterMatrixCell('${d}','${p}')" title="${DOMAIN_NAMES[d] || d} × ${phaseLabels[p]}: ${n}件">${n}</div></td>`;
+                });
+                html += `<td><div class="matrix-cell c0" style="background:var(--bg-expanded);color:var(--accent);font-weight:700;">${counts[d].total}</div></td></tr>`;
+            });
+
+            // Total row
+            html += '<tr class="matrix-total-row"><td class="matrix-row-label" style="color:var(--accent);">合計</td>';
+            phases.forEach(p => {
+                html += `<td><div class="matrix-cell">${phaseTotals[p]}</div></td>`;
+            });
+            html += `<td><div class="matrix-cell">${phaseTotals.all}</div></td></tr>`;
+            html += '</tbody></table>';
+
+            document.getElementById('phase-domain-matrix').innerHTML = html;
+        }
+
+        window.filterMatrixCell = function(domain, phase) {
+            // Filter list by domain + phase (applied client-side)
+            activeDomains.clear();
+            activeDomains.add(domain);
+            document.querySelectorAll('#domain-filters .pill').forEach(p => {
+                p.classList.remove('active');
+                if (p.dataset.domain === domain) p.classList.add('active');
+            });
+            renderList();
+            document.getElementById('accel-list').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        };
 
         // --- Domain filter pills ---
         function buildDomainFilters() {
