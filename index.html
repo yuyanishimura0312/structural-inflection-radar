@@ -28,11 +28,22 @@
             --bg: #faf8f5;
             --bg-card: #ffffff;
             --bg-secondary: #f5f0eb;
+            --bg-expanded: #fdfbf9;
             --text: #1a1a1a;
             --text-secondary: #6b5b50;
             --text-muted: #9a8a7e;
             --border: #e8e0d8;
             --border-light: #f0ebe5;
+
+            /* Phase colors */
+            --phase-surge: #783c28;
+            --phase-surge-bg: rgba(120, 60, 40, 0.08);
+            --phase-rising: #B07256;
+            --phase-rising-bg: rgba(176, 114, 86, 0.08);
+            --phase-moderate: #CEA26F;
+            --phase-moderate-bg: rgba(206, 162, 111, 0.1);
+            --phase-emerging: #966D5E;
+            --phase-emerging-bg: rgba(150, 109, 94, 0.08);
 
             /* Font */
             --font: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', system-ui, sans-serif;
@@ -147,9 +158,7 @@
             font-feature-settings: 'tnum';
         }
 
-        .stat-value.accent {
-            color: var(--accent);
-        }
+        .stat-value.accent { color: var(--accent); }
 
         .stat-sub {
             font-size: 0.72rem;
@@ -248,27 +257,43 @@
             gap: 2px;
         }
 
-        .accel-item {
-            display: grid;
-            grid-template-columns: 36px 1fr 80px 80px 120px;
-            align-items: center;
-            gap: 16px;
-            padding: 14px 20px;
-            background: var(--bg-card);
-            border: 1px solid var(--border-light);
+        /* Row wrapper: holds both the row and expandable panel */
+        .accel-wrapper {
             border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.12s;
+            overflow: hidden;
+            border: 1px solid var(--border-light);
+            background: var(--bg-card);
+            transition: border-color 0.15s, box-shadow 0.15s;
         }
 
-        .accel-item:hover {
+        .accel-wrapper:hover {
             border-color: var(--accent-border);
             box-shadow: 0 1px 4px rgba(120, 60, 40, 0.06);
         }
 
+        .accel-wrapper.expanded {
+            border-color: var(--accent-border);
+            box-shadow: 0 2px 8px rgba(120, 60, 40, 0.08);
+        }
+
+        .accel-item {
+            display: grid;
+            grid-template-columns: 36px 1fr 90px 60px 60px 130px;
+            align-items: center;
+            gap: 12px;
+            padding: 13px 20px;
+            cursor: pointer;
+            transition: background 0.1s;
+            user-select: none;
+        }
+
+        .accel-item:hover {
+            background: var(--accent-light);
+        }
+
         .accel-item:focus-visible {
             outline: 2px solid var(--accent);
-            outline-offset: 1px;
+            outline-offset: -2px;
         }
 
         .accel-rank {
@@ -279,13 +304,9 @@
             font-feature-settings: 'tnum';
         }
 
-        .accel-rank.top3 {
-            color: var(--accent);
-        }
+        .accel-rank.top3 { color: var(--accent); }
 
-        .accel-info {
-            min-width: 0;
-        }
+        .accel-info { min-width: 0; }
 
         .accel-name {
             font-size: 0.88rem;
@@ -312,6 +333,38 @@
             border-radius: 3px;
             font-weight: 500;
             letter-spacing: 0.02em;
+        }
+
+        /* Phase badge */
+        .phase-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 8px;
+            border-radius: 9999px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            white-space: nowrap;
+        }
+
+        .phase-surge {
+            background: var(--phase-surge-bg);
+            color: var(--phase-surge);
+        }
+
+        .phase-rising {
+            background: var(--phase-rising-bg);
+            color: var(--phase-rising);
+        }
+
+        .phase-moderate {
+            background: var(--phase-moderate-bg);
+            color: var(--phase-moderate);
+        }
+
+        .phase-emerging {
+            background: var(--phase-emerging-bg);
+            color: var(--phase-emerging);
         }
 
         .accel-score {
@@ -351,7 +404,6 @@
         }
 
         .delta-bar.up { background: var(--accent); }
-        .delta-bar.down { background: var(--text-muted); }
 
         .delta-value {
             font-size: 0.78rem;
@@ -360,18 +412,27 @@
             font-family: var(--font-mono);
             min-width: 52px;
             text-align: right;
+            color: var(--accent);
         }
 
-        .delta-value.up { color: var(--accent); }
-        .delta-value.down { color: var(--text-muted); }
-        .delta-value.neutral { color: var(--text-muted); }
+        /* Expand chevron */
+        .expand-icon {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            transition: transform 0.2s;
+            margin-left: 4px;
+        }
+
+        .expanded .expand-icon {
+            transform: rotate(180deg);
+        }
 
         /* Column headers */
         .list-header {
             display: grid;
-            grid-template-columns: 36px 1fr 80px 80px 120px;
+            grid-template-columns: 36px 1fr 90px 60px 60px 130px;
             align-items: center;
-            gap: 16px;
+            gap: 12px;
             padding: 8px 20px 10px;
             border-bottom: 1px solid var(--border);
             margin-bottom: 4px;
@@ -385,17 +446,31 @@
             text-transform: uppercase;
         }
 
-        .list-header .col-right {
-            text-align: right;
+        .list-header .col-right { text-align: right; }
+
+        /* Inline expanded panel */
+        .expand-panel {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+            background: var(--bg-expanded);
+            border-top: 0 solid var(--border-light);
         }
 
-        /* 5-axis mini display (in expanded/modal view) */
+        .expand-panel.open {
+            max-height: 800px;
+            border-top-width: 1px;
+        }
+
+        .expand-inner {
+            padding: 20px 24px 24px;
+        }
+
+        /* 5-axis display in expanded panel */
         .axes-row {
             display: flex;
-            gap: 12px;
-            margin-top: 16px;
-            padding-top: 16px;
-            border-top: 1px solid var(--border-light);
+            gap: 16px;
+            margin-bottom: 20px;
         }
 
         .axis-mini {
@@ -411,16 +486,15 @@
         }
 
         .axis-mini-bar {
-            height: 4px;
+            height: 5px;
             background: var(--bg-secondary);
-            border-radius: 2px;
+            border-radius: 3px;
             overflow: hidden;
         }
 
         .axis-mini-fill {
             height: 100%;
-            border-radius: 2px;
-            background: var(--ci-terracotta);
+            border-radius: 3px;
             transition: width 0.4s;
         }
 
@@ -436,7 +510,74 @@
             font-feature-settings: 'tnum';
         }
 
-        /* Modal */
+        /* Evidence preview in expanded panel */
+        .evidence-preview {
+            margin-bottom: 16px;
+        }
+
+        .evidence-preview h4 {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .evidence-snippet {
+            font-size: 0.78rem;
+            color: var(--text);
+            line-height: 1.7;
+            padding: 10px 14px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            border-radius: 6px;
+            margin-bottom: 6px;
+        }
+
+        .evidence-axis-label {
+            font-size: 0.65rem;
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 2px;
+        }
+
+        .expand-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-light);
+        }
+
+        .btn-detail {
+            font-family: var(--font);
+            font-size: 0.78rem;
+            font-weight: 600;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.15s;
+            text-decoration: none;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .btn-primary:hover { opacity: 0.85; }
+
+        .btn-secondary {
+            background: var(--bg-card);
+            color: var(--accent);
+            border: 1px solid var(--accent-border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--accent-light);
+        }
+
+        /* Modal (for full detail view) */
         .modal-overlay {
             display: flex;
             position: fixed;
@@ -452,10 +593,7 @@
             transition: opacity 0.2s, visibility 0.2s;
         }
 
-        .modal-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
+        .modal-overlay.active { opacity: 1; visibility: visible; }
 
         .modal {
             background: var(--bg-card);
@@ -480,13 +618,9 @@
 
         .modal-close {
             position: absolute;
-            top: 16px;
-            right: 16px;
-            width: 30px;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            top: 16px; right: 16px;
+            width: 30px; height: 30px;
+            display: flex; align-items: center; justify-content: center;
             background: var(--bg-secondary);
             border: 1px solid var(--border);
             border-radius: 8px;
@@ -496,14 +630,9 @@
             transition: all 0.15s;
         }
 
-        .modal-close:hover {
-            background: var(--border);
-            color: var(--text);
-        }
+        .modal-close:hover { background: var(--border); color: var(--text); }
 
-        .modal-header {
-            margin-bottom: 24px;
-        }
+        .modal-header { margin-bottom: 24px; }
 
         .modal h2 {
             font-size: 1.15rem;
@@ -518,6 +647,7 @@
             display: flex;
             align-items: center;
             gap: 12px;
+            flex-wrap: wrap;
         }
 
         .modal-delta {
@@ -534,9 +664,7 @@
             border-bottom: 1px solid var(--border-light);
         }
 
-        .evidence-section:last-of-type {
-            border-bottom: none;
-        }
+        .evidence-section:last-of-type { border-bottom: none; }
 
         .evidence-section h3 {
             font-size: 0.82rem;
@@ -570,9 +698,7 @@
             line-height: 1.7;
         }
 
-        .evidence-list li:last-child {
-            border-bottom: none;
-        }
+        .evidence-list li:last-child { border-bottom: none; }
 
         .source-item {
             display: block;
@@ -587,9 +713,7 @@
             font-weight: 500;
         }
 
-        .source-item a:hover {
-            text-decoration: underline;
-        }
+        .source-item a:hover { text-decoration: underline; }
 
         .source-item .source-meta {
             font-size: 0.68rem;
@@ -612,9 +736,7 @@
             transition: opacity 0.15s;
         }
 
-        .scorer-link:hover {
-            opacity: 0.85;
-        }
+        .scorer-link:hover { opacity: 0.85; }
 
         /* Domain colors */
         .domain-ai_agents { background: rgba(240, 166, 113, 0.15); color: #a06020; }
@@ -660,10 +782,10 @@
             .summary { grid-template-columns: repeat(2, 1fr); }
             .accel-item {
                 grid-template-columns: 28px 1fr 60px;
-                gap: 10px;
+                gap: 8px;
                 padding: 12px 14px;
             }
-            .accel-items-count, .accel-score { display: none; }
+            .accel-items-count, .accel-score, .phase-col { display: none; }
             .list-header {
                 grid-template-columns: 28px 1fr 60px;
             }
@@ -671,7 +793,8 @@
             .header-inner { padding: 16px 20px; }
             .main { padding: 20px 16px 48px; }
             .axes-row { flex-wrap: wrap; gap: 8px; }
-            .axis-mini { min-width: 70px; }
+            .axis-mini { min-width: 60px; }
+            .expand-inner { padding: 16px; }
         }
 
         @media (max-width: 480px) {
@@ -742,8 +865,9 @@
         <div class="list-header">
             <span>#</span>
             <span>Theme</span>
+            <span class="hide-mobile">Phase</span>
             <span class="col-right hide-mobile">Score</span>
-            <span class="col-right hide-mobile">Sources</span>
+            <span class="col-right hide-mobile">Src</span>
             <span class="col-right">Acceleration</span>
         </div>
 
@@ -779,16 +903,9 @@
         const AXIS_KEYS = Object.keys(AXIS_LABELS);
 
         const DOMAIN_NAMES = {
-            'ai_agents': 'AI',
-            'biotech': 'Biotech',
-            'cybersecurity': 'Cyber',
-            'defense_tech': 'Defense',
-            'energy': 'Energy',
-            'geopolitics': 'Geopolitics',
-            'quantum': 'Quantum',
-            'robotics': 'Robotics',
-            'semiconductors': 'Semicon',
-            'space': 'Space',
+            'ai_agents': 'AI', 'biotech': 'Biotech', 'cybersecurity': 'Cyber',
+            'defense_tech': 'Defense', 'energy': 'Energy', 'geopolitics': 'Geopolitics',
+            'quantum': 'Quantum', 'robotics': 'Robotics', 'semiconductors': 'Semicon', 'space': 'Space',
         };
 
         const THEME_NAMES_JA = {
@@ -854,9 +971,18 @@
 
         let currentSort = 'delta';
         let activeDomains = new Set();
+        let expandedTheme = null;
 
         function formatThemeName(name) {
             return THEME_NAMES_JA[name] || name.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+        }
+
+        // Phase classification based on delta
+        function getPhase(delta) {
+            if (delta >= 0.30) return { label: 'Surge', cls: 'phase-surge' };
+            if (delta >= 0.15) return { label: 'Rising', cls: 'phase-rising' };
+            if (delta >= 0.08) return { label: 'Moderate', cls: 'phase-moderate' };
+            return { label: 'Emerging', cls: 'phase-emerging' };
         }
 
         // --- Init ---
@@ -867,7 +993,6 @@
                 return;
             }
 
-            // Summary stats
             const accelCount = THEMES_DATA.themes.filter(t => (t.delta?.composite || 0) > 0.01).length;
             document.getElementById('stat-accel').textContent = accelCount;
             document.getElementById('stat-total').textContent = THEMES_DATA.total_themes;
@@ -886,7 +1011,6 @@
             const domains = new Set();
             THEMES_DATA.themes.forEach(t => { if (t.domain) domains.add(t.domain); });
 
-            // "All" pill
             const allPill = document.createElement('button');
             allPill.className = 'pill active';
             allPill.textContent = 'All';
@@ -933,7 +1057,6 @@
             const themes = getFilteredThemes();
             document.getElementById('count-label').textContent = `${themes.length} themes`;
 
-            // Find max delta for bar scaling
             const maxDelta = Math.max(...themes.map(t => t.delta?.composite || 0), 0.01);
 
             const html = themes.map((t, i) => {
@@ -942,8 +1065,10 @@
                 const deltaStr = `+${(delta * 100).toFixed(1)}%`;
                 const displayName = formatThemeName(t.name);
                 const domain = t.domain || '';
+                const phase = getPhase(delta);
+                const isExpanded = expandedTheme === t.name;
 
-                // 5-axis mini bars
+                // Build expanded panel content
                 const axesHtml = AXIS_KEYS.map(key => {
                     const score = t.axes[key]?.score || 0;
                     const scorePct = Math.round(score * 100);
@@ -955,25 +1080,55 @@
                     </div>`;
                 }).join('');
 
-                return `<div class="accel-item" tabindex="0" role="button"
-                    aria-label="${displayName} - acceleration ${deltaStr}"
-                    onclick="openModal('${t.name}')"
-                    onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openModal('${t.name}')}">
-                    <span class="accel-rank ${i < 3 ? 'top3' : ''}">${i + 1}</span>
-                    <div class="accel-info">
-                        <div class="accel-name">${displayName}</div>
-                        <div class="accel-meta">
-                            <span class="domain-tag domain-${domain}">${DOMAIN_NAMES[domain] || domain}</span>
-                            <span>${t.item_count} sources</span>
+                // Top evidence snippets (max 3 from highest-scoring axes)
+                const topEvidence = AXIS_KEYS
+                    .filter(k => t.axes[k]?.evidence?.length > 0)
+                    .sort((a, b) => (t.axes[b]?.score || 0) - (t.axes[a]?.score || 0))
+                    .slice(0, 2)
+                    .map(k => {
+                        const ev = t.axes[k].evidence[0];
+                        return `<div class="evidence-snippet">
+                            <div class="evidence-axis-label">${AXIS_LABELS[k]} ${Math.round(t.axes[k].score * 100)}%</div>
+                            ${ev}
+                        </div>`;
+                    }).join('');
+
+                const scorerQuery = encodeURIComponent(t.name);
+
+                return `<div class="accel-wrapper ${isExpanded ? 'expanded' : ''}" data-theme="${t.name}">
+                    <div class="accel-item" tabindex="0" role="button"
+                        aria-label="${displayName} - ${phase.label} - acceleration ${deltaStr}"
+                        aria-expanded="${isExpanded}"
+                        onclick="toggleExpand('${t.name}')"
+                        onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleExpand('${t.name}')}">
+                        <span class="accel-rank ${i < 3 ? 'top3' : ''}">${i + 1}</span>
+                        <div class="accel-info">
+                            <div class="accel-name">${displayName}</div>
+                            <div class="accel-meta">
+                                <span class="domain-tag domain-${domain}">${DOMAIN_NAMES[domain] || domain}</span>
+                                <span>${t.item_count} sources</span>
+                            </div>
+                        </div>
+                        <span class="phase-badge ${phase.cls} phase-col">${phase.label}</span>
+                        <div class="accel-score">${(t.composite_score * 100).toFixed(0)}%</div>
+                        <div class="accel-items-count">${t.item_count}</div>
+                        <div class="accel-delta">
+                            <div class="delta-bar-wrap">
+                                <div class="delta-bar up" style="width:${pct}%"></div>
+                            </div>
+                            <span class="delta-value">${deltaStr}</span>
+                            <span class="expand-icon">&#9662;</span>
                         </div>
                     </div>
-                    <div class="accel-score">${(t.composite_score * 100).toFixed(0)}%</div>
-                    <div class="accel-items-count">${t.item_count}</div>
-                    <div class="accel-delta">
-                        <div class="delta-bar-wrap">
-                            <div class="delta-bar up" style="width:${pct}%"></div>
+                    <div class="expand-panel ${isExpanded ? 'open' : ''}">
+                        <div class="expand-inner">
+                            <div class="axes-row">${axesHtml}</div>
+                            ${topEvidence ? `<div class="evidence-preview"><h4>Key Evidence</h4>${topEvidence}</div>` : ''}
+                            <div class="expand-actions">
+                                <a href="#" class="btn-detail btn-primary" onclick="event.stopPropagation();openModal('${t.name}');return false;">Full Details</a>
+                                <a href="${SCORER_URL}?q=${scorerQuery}" target="_blank" rel="noopener" class="btn-detail btn-secondary" onclick="event.stopPropagation();">Open Scorer</a>
+                            </div>
                         </div>
-                        <span class="delta-value up">${deltaStr}</span>
                     </div>
                 </div>`;
             }).join('');
@@ -981,13 +1136,38 @@
             document.getElementById('accel-list').innerHTML = html || '<div class="empty-state"><p>No accelerating themes found for this filter.</p></div>';
         }
 
+        // --- Inline expand/collapse ---
+        window.toggleExpand = function(themeName) {
+            if (expandedTheme === themeName) {
+                expandedTheme = null;
+            } else {
+                expandedTheme = themeName;
+            }
+            // Update DOM without full re-render for smooth animation
+            document.querySelectorAll('.accel-wrapper').forEach(wrapper => {
+                const name = wrapper.dataset.theme;
+                const panel = wrapper.querySelector('.expand-panel');
+                const item = wrapper.querySelector('.accel-item');
+                if (name === expandedTheme) {
+                    wrapper.classList.add('expanded');
+                    panel.classList.add('open');
+                    item.setAttribute('aria-expanded', 'true');
+                } else {
+                    wrapper.classList.remove('expanded');
+                    panel.classList.remove('open');
+                    item.setAttribute('aria-expanded', 'false');
+                }
+            });
+        };
+
         // --- Sort ---
         window.handleSort = function(type) {
             currentSort = type;
+            expandedTheme = null;
             render();
         };
 
-        // --- Modal ---
+        // --- Modal (full details) ---
         window.openModal = function(themeName) {
             const theme = THEMES_DATA.themes.find(t => t.name === themeName);
             if (!theme) return;
@@ -996,8 +1176,8 @@
             const delta = theme.delta?.composite || 0;
             const deltaStr = delta > 0 ? `+${(delta * 100).toFixed(1)}%` : `${(delta * 100).toFixed(1)}%`;
             const domain = theme.domain || '';
+            const phase = getPhase(delta);
 
-            // 5-axis section
             const axesHtml = AXIS_KEYS.map(key => {
                 const score = theme.axes[key]?.score || 0;
                 const scorePct = Math.round(score * 100);
@@ -1009,7 +1189,6 @@
                 </div>`;
             }).join('');
 
-            // Evidence
             let evidenceHtml = '';
             for (const [key, axis] of Object.entries(theme.axes)) {
                 if (axis.evidence && axis.evidence.length > 0) {
@@ -1023,7 +1202,6 @@
                 }
             }
 
-            // Sources
             let sourcesHtml = '';
             if (theme.source_items && theme.source_items.length > 0) {
                 sourcesHtml = '<h3 style="margin-top:20px;font-size:0.82rem;font-weight:600;color:var(--text);margin-bottom:10px;">Sources</h3>';
@@ -1039,13 +1217,14 @@
                     <h2>${displayName}</h2>
                     <div class="modal-subtitle">
                         <span class="domain-tag domain-${domain}">${DOMAIN_NAMES[domain] || domain}</span>
+                        <span class="phase-badge ${phase.cls}">${phase.label}</span>
                         <span>${theme.item_count} sources</span>
                         <span>Score: ${(theme.composite_score * 100).toFixed(1)}%</span>
                         <span class="modal-delta ${delta > 0 ? 'up' : ''}">${deltaStr}</span>
                     </div>
                 </div>
-                <div class="axes-row">${axesHtml}</div>
-                <div style="margin-top:24px">${evidenceHtml}</div>
+                <div class="axes-row" style="margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid var(--border-light);">${axesHtml}</div>
+                ${evidenceHtml}
                 ${sourcesHtml}
                 <a href="${SCORER_URL}?q=${scorerQuery}" target="_blank" rel="noopener" class="scorer-link">Open in Structural Inflection Scorer</a>
             `;
