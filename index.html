@@ -4,10 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="https://esse-sense.com/favicon.ico">
-    <title>Structural Inflection Radar — MIRA TUKU</title>
+    <title>構造変化点検出レーダー — MIRA TUKU</title>
     <style>
         :root {
-            /* Miratuku CI Colors */
             --ci-golden-orange: #F0A671;
             --ci-light-beige: #F2C792;
             --ci-warm-beige: #F1C189;
@@ -21,7 +20,6 @@
             --ci-warm-brown: #966D5E;
             --ci-deep-brown: #7A4033;
 
-            /* App standard */
             --accent: #783c28;
             --accent-light: rgba(120, 60, 40, 0.08);
             --accent-border: rgba(120, 60, 40, 0.18);
@@ -35,7 +33,6 @@
             --border: #e8e0d8;
             --border-light: #f0ebe5;
 
-            /* Phase colors */
             --phase-surge: #783c28;
             --phase-surge-bg: rgba(120, 60, 40, 0.08);
             --phase-rising: #B07256;
@@ -45,7 +42,6 @@
             --phase-emerging: #966D5E;
             --phase-emerging-bg: rgba(150, 109, 94, 0.08);
 
-            /* Font */
             --font: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', system-ui, sans-serif;
             --font-mono: 'SF Mono', 'Menlo', 'Monaco', monospace;
         }
@@ -60,7 +56,6 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* Header */
         .site-header {
             border-bottom: 1px solid var(--border);
             background: var(--bg-card);
@@ -99,16 +94,15 @@
             font-size: 0.95rem;
             font-weight: 600;
             color: var(--text);
-            letter-spacing: 0.01em;
         }
 
-        .header-right {
+        .header-nav {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 4px;
         }
 
-        .header-link {
+        .nav-link {
             font-size: 0.78rem;
             color: var(--text-muted);
             text-decoration: none;
@@ -117,17 +111,22 @@
             transition: all 0.15s;
         }
 
-        .header-link:hover {
+        .nav-link:hover, .nav-link.active {
             color: var(--accent);
             background: var(--accent-light);
         }
 
-        /* Main content */
+        .nav-link.active { font-weight: 600; }
+
         .main {
             max-width: 1080px;
             margin: 0 auto;
             padding: 32px 32px 64px;
         }
+
+        /* Page sections (tabs) */
+        .page-section { display: none; }
+        .page-section.active { display: block; }
 
         /* Summary stats */
         .summary {
@@ -164,6 +163,147 @@
             font-size: 0.72rem;
             color: var(--text-muted);
             margin-top: 4px;
+        }
+
+        /* === DOMAIN HEATMAP VISUALIZATION === */
+        .viz-section {
+            margin-bottom: 32px;
+        }
+
+        .viz-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 16px;
+        }
+
+        .viz-subtitle {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        .domain-heatmap {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+
+        .heatmap-cell {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.15s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .heatmap-cell:hover {
+            border-color: var(--accent-border);
+            box-shadow: 0 2px 8px rgba(120, 60, 40, 0.08);
+        }
+
+        .heatmap-cell.active {
+            border-color: var(--accent);
+            box-shadow: 0 2px 8px rgba(120, 60, 40, 0.12);
+        }
+
+        .heatmap-intensity {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            transition: height 0.4s ease;
+            border-radius: 0 0 9px 9px;
+        }
+
+        .heatmap-domain {
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: var(--text);
+            position: relative;
+            z-index: 1;
+            margin-bottom: 6px;
+        }
+
+        .heatmap-count {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--accent);
+            font-feature-settings: 'tnum';
+            position: relative;
+            z-index: 1;
+        }
+
+        .heatmap-avg {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            position: relative;
+            z-index: 1;
+            margin-top: 2px;
+        }
+
+        /* Horizontal bar chart */
+        .bar-chart {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 20px 24px;
+        }
+
+        .bar-row {
+            display: grid;
+            grid-template-columns: 100px 1fr 60px;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .bar-row:last-child { border-bottom: none; }
+
+        .bar-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .bar-track {
+            height: 20px;
+            background: var(--bg-secondary);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.6s ease;
+            display: flex;
+            align-items: center;
+            padding-left: 8px;
+        }
+
+        .bar-inner-label {
+            font-size: 0.6rem;
+            font-weight: 600;
+            color: #fff;
+            white-space: nowrap;
+        }
+
+        .bar-value {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-align: right;
+            font-feature-settings: 'tnum';
+            font-family: var(--font-mono);
         }
 
         /* Controls bar */
@@ -208,16 +348,8 @@
             white-space: nowrap;
         }
 
-        .pill:hover {
-            border-color: var(--accent);
-            color: var(--accent);
-        }
-
-        .pill.active {
-            background: var(--accent);
-            color: #fff;
-            border-color: var(--accent);
-        }
+        .pill:hover { border-color: var(--accent); color: var(--accent); }
+        .pill.active { background: var(--accent); color: #fff; border-color: var(--accent); }
 
         .controls-right {
             display: flex;
@@ -240,10 +372,7 @@
             background-position: right 10px center;
         }
 
-        .sort-select:focus {
-            outline: none;
-            border-color: var(--accent);
-        }
+        .sort-select:focus { outline: none; border-color: var(--accent); }
 
         .count-label {
             font-size: 0.75rem;
@@ -251,13 +380,8 @@
         }
 
         /* Acceleration list */
-        .accel-list {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
+        .accel-list { display: flex; flex-direction: column; gap: 2px; }
 
-        /* Row wrapper: holds both the row and expandable panel */
         .accel-wrapper {
             border-radius: 8px;
             overflow: hidden;
@@ -287,9 +411,7 @@
             user-select: none;
         }
 
-        .accel-item:hover {
-            background: var(--accent-light);
-        }
+        .accel-item:hover { background: var(--accent-light); }
 
         .accel-item:focus-visible {
             outline: 2px solid var(--accent);
@@ -305,7 +427,6 @@
         }
 
         .accel-rank.top3 { color: var(--accent); }
-
         .accel-info { min-width: 0; }
 
         .accel-name {
@@ -332,10 +453,8 @@
             padding: 1px 7px;
             border-radius: 3px;
             font-weight: 500;
-            letter-spacing: 0.02em;
         }
 
-        /* Phase badge */
         .phase-badge {
             display: inline-flex;
             align-items: center;
@@ -343,29 +462,13 @@
             border-radius: 9999px;
             font-size: 0.65rem;
             font-weight: 600;
-            letter-spacing: 0.02em;
             white-space: nowrap;
         }
 
-        .phase-surge {
-            background: var(--phase-surge-bg);
-            color: var(--phase-surge);
-        }
-
-        .phase-rising {
-            background: var(--phase-rising-bg);
-            color: var(--phase-rising);
-        }
-
-        .phase-moderate {
-            background: var(--phase-moderate-bg);
-            color: var(--phase-moderate);
-        }
-
-        .phase-emerging {
-            background: var(--phase-emerging-bg);
-            color: var(--phase-emerging);
-        }
+        .phase-surge { background: var(--phase-surge-bg); color: var(--phase-surge); }
+        .phase-rising { background: var(--phase-rising-bg); color: var(--phase-rising); }
+        .phase-moderate { background: var(--phase-moderate-bg); color: var(--phase-moderate); }
+        .phase-emerging { background: var(--phase-emerging-bg); color: var(--phase-emerging); }
 
         .accel-score {
             font-size: 0.82rem;
@@ -401,9 +504,8 @@
             height: 100%;
             border-radius: 3px;
             transition: width 0.4s ease;
+            background: var(--accent);
         }
-
-        .delta-bar.up { background: var(--accent); }
 
         .delta-value {
             font-size: 0.78rem;
@@ -415,7 +517,6 @@
             color: var(--accent);
         }
 
-        /* Expand chevron */
         .expand-icon {
             font-size: 0.7rem;
             color: var(--text-muted);
@@ -423,11 +524,8 @@
             margin-left: 4px;
         }
 
-        .expanded .expand-icon {
-            transform: rotate(180deg);
-        }
+        .expanded .expand-icon { transform: rotate(180deg); }
 
-        /* Column headers */
         .list-header {
             display: grid;
             grid-template-columns: 36px 1fr 90px 60px 60px 130px;
@@ -443,16 +541,15 @@
             font-weight: 600;
             color: var(--text-muted);
             letter-spacing: 0.04em;
-            text-transform: uppercase;
         }
 
         .list-header .col-right { text-align: right; }
 
-        /* Inline expanded panel */
+        /* Expand panel */
         .expand-panel {
             max-height: 0;
             overflow: hidden;
-            transition: max-height 0.3s ease, padding 0.3s ease;
+            transition: max-height 0.3s ease;
             background: var(--bg-expanded);
             border-top: 0 solid var(--border-light);
         }
@@ -462,27 +559,20 @@
             border-top-width: 1px;
         }
 
-        .expand-inner {
-            padding: 20px 24px 24px;
-        }
+        .expand-inner { padding: 20px 24px 24px; }
 
-        /* 5-axis display in expanded panel */
         .axes-row {
             display: flex;
             gap: 16px;
             margin-bottom: 20px;
         }
 
-        .axis-mini {
-            flex: 1;
-            text-align: center;
-        }
+        .axis-mini { flex: 1; text-align: center; }
 
         .axis-mini-label {
             font-size: 0.65rem;
             color: var(--text-muted);
             margin-bottom: 4px;
-            letter-spacing: 0.02em;
         }
 
         .axis-mini-bar {
@@ -510,10 +600,7 @@
             font-feature-settings: 'tnum';
         }
 
-        /* Evidence preview in expanded panel */
-        .evidence-preview {
-            margin-bottom: 16px;
-        }
+        .evidence-preview { margin-bottom: 16px; }
 
         .evidence-preview h4 {
             font-size: 0.75rem;
@@ -560,36 +647,21 @@
             border: none;
         }
 
-        .btn-primary {
-            background: var(--accent);
-            color: #fff;
-        }
-
+        .btn-primary { background: var(--accent); color: #fff; }
         .btn-primary:hover { opacity: 0.85; }
+        .btn-secondary { background: var(--bg-card); color: var(--accent); border: 1px solid var(--accent-border); }
+        .btn-secondary:hover { background: var(--accent-light); }
 
-        .btn-secondary {
-            background: var(--bg-card);
-            color: var(--accent);
-            border: 1px solid var(--accent-border);
-        }
-
-        .btn-secondary:hover {
-            background: var(--accent-light);
-        }
-
-        /* Modal (for full detail view) */
+        /* Modal */
         .modal-overlay {
-            display: flex;
-            position: fixed;
+            display: flex; position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(26, 26, 26, 0.4);
             backdrop-filter: blur(2px);
             z-index: 100;
-            align-items: center;
-            justify-content: center;
+            align-items: center; justify-content: center;
             padding: 20px;
-            opacity: 0;
-            visibility: hidden;
+            opacity: 0; visibility: hidden;
             transition: opacity 0.2s, visibility 0.2s;
         }
 
@@ -611,35 +683,23 @@
             transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s;
         }
 
-        .modal-overlay.active .modal {
-            transform: scale(1) translateY(0);
-            opacity: 1;
-        }
+        .modal-overlay.active .modal { transform: scale(1) translateY(0); opacity: 1; }
 
         .modal-close {
-            position: absolute;
-            top: 16px; right: 16px;
+            position: absolute; top: 16px; right: 16px;
             width: 30px; height: 30px;
             display: flex; align-items: center; justify-content: center;
             background: var(--bg-secondary);
             border: 1px solid var(--border);
             border-radius: 8px;
-            font-size: 1rem;
-            cursor: pointer;
+            font-size: 1rem; cursor: pointer;
             color: var(--text-muted);
             transition: all 0.15s;
         }
 
         .modal-close:hover { background: var(--border); color: var(--text); }
-
         .modal-header { margin-bottom: 24px; }
-
-        .modal h2 {
-            font-size: 1.15rem;
-            font-weight: 700;
-            color: var(--text);
-            margin-bottom: 6px;
-        }
+        .modal h2 { font-size: 1.15rem; font-weight: 700; color: var(--text); margin-bottom: 6px; }
 
         .modal-subtitle {
             color: var(--text-muted);
@@ -650,90 +710,36 @@
             flex-wrap: wrap;
         }
 
-        .modal-delta {
-            font-weight: 700;
-            font-family: var(--font-mono);
-            font-size: 0.82rem;
-        }
-
+        .modal-delta { font-weight: 700; font-family: var(--font-mono); font-size: 0.82rem; }
         .modal-delta.up { color: var(--accent); }
 
-        .evidence-section {
-            margin-bottom: 20px;
-            padding-bottom: 18px;
-            border-bottom: 1px solid var(--border-light);
-        }
-
+        .evidence-section { margin-bottom: 20px; padding-bottom: 18px; border-bottom: 1px solid var(--border-light); }
         .evidence-section:last-of-type { border-bottom: none; }
 
         .evidence-section h3 {
-            font-size: 0.82rem;
-            color: var(--accent);
-            margin-bottom: 8px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            font-size: 0.82rem; color: var(--accent); margin-bottom: 8px; font-weight: 600;
+            display: flex; align-items: center; gap: 8px;
         }
 
         .evidence-score {
-            font-size: 0.72rem;
-            font-weight: 500;
-            color: var(--text-muted);
-            background: var(--bg-secondary);
-            padding: 1px 6px;
-            border-radius: 3px;
+            font-size: 0.72rem; font-weight: 500; color: var(--text-muted);
+            background: var(--bg-secondary); padding: 1px 6px; border-radius: 3px;
         }
 
-        .evidence-list {
-            list-style: none;
-            padding: 0;
-        }
-
-        .evidence-list li {
-            font-size: 0.82rem;
-            color: var(--text);
-            padding: 7px 0;
-            border-bottom: 1px solid var(--border-light);
-            line-height: 1.7;
-        }
-
+        .evidence-list { list-style: none; padding: 0; }
+        .evidence-list li { font-size: 0.82rem; color: var(--text); padding: 7px 0; border-bottom: 1px solid var(--border-light); line-height: 1.7; }
         .evidence-list li:last-child { border-bottom: none; }
 
-        .source-item {
-            display: block;
-            padding: 8px 0;
-            border-bottom: 1px solid var(--border-light);
-        }
-
-        .source-item a {
-            color: var(--accent);
-            text-decoration: none;
-            font-size: 0.82rem;
-            font-weight: 500;
-        }
-
+        .source-item { display: block; padding: 8px 0; border-bottom: 1px solid var(--border-light); }
+        .source-item a { color: var(--accent); text-decoration: none; font-size: 0.82rem; font-weight: 500; }
         .source-item a:hover { text-decoration: underline; }
-
-        .source-item .source-meta {
-            font-size: 0.68rem;
-            color: var(--text-muted);
-            margin-top: 2px;
-        }
+        .source-item .source-meta { font-size: 0.68rem; color: var(--text-muted); margin-top: 2px; }
 
         .scorer-link {
-            display: block;
-            width: 100%;
-            text-align: center;
-            margin-top: 20px;
-            padding: 10px 16px;
-            background: var(--accent);
-            color: #fff;
-            border-radius: 8px;
-            font-size: 0.82rem;
-            font-weight: 600;
-            text-decoration: none;
-            transition: opacity 0.15s;
+            display: block; width: 100%; text-align: center; margin-top: 20px;
+            padding: 10px 16px; background: var(--accent); color: #fff;
+            border-radius: 8px; font-size: 0.82rem; font-weight: 600;
+            text-decoration: none; transition: opacity 0.15s;
         }
 
         .scorer-link:hover { opacity: 0.85; }
@@ -750,20 +756,8 @@
         .domain-semiconductors { background: rgba(247, 190, 162, 0.2); color: #9a4a28; }
         .domain-space { background: rgba(242, 199, 146, 0.18); color: #7a5a20; }
 
-        /* Empty state */
-        .empty-state {
-            text-align: center;
-            padding: 80px 20px;
-            color: var(--text-muted);
-        }
+        .empty-state { text-align: center; padding: 80px 20px; color: var(--text-muted); }
 
-        .empty-state h2 {
-            color: var(--text-secondary);
-            font-size: 1.1rem;
-            margin-bottom: 8px;
-        }
-
-        /* Footer */
         .site-footer {
             max-width: 1080px;
             margin: 0 auto;
@@ -771,34 +765,137 @@
             text-align: center;
         }
 
-        .footer-text {
-            font-size: 0.68rem;
-            color: var(--text-muted);
-            letter-spacing: 0.02em;
+        .footer-text { font-size: 0.68rem; color: var(--text-muted); }
+
+        /* === Guide page styles === */
+        .guide-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 40px;
+            line-height: 1.8;
         }
 
-        /* Responsive */
+        .guide-content h2 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text);
+            margin: 32px 0 12px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border-light);
+        }
+
+        .guide-content h2:first-child {
+            margin-top: 0;
+            padding-top: 0;
+            border-top: none;
+        }
+
+        .guide-content h3 {
+            font-size: 0.92rem;
+            font-weight: 600;
+            color: var(--accent);
+            margin: 20px 0 8px;
+        }
+
+        .guide-content p {
+            font-size: 0.85rem;
+            color: var(--text);
+            margin-bottom: 12px;
+        }
+
+        .guide-content ul, .guide-content ol {
+            font-size: 0.85rem;
+            margin: 8px 0 16px 20px;
+            color: var(--text);
+        }
+
+        .guide-content li { margin-bottom: 6px; line-height: 1.7; }
+
+        .guide-content code {
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+            background: var(--bg-secondary);
+            padding: 1px 5px;
+            border-radius: 3px;
+            color: var(--accent);
+        }
+
+        .guide-content .info-box {
+            background: var(--accent-light);
+            border: 1px solid var(--accent-border);
+            border-radius: 8px;
+            padding: 14px 18px;
+            margin: 16px 0;
+            font-size: 0.82rem;
+            color: var(--text);
+        }
+
+        .guide-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12px 0 20px;
+            font-size: 0.78rem;
+        }
+
+        .guide-table th {
+            background: var(--bg-secondary);
+            padding: 8px 12px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-secondary);
+            border-bottom: 2px solid var(--border);
+        }
+
+        .guide-table td {
+            padding: 8px 12px;
+            border-bottom: 1px solid var(--border-light);
+            color: var(--text);
+        }
+
+        .guide-table tr:hover { background: var(--accent-light); }
+
+        /* DB schema styles */
+        .schema-block {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin: 12px 0 20px;
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            line-height: 1.6;
+            overflow-x: auto;
+            color: var(--text);
+        }
+
+        .schema-block .tname { color: var(--accent); font-weight: 700; }
+        .schema-block .col { color: var(--text); }
+        .schema-block .type { color: var(--ci-amber-brown); }
+        .schema-block .pk { color: var(--ci-terracotta); font-weight: 600; }
+        .schema-block .fk { color: var(--text-muted); font-style: italic; }
+
         @media (max-width: 768px) {
             .summary { grid-template-columns: repeat(2, 1fr); }
+            .domain-heatmap { grid-template-columns: repeat(2, 1fr); }
             .accel-item {
                 grid-template-columns: 28px 1fr 60px;
-                gap: 8px;
-                padding: 12px 14px;
+                gap: 8px; padding: 12px 14px;
             }
             .accel-items-count, .accel-score, .phase-col { display: none; }
-            .list-header {
-                grid-template-columns: 28px 1fr 60px;
-            }
+            .list-header { grid-template-columns: 28px 1fr 60px; }
             .list-header .hide-mobile { display: none; }
             .header-inner { padding: 16px 20px; }
             .main { padding: 20px 16px 48px; }
             .axes-row { flex-wrap: wrap; gap: 8px; }
             .axis-mini { min-width: 60px; }
-            .expand-inner { padding: 16px; }
+            .guide-content { padding: 24px; }
+            .bar-row { grid-template-columns: 80px 1fr 50px; }
         }
 
         @media (max-width: 480px) {
             .summary { grid-template-columns: 1fr 1fr; gap: 10px; }
+            .domain-heatmap { grid-template-columns: repeat(2, 1fr); }
             .stat-card { padding: 14px 16px; }
             .stat-value { font-size: 1.2rem; }
             .header-title { font-size: 0.82rem; }
@@ -812,77 +909,317 @@
             <div class="header-left">
                 <span class="header-brand">MIRA TUKU</span>
                 <span class="header-divider"></span>
-                <span class="header-title">Structural Inflection Radar</span>
+                <span class="header-title">構造変化点検出レーダー</span>
             </div>
-            <div class="header-right">
-                <a href="dashboard.html" class="header-link">Admin</a>
-            </div>
+            <nav class="header-nav">
+                <a href="#" class="nav-link active" data-page="dashboard" onclick="switchPage('dashboard');return false;">ダッシュボード</a>
+                <a href="#" class="nav-link" data-page="guide" onclick="switchPage('guide');return false;">使い方ガイド</a>
+                <a href="dashboard.html" class="nav-link">管理</a>
+            </nav>
         </div>
     </header>
 
     <main class="main">
-        <!-- Summary KPIs -->
-        <div class="summary" id="summary">
-            <div class="stat-card">
-                <div class="stat-label">Accelerating</div>
-                <div class="stat-value accent" id="stat-accel">--</div>
-                <div class="stat-sub">themes</div>
+        <!-- ==================== DASHBOARD PAGE ==================== -->
+        <div id="page-dashboard" class="page-section active">
+            <div class="summary" id="summary">
+                <div class="stat-card">
+                    <div class="stat-label">加速中テーマ</div>
+                    <div class="stat-value accent" id="stat-accel">--</div>
+                    <div class="stat-sub">テーマ</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">総テーマ数</div>
+                    <div class="stat-value" id="stat-total">--</div>
+                    <div class="stat-sub">10ドメイン</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">分析ソース</div>
+                    <div class="stat-value" id="stat-sources">--</div>
+                    <div class="stat-sub">件</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">最終更新</div>
+                    <div class="stat-value" id="stat-date" style="font-size:1.1rem;">--</div>
+                    <div class="stat-sub" id="stat-date-sub"></div>
+                </div>
             </div>
-            <div class="stat-card">
-                <div class="stat-label">Total Themes</div>
-                <div class="stat-value" id="stat-total">--</div>
-                <div class="stat-sub">across 10 domains</div>
+
+            <!-- Visualization: Domain Heatmap -->
+            <div class="viz-section">
+                <h3 class="viz-title">ドメイン別 加速テーマ分布</h3>
+                <p class="viz-subtitle">各ドメインの加速中テーマ数と平均加速度。セルの塗りの高さが平均加速度の強さを示します。クリックでフィルタ。</p>
+                <div class="domain-heatmap" id="domain-heatmap"></div>
             </div>
-            <div class="stat-card">
-                <div class="stat-label">Sources</div>
-                <div class="stat-value" id="stat-sources">--</div>
-                <div class="stat-sub">items analyzed</div>
+
+            <!-- Visualization: Top accelerators bar chart -->
+            <div class="viz-section">
+                <h3 class="viz-title">加速度ランキング Top 10</h3>
+                <p class="viz-subtitle">加速度が最も高いテーマ上位10件。バーの長さが加速度の大きさを表します。</p>
+                <div class="bar-chart" id="bar-chart"></div>
             </div>
-            <div class="stat-card">
-                <div class="stat-label">Last Updated</div>
-                <div class="stat-value" id="stat-date" style="font-size:1.1rem;">--</div>
-                <div class="stat-sub" id="stat-date-sub"></div>
+
+            <!-- Controls -->
+            <div class="controls">
+                <div class="controls-left">
+                    <h2 class="section-title">加速テーマ一覧</h2>
+                    <div class="filter-pills" id="domain-filters"></div>
+                </div>
+                <div class="controls-right">
+                    <span class="count-label" id="count-label"></span>
+                    <select class="sort-select" id="sort-select" onchange="handleSort(this.value)">
+                        <option value="delta">加速度順</option>
+                        <option value="score">スコア順</option>
+                        <option value="count">ソース件数順</option>
+                    </select>
+                </div>
             </div>
+
+            <div class="list-header">
+                <span>#</span>
+                <span>テーマ</span>
+                <span class="hide-mobile">フェーズ</span>
+                <span class="col-right hide-mobile">スコア</span>
+                <span class="col-right hide-mobile">件数</span>
+                <span class="col-right">加速度</span>
+            </div>
+
+            <div class="accel-list" id="accel-list"></div>
         </div>
 
-        <!-- Controls -->
-        <div class="controls">
-            <div class="controls-left">
-                <h2 class="section-title">Acceleration Group</h2>
-                <div class="filter-pills" id="domain-filters"></div>
-            </div>
-            <div class="controls-right">
-                <span class="count-label" id="count-label"></span>
-                <select class="sort-select" id="sort-select" onchange="handleSort(this.value)">
-                    <option value="delta">Acceleration</option>
-                    <option value="score">Score</option>
-                    <option value="count">Sources</option>
-                </select>
+        <!-- ==================== GUIDE PAGE ==================== -->
+        <div id="page-guide" class="page-section">
+            <div class="guide-content">
+                <h2>構造変化点検出レーダーとは</h2>
+                <p>本ツールは、新興技術の<strong>構造的変化点（Structural Inflection Point）</strong>を早期に検出するための情報ダッシュボードです。学術論文（OpenAlex）とテックコミュニティ（HackerNews）から収集したデータを、AIが5つの軸でスコアリングし、スコアの<strong>加速度（変化の勢い）</strong>が高いテーマを「加速群」として可視化します。</p>
+
+                <div class="info-box">
+                    絶対スコアではなく「加速度」に注目するのがこのツールの特徴です。スコアが低くても急上昇しているテーマは、今後の重要変化を示唆する先行指標になります。
+                </div>
+
+                <h2>画面の見方</h2>
+
+                <h3>サマリーカード（画面上部）</h3>
+                <p>4つのKPIカードが全体の概況を示します。</p>
+                <ul>
+                    <li><strong>加速中テーマ</strong>：前回スキャンから加速度がプラスのテーマ数</li>
+                    <li><strong>総テーマ数</strong>：全ドメインで検出されたテーマの合計</li>
+                    <li><strong>分析ソース</strong>：スコアリングに使用した論文・記事の総数</li>
+                    <li><strong>最終更新</strong>：パイプラインの最終実行日</li>
+                </ul>
+
+                <h3>ドメイン別ヒートマップ</h3>
+                <p>10個のドメインごとに、加速中テーマの件数と平均加速度を表示します。セル下部の塗りの高さが平均加速度の強さを示しており、どのドメインで変化が活発かを一目で把握できます。セルをクリックすると、そのドメインで下の一覧をフィルタします。</p>
+
+                <h3>加速度ランキング Top 10</h3>
+                <p>加速度が最も高い上位10テーマを水平バーチャートで表示します。バーの長さが加速度に比例しており、最も勢いのある技術テーマを視覚的に把握できます。</p>
+
+                <h3>加速テーマ一覧</h3>
+                <p>加速度がプラスの全テーマをリスト表示します。各行には以下の情報が含まれます。</p>
+                <ul>
+                    <li><strong>テーマ名</strong>：技術テーマの名称（日本語表示）</li>
+                    <li><strong>ドメインタグ</strong>：所属する分野（AI、エネルギー、半導体など）</li>
+                    <li><strong>フェーズバッジ</strong>：加速度の強さに応じた分類</li>
+                    <li><strong>スコア</strong>：5軸の総合スコア（0〜100%）</li>
+                    <li><strong>件数</strong>：そのテーマに関連するソース記事・論文の数</li>
+                    <li><strong>加速度</strong>：前回スキャンからのスコア変化率</li>
+                </ul>
+
+                <h3>フェーズ分類</h3>
+                <table class="guide-table">
+                    <thead>
+                        <tr><th>フェーズ</th><th>加速度</th><th>意味</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><span class="phase-badge phase-surge">Surge</span></td><td>30%以上</td><td>急激な構造変化の兆候。最優先で注視すべきテーマ</td></tr>
+                        <tr><td><span class="phase-badge phase-rising">Rising</span></td><td>15〜30%</td><td>明確な上昇トレンド。投資・政策判断の参考に</td></tr>
+                        <tr><td><span class="phase-badge phase-moderate">Moderate</span></td><td>8〜15%</td><td>緩やかな加速。継続的なモニタリング推奨</td></tr>
+                        <tr><td><span class="phase-badge phase-emerging">Emerging</span></td><td>1〜8%</td><td>初期段階の変化兆候。今後の動向に注目</td></tr>
+                    </tbody>
+                </table>
+
+                <h3>行の展開</h3>
+                <p>テーマ行をクリックすると、インラインで詳細パネルが展開されます。パネルには以下が表示されます。</p>
+                <ul>
+                    <li><strong>5軸スコアバー</strong>：各スコアリング軸の値を視覚的に表示</li>
+                    <li><strong>主要エビデンス</strong>：スコアが高い軸からAIが抽出した根拠を2件表示</li>
+                    <li><strong>「全詳細」ボタン</strong>：モーダルで全軸のエビデンスとソースリンクを表示</li>
+                    <li><strong>「スコアラーを開く」ボタン</strong>：個別テーマの詳細スコアリングツールへ遷移</li>
+                </ul>
+
+                <h2>5軸スコアリングモデル</h2>
+                <p>各テーマは以下の5つの構造変化指標で評価されます。これらはAI（Claude Haiku）が学術論文やテック記事の内容を分析して判定します。</p>
+
+                <table class="guide-table">
+                    <thead>
+                        <tr><th>軸</th><th>英名</th><th>説明</th><th>配点</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>閾値接近</td><td>Threshold Proximity</td><td>コスト/性能曲線の変曲点への接近度。技術的ブレークスルーの兆候</td><td>25%</td></tr>
+                        <tr><td>外圧/窓</td><td>External Pressure</td><td>地政学イベント、規制変更、サプライチェーンショックなどの外的要因</td><td>18.75%</td></tr>
+                        <tr><td>技術サイクル</td><td>Tech Cycle Position</td><td>VC投資ラウンド、大型買収、商用化フェーズなどの技術成熟度</td><td>18.75%</td></tr>
+                        <tr><td>制度変化</td><td>Institutional Change</td><td>規制マイルストーン、標準規格の採択、法制化の動き</td><td>18.75%</td></tr>
+                        <tr><td>不確実性解消</td><td>Uncertainty Resolution</td><td>大型契約、政策確定、不可逆的投資など、不確実性を減らすイベント</td><td>18.75%</td></tr>
+                    </tbody>
+                </table>
+
+                <h2>ドメイン一覧</h2>
+                <p>現在、以下の10ドメインを監視対象としています。各ドメインには個別のキーワードセットが設定されています。</p>
+                <table class="guide-table">
+                    <thead>
+                        <tr><th>ドメイン</th><th>対象範囲</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>AI</td><td>AIエージェント、LLM、コーディングツール、推論最適化</td></tr>
+                        <tr><td>バイオテック</td><td>遺伝子治療、創薬、ゲノミクス、合成生物学</td></tr>
+                        <tr><td>サイバーセキュリティ</td><td>ランサムウェア、ゼロトラスト、量子暗号、規制対応</td></tr>
+                        <tr><td>防衛テック</td><td>ドローン、ミサイル防衛、自律兵器、軍事ドクトリン</td></tr>
+                        <tr><td>エネルギー</td><td>再生可能エネルギー、蓄電池、水素、原子力、送電網</td></tr>
+                        <tr><td>地政学</td><td>米中競争、EU規制、サプライチェーン、貿易政策</td></tr>
+                        <tr><td>量子</td><td>量子コンピューティング、量子暗号、誤り訂正</td></tr>
+                        <tr><td>ロボティクス</td><td>ヒューマノイド、自律走行車、産業用ロボット、RPA</td></tr>
+                        <tr><td>半導体</td><td>先端プロセス、RISC-V、フォトニクス、チップ設計</td></tr>
+                        <tr><td>宇宙</td><td>衛星コンステレーション、月面探査、宇宙デブリ、商業宇宙</td></tr>
+                    </tbody>
+                </table>
+
+                <h2>データパイプライン</h2>
+                <p>本ツールのデータは以下の4段階のパイプラインで生成されます。</p>
+                <ol>
+                    <li><strong>収集（Collect）</strong>：OpenAlex API（学術論文）とHackerNews Algolia API（テック記事）からキーワード検索で記事を取得。過去30日間、ドメインごとにキーワード別最大10件。</li>
+                    <li><strong>スコアリング（Score）</strong>：Claude Haiku 4.5が各記事を5軸で分析。テーマタグの付与と各軸のシグナル/エビデンスを生成。学術論文は信頼度1.0、テックメディアは0.7で重み付け。</li>
+                    <li><strong>集約（Aggregate）</strong>：テーマタグごとにスコアを集約。前回スナップショットとの差分（デルタ）を計算。2件未満のテーマはノイズとして除外。</li>
+                    <li><strong>エクスポート（Export）</strong>：集約結果をJavaScriptファイル（themes_data.js）として出力。GitHub Pagesで静的に公開。</li>
+                </ol>
+
+                <h2>データベース構造</h2>
+                <p>バックエンドではSQLiteデータベースを使用して時系列データの蓄積を行っています。以下が主要テーブルの構造です。</p>
+
+                <h3>domains（ドメインマスタ）</h3>
+                <div class="schema-block">
+<span class="tname">domains</span> (10件)<br>
+├─ <span class="col">id</span> <span class="type">INTEGER</span> <span class="pk">PK</span><br>
+├─ <span class="col">slug</span> <span class="type">TEXT</span> <span class="pk">UNIQUE</span> (例: ai_agents, energy)<br>
+├─ <span class="col">name_ja</span> <span class="type">TEXT</span> (日本語名)<br>
+├─ <span class="col">name_en</span> <span class="type">TEXT</span> (英語名)<br>
+├─ <span class="col">description</span> <span class="type">TEXT</span><br>
+└─ <span class="col">is_active</span> <span class="type">INTEGER</span>
+                </div>
+
+                <h3>domain_keywords（検索キーワード）</h3>
+                <div class="schema-block">
+<span class="tname">domain_keywords</span> (323件)<br>
+├─ <span class="col">id</span> <span class="type">INTEGER</span> <span class="pk">PK</span><br>
+├─ <span class="col">domain_id</span> <span class="type">INTEGER</span> <span class="fk">→ domains.id</span><br>
+├─ <span class="col">keyword</span> <span class="type">TEXT</span> (検索キーワード)<br>
+├─ <span class="col">source_type</span> <span class="type">TEXT</span> (openalex / hackernews)<br>
+└─ <span class="col">is_active</span> <span class="type">INTEGER</span>
+                </div>
+
+                <h3>sources（データソース）</h3>
+                <div class="schema-block">
+<span class="tname">sources</span> (3件)<br>
+├─ <span class="col">id</span> <span class="type">INTEGER</span> <span class="pk">PK</span><br>
+├─ <span class="col">slug</span> <span class="type">TEXT</span> (openalex / hackernews / arxiv)<br>
+├─ <span class="col">source_type</span> <span class="type">TEXT</span> (academic / tech_media)<br>
+├─ <span class="col">credibility_weight</span> <span class="type">REAL</span> (学術=1.0, テック=0.7)<br>
+└─ <span class="col">is_active</span> <span class="type">INTEGER</span>
+                </div>
+
+                <h3>raw_items（収集された記事・論文）</h3>
+                <div class="schema-block">
+<span class="tname">raw_items</span><br>
+├─ <span class="col">id</span> <span class="type">INTEGER</span> <span class="pk">PK</span><br>
+├─ <span class="col">external_id</span> <span class="type">TEXT</span> (OpenAlex/HN ID)<br>
+├─ <span class="col">domain_id</span> <span class="type">INTEGER</span> <span class="fk">→ domains.id</span><br>
+├─ <span class="col">source_id</span> <span class="type">INTEGER</span> <span class="fk">→ sources.id</span><br>
+├─ <span class="col">title</span> <span class="type">TEXT</span><br>
+├─ <span class="col">abstract</span> <span class="type">TEXT</span><br>
+├─ <span class="col">url</span> <span class="type">TEXT</span><br>
+├─ <span class="col">publication_date</span> <span class="type">TEXT</span><br>
+├─ <span class="col">cited_by_count</span> <span class="type">INTEGER</span><br>
+└─ <span class="col">run_id</span> <span class="type">INTEGER</span> <span class="fk">→ pipeline_runs.id</span>
+                </div>
+
+                <h3>scored_items（AIスコアリング結果）</h3>
+                <div class="schema-block">
+<span class="tname">scored_items</span><br>
+├─ <span class="col">id</span> <span class="type">INTEGER</span> <span class="pk">PK</span><br>
+├─ <span class="col">raw_item_id</span> <span class="type">INTEGER</span> <span class="fk">→ raw_items.id</span><br>
+├─ <span class="col">model</span> <span class="type">TEXT</span> (claude-haiku-4-5)<br>
+├─ <span class="col">credibility_weight</span> <span class="type">REAL</span><br>
+├─ <span class="col">threshold_proximity_signal</span> <span class="type">INTEGER</span> (0/1)<br>
+├─ <span class="col">threshold_proximity_evidence</span> <span class="type">TEXT</span><br>
+├─ <span class="col">external_pressure_signal/evidence</span><br>
+├─ <span class="col">tech_cycle_position_signal/evidence</span><br>
+├─ <span class="col">institutional_change_signal/evidence</span><br>
+├─ <span class="col">uncertainty_resolution_signal/evidence</span><br>
+└─ <span class="col">scored_at</span> <span class="type">TEXT</span>
+                </div>
+
+                <h3>themes / theme_scores / theme_axes（テーマ時系列）</h3>
+                <div class="schema-block">
+<span class="tname">themes</span> (テーママスタ)<br>
+├─ <span class="col">id</span> <span class="type">INTEGER</span> <span class="pk">PK</span><br>
+├─ <span class="col">domain_id</span> <span class="type">INTEGER</span> <span class="fk">→ domains.id</span><br>
+├─ <span class="col">tag</span> <span class="type">TEXT</span> (例: perovskite_solar_cells)<br>
+└─ <span class="col">name_ja</span> <span class="type">TEXT</span><br>
+<br>
+<span class="tname">theme_scores</span> (スキャンごとのスコア)<br>
+├─ <span class="col">theme_id</span> <span class="type">INTEGER</span> <span class="fk">→ themes.id</span><br>
+├─ <span class="col">scan_date</span> <span class="type">TEXT</span> (UNIQUE: theme_id + scan_date)<br>
+├─ <span class="col">composite_score</span> <span class="type">REAL</span><br>
+└─ <span class="col">composite_delta</span> <span class="type">REAL</span><br>
+<br>
+<span class="tname">theme_axes</span> (軸ごとのスコア)<br>
+├─ <span class="col">theme_score_id</span> <span class="type">INTEGER</span> <span class="fk">→ theme_scores.id</span><br>
+├─ <span class="col">axis</span> <span class="type">TEXT</span><br>
+├─ <span class="col">score</span> <span class="type">REAL</span><br>
+└─ <span class="col">delta</span> <span class="type">REAL</span>
+                </div>
+
+                <h3>pipeline_runs（パイプライン実行履歴）</h3>
+                <div class="schema-block">
+<span class="tname">pipeline_runs</span><br>
+├─ <span class="col">id</span> <span class="type">INTEGER</span> <span class="pk">PK</span><br>
+├─ <span class="col">domain_id</span> <span class="type">INTEGER</span> <span class="fk">→ domains.id</span><br>
+├─ <span class="col">started_at / completed_at</span> <span class="type">TEXT</span><br>
+├─ <span class="col">status</span> <span class="type">TEXT</span> (running / completed / error)<br>
+├─ <span class="col">collect_count / score_count</span> <span class="type">INTEGER</span><br>
+├─ <span class="col">model</span> <span class="type">TEXT</span><br>
+└─ <span class="col">estimated_cost_usd</span> <span class="type">REAL</span>
+                </div>
+
+                <h3>データフロー図</h3>
+                <div class="schema-block" style="line-height:1.8;">
+domains + domain_keywords<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&#x2193; (キーワード定義)<br>
+<span class="tname">collect.py</span> → raw_items<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&#x2193; (AI分析)<br>
+<span class="tname">score.py</span> → scored_items + scored_item_tags<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&#x2193; (テーマ集約)<br>
+<span class="tname">aggregate.py</span> → themes + theme_scores + theme_axes<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&#x2193; (JS出力)<br>
+<span class="tname">export_js.py</span> → themes_data.js → <span class="pk">GitHub Pages公開</span>
+                </div>
+
+                <h2>フィルタとソート</h2>
+                <p>ドメインフィルターのピル（タブ）をクリックすると、特定のドメインのテーマだけを表示できます。複数選択も可能です。「全て」を押すとフィルタを解除します。ソートは右上のドロップダウンから「加速度順」「スコア順」「ソース件数順」を選択できます。</p>
+
+                <h2>更新頻度とデータソース</h2>
+                <p>パイプラインはローカル環境で手動実行されます。実行コマンドは <code>python3 run_pipeline.py</code> です。ドメインを指定する場合は <code>python3 run_pipeline.py --domain energy</code> のように指定します。収集されたデータは <code>themes_data.js</code> としてエクスポートされ、GitHubへのpushで自動的に公開版が更新されます。</p>
             </div>
         </div>
-
-        <!-- List header -->
-        <div class="list-header">
-            <span>#</span>
-            <span>Theme</span>
-            <span class="hide-mobile">Phase</span>
-            <span class="col-right hide-mobile">Score</span>
-            <span class="col-right hide-mobile">Src</span>
-            <span class="col-right">Acceleration</span>
-        </div>
-
-        <!-- Acceleration list -->
-        <div class="accel-list" id="accel-list"></div>
     </main>
 
     <footer class="site-footer">
-        <p class="footer-text">Structural Inflection Radar &mdash; Detecting acceleration in emerging technologies</p>
+        <p class="footer-text">Structural Inflection Radar &mdash; MIRA TUKU</p>
     </footer>
 
     <!-- Modal -->
-    <div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)" role="dialog" aria-modal="true" aria-label="Theme details">
+    <div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)" role="dialog" aria-modal="true">
         <div class="modal" id="modal-content">
-            <button class="modal-close" onclick="closeModal()" aria-label="Close">&times;</button>
+            <button class="modal-close" onclick="closeModal()" aria-label="閉じる">&times;</button>
             <div id="modal-body"></div>
         </div>
     </div>
@@ -894,18 +1231,25 @@
 
         const SCORER_URL = 'https://yuyanishimura0312.github.io/structural-inflection-scorer/';
         const AXIS_LABELS = {
-            threshold_proximity: 'Threshold',
-            external_pressure: 'External',
-            tech_cycle_position: 'Tech Cycle',
-            institutional_change: 'Institutional',
-            uncertainty_resolution: 'Uncertainty',
+            threshold_proximity: '閾値接近',
+            external_pressure: '外圧/窓',
+            tech_cycle_position: '技術サイクル',
+            institutional_change: '制度変化',
+            uncertainty_resolution: '不確実性解消',
         };
         const AXIS_KEYS = Object.keys(AXIS_LABELS);
 
         const DOMAIN_NAMES = {
-            'ai_agents': 'AI', 'biotech': 'Biotech', 'cybersecurity': 'Cyber',
-            'defense_tech': 'Defense', 'energy': 'Energy', 'geopolitics': 'Geopolitics',
-            'quantum': 'Quantum', 'robotics': 'Robotics', 'semiconductors': 'Semicon', 'space': 'Space',
+            'ai_agents': 'AI', 'biotech': 'バイオテック', 'cybersecurity': 'サイバー',
+            'defense_tech': '防衛テック', 'energy': 'エネルギー', 'geopolitics': '地政学',
+            'quantum': '量子', 'robotics': 'ロボティクス', 'semiconductors': '半導体', 'space': '宇宙',
+        };
+
+        // CI colors for domains
+        const DOMAIN_COLORS = {
+            'ai_agents': '#F0A671', 'biotech': '#DC8766', 'cybersecurity': '#966D5E',
+            'defense_tech': '#B07256', 'energy': '#CEA26F', 'geopolitics': '#7A4033',
+            'quantum': '#F1C189', 'robotics': '#EFC4A4', 'semiconductors': '#F7BEA2', 'space': '#F2C792',
         };
 
         const THEME_NAMES_JA = {
@@ -930,28 +1274,17 @@
             'machine_learning': '機械学習', 'space_technology': '宇宙技術',
             'ai_infrastructure': 'AIインフラ', 'authentication': '認証技術',
             'automotive_innovation': '自動車イノベーション', 'autonomous_systems': '自律システム',
-            'black_hole_formation': 'ブラックホール形成', 'climate_tech': '気候テック',
-            'consumer_adoption': '消費者普及', 'cosmology': '宇宙論',
-            'cost_competitiveness': 'コスト競争力', 'critical_infrastructure': '重要インフラ',
-            'developer_tools': '開発者ツール', 'distributed_generation': '分散型発電',
-            'drone_technology': 'ドローン技術', 'early_universe': '初期宇宙',
+            'climate_tech': '気候テック', 'cost_competitiveness': 'コスト競争力',
+            'critical_infrastructure': '重要インフラ', 'developer_tools': '開発者ツール',
+            'distributed_generation': '分散型発電', 'drone_technology': 'ドローン技術',
             'electrification': '電化', 'energy_crisis': 'エネルギー危機',
             'energy_independence': 'エネルギー自立', 'energy_infrastructure': 'エネルギーインフラ',
-            'energy_security': 'エネルギー安全保障', 'evolutionary_biology': '進化生物学',
-            'fluid_dynamics': '流体力学', 'geopolitical_conflict': '地政学的紛争',
-            'geopolitical_shock': '地政学的ショック', 'global_markets': 'グローバル市場',
-            'heterojunction': 'ヘテロ接合', 'historical_analysis': '歴史分析',
-            'identity_management': 'ID管理', 'infrastructure': 'インフラ',
-            'mathematical_modeling': '数理モデリング', 'microfluidics': 'マイクロ流体工学',
-            'ontology': 'オントロジー', 'oxygen_reduction_reaction': '酸素還元反応',
-            'peer_review': '査読', 'photovoltaic_efficiency': '太陽電池効率',
-            'plasma_physics': 'プラズマ物理学', 'predictive_modeling': '予測モデリング',
-            'quantum_computing': '量子コンピューティング', 'range_breakthrough': '航続距離ブレークスルー',
-            'range_extension': '航続距離延長', 'strategic_partnership': '戦略的提携',
-            'supply_chain_disruption': 'サプライチェーン混乱', 'sustainable_polymers': '持続可能ポリマー',
-            'terminal_ui': 'ターミナルUI', 'theoretical_physics': '理論物理学',
-            'uk_policy': '英国政策', 'waste_valorization': '廃棄物高付加価値化',
-            'window_technology': '窓技術',
+            'energy_security': 'エネルギー安全保障', 'geopolitical_conflict': '地政学的紛争',
+            'global_markets': 'グローバル市場', 'identity_management': 'ID管理',
+            'infrastructure': 'インフラ',
+            'quantum_computing': '量子コンピューティング',
+            'strategic_partnership': '戦略的提携',
+            'supply_chain_disruption': 'サプライチェーン混乱',
             'semiconductor': '半導体', 'renewable_energy_policy': '再エネ政策',
             'offshore_wind': '洋上風力', 'eu_ai_regulation': 'EU AI規制',
             'cost_reduction': 'コスト削減', 'eu_ai_act': 'EU AI法',
@@ -969,6 +1302,10 @@
             'satellite_constellation': '衛星コンステレーション',
         };
 
+        const PHASE_LABELS = {
+            surge: '急加速', rising: '上昇', moderate: '緩加速', emerging: '初動',
+        };
+
         let currentSort = 'delta';
         let activeDomains = new Set();
         let expandedTheme = null;
@@ -977,24 +1314,35 @@
             return THEME_NAMES_JA[name] || name.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
         }
 
-        // Phase classification based on delta
         function getPhase(delta) {
-            if (delta >= 0.30) return { label: 'Surge', cls: 'phase-surge' };
-            if (delta >= 0.15) return { label: 'Rising', cls: 'phase-rising' };
-            if (delta >= 0.08) return { label: 'Moderate', cls: 'phase-moderate' };
-            return { label: 'Emerging', cls: 'phase-emerging' };
+            if (delta >= 0.30) return { label: PHASE_LABELS.surge, cls: 'phase-surge', key: 'surge' };
+            if (delta >= 0.15) return { label: PHASE_LABELS.rising, cls: 'phase-rising', key: 'rising' };
+            if (delta >= 0.08) return { label: PHASE_LABELS.moderate, cls: 'phase-moderate', key: 'moderate' };
+            return { label: PHASE_LABELS.emerging, cls: 'phase-emerging', key: 'emerging' };
         }
+
+        function getAccelThemes() {
+            return THEMES_DATA.themes.filter(t => (t.delta?.composite || 0) > 0.01);
+        }
+
+        // --- Page switching ---
+        window.switchPage = function(page) {
+            document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+            document.getElementById('page-' + page).classList.add('active');
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            document.querySelector(`.nav-link[data-page="${page}"]`)?.classList.add('active');
+            window.scrollTo(0, 0);
+        };
 
         // --- Init ---
         function init() {
-            if (typeof THEMES_DATA === 'undefined' || !THEMES_DATA.themes || THEMES_DATA.themes.length === 0) {
-                document.getElementById('accel-list').innerHTML =
-                    '<div class="empty-state"><h2>No data available</h2><p>Run the pipeline to generate data.</p></div>';
+            if (typeof THEMES_DATA === 'undefined' || !THEMES_DATA.themes?.length) {
+                document.getElementById('accel-list').innerHTML = '<div class="empty-state"><p>データがありません。パイプラインを実行してください。</p></div>';
                 return;
             }
 
-            const accelCount = THEMES_DATA.themes.filter(t => (t.delta?.composite || 0) > 0.01).length;
-            document.getElementById('stat-accel').textContent = accelCount;
+            const accel = getAccelThemes();
+            document.getElementById('stat-accel').textContent = accel.length;
             document.getElementById('stat-total').textContent = THEMES_DATA.total_themes;
             document.getElementById('stat-sources').textContent = THEMES_DATA.total_source_items.toLocaleString();
 
@@ -1002,10 +1350,84 @@
             document.getElementById('stat-date').textContent = date.toLocaleDateString('ja-JP', { month: 'short', day: 'numeric' });
             document.getElementById('stat-date-sub').textContent = date.toLocaleDateString('ja-JP', { year: 'numeric' });
 
+            buildDomainHeatmap();
+            buildBarChart();
             buildDomainFilters();
-            render();
+            renderList();
+
+            // Handle hash navigation
+            if (location.hash === '#guide') switchPage('guide');
         }
 
+        // --- Domain heatmap ---
+        function buildDomainHeatmap() {
+            const accel = getAccelThemes();
+            const stats = {};
+            accel.forEach(t => {
+                const d = t.domain || 'unknown';
+                if (!stats[d]) stats[d] = { count: 0, totalDelta: 0 };
+                stats[d].count++;
+                stats[d].totalDelta += (t.delta?.composite || 0);
+            });
+
+            const maxAvg = Math.max(...Object.values(stats).map(s => s.totalDelta / s.count), 0.01);
+            const container = document.getElementById('domain-heatmap');
+
+            const sortedDomains = Object.entries(stats).sort((a, b) => b[1].count - a[1].count);
+
+            container.innerHTML = sortedDomains.map(([domain, s]) => {
+                const avg = s.totalDelta / s.count;
+                const intensity = Math.round((avg / maxAvg) * 50);
+                const color = DOMAIN_COLORS[domain] || '#CEA26F';
+                return `<div class="heatmap-cell" onclick="filterByDomain('${domain}')" title="${DOMAIN_NAMES[domain] || domain}: ${s.count}テーマ, 平均加速度 ${(avg * 100).toFixed(1)}%">
+                    <div class="heatmap-intensity" style="height:${intensity}%;background:${color};opacity:0.15;"></div>
+                    <div class="heatmap-domain">${DOMAIN_NAMES[domain] || domain}</div>
+                    <div class="heatmap-count">${s.count}</div>
+                    <div class="heatmap-avg">平均 +${(avg * 100).toFixed(1)}%</div>
+                </div>`;
+            }).join('');
+        }
+
+        window.filterByDomain = function(domain) {
+            activeDomains.clear();
+            activeDomains.add(domain);
+            // Update pills
+            document.querySelectorAll('#domain-filters .pill').forEach(p => {
+                p.classList.remove('active');
+                if (p.dataset.domain === domain) p.classList.add('active');
+            });
+            // Update heatmap
+            document.querySelectorAll('.heatmap-cell').forEach(c => c.classList.remove('active'));
+            event.target.closest('.heatmap-cell')?.classList.add('active');
+            renderList();
+            document.getElementById('accel-list').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        };
+
+        // --- Bar chart ---
+        function buildBarChart() {
+            const accel = getAccelThemes();
+            accel.sort((a, b) => (b.delta?.composite || 0) - (a.delta?.composite || 0));
+            const top10 = accel.slice(0, 10);
+            const maxDelta = top10[0]?.delta?.composite || 0.01;
+
+            const container = document.getElementById('bar-chart');
+            container.innerHTML = top10.map(t => {
+                const delta = t.delta?.composite || 0;
+                const pct = Math.round((delta / maxDelta) * 100);
+                const color = DOMAIN_COLORS[t.domain] || '#CEA26F';
+                return `<div class="bar-row">
+                    <div class="bar-label">${formatThemeName(t.name)}</div>
+                    <div class="bar-track">
+                        <div class="bar-fill" style="width:${pct}%;background:${color};">
+                            ${pct > 25 ? `<span class="bar-inner-label">${DOMAIN_NAMES[t.domain] || ''}</span>` : ''}
+                        </div>
+                    </div>
+                    <div class="bar-value">+${(delta * 100).toFixed(1)}%</div>
+                </div>`;
+            }).join('');
+        }
+
+        // --- Domain filter pills ---
         function buildDomainFilters() {
             const container = document.getElementById('domain-filters');
             const domains = new Set();
@@ -1013,12 +1435,14 @@
 
             const allPill = document.createElement('button');
             allPill.className = 'pill active';
-            allPill.textContent = 'All';
+            allPill.textContent = '全て';
+            allPill.dataset.domain = 'all';
             allPill.onclick = () => {
                 activeDomains.clear();
                 container.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
                 allPill.classList.add('active');
-                render();
+                document.querySelectorAll('.heatmap-cell').forEach(c => c.classList.remove('active'));
+                renderList();
             };
             container.appendChild(allPill);
 
@@ -1026,6 +1450,7 @@
                 const pill = document.createElement('button');
                 pill.className = 'pill';
                 pill.textContent = DOMAIN_NAMES[domain] || domain;
+                pill.dataset.domain = domain;
                 pill.onclick = () => {
                     allPill.classList.remove('active');
                     if (activeDomains.has(domain)) {
@@ -1036,27 +1461,24 @@
                         pill.classList.add('active');
                     }
                     if (activeDomains.size === 0) allPill.classList.add('active');
-                    render();
+                    renderList();
                 };
                 container.appendChild(pill);
             });
         }
 
         function getFilteredThemes() {
-            let themes = THEMES_DATA.themes.filter(t => (t.delta?.composite || 0) > 0.01);
-            if (activeDomains.size > 0) {
-                themes = themes.filter(t => activeDomains.has(t.domain));
-            }
+            let themes = getAccelThemes();
+            if (activeDomains.size > 0) themes = themes.filter(t => activeDomains.has(t.domain));
             if (currentSort === 'delta') themes.sort((a, b) => (b.delta?.composite || 0) - (a.delta?.composite || 0));
             else if (currentSort === 'score') themes.sort((a, b) => b.composite_score - a.composite_score);
             else themes.sort((a, b) => b.item_count - a.item_count);
             return themes;
         }
 
-        function render() {
+        function renderList() {
             const themes = getFilteredThemes();
-            document.getElementById('count-label').textContent = `${themes.length} themes`;
-
+            document.getElementById('count-label').textContent = `${themes.length} テーマ`;
             const maxDelta = Math.max(...themes.map(t => t.delta?.composite || 0), 0.01);
 
             const html = themes.map((t, i) => {
@@ -1068,7 +1490,6 @@
                 const phase = getPhase(delta);
                 const isExpanded = expandedTheme === t.name;
 
-                // Build expanded panel content
                 const axesHtml = AXIS_KEYS.map(key => {
                     const score = t.axes[key]?.score || 0;
                     const scorePct = Math.round(score * 100);
@@ -1080,24 +1501,19 @@
                     </div>`;
                 }).join('');
 
-                // Top evidence snippets (max 3 from highest-scoring axes)
                 const topEvidence = AXIS_KEYS
                     .filter(k => t.axes[k]?.evidence?.length > 0)
                     .sort((a, b) => (t.axes[b]?.score || 0) - (t.axes[a]?.score || 0))
                     .slice(0, 2)
-                    .map(k => {
-                        const ev = t.axes[k].evidence[0];
-                        return `<div class="evidence-snippet">
-                            <div class="evidence-axis-label">${AXIS_LABELS[k]} ${Math.round(t.axes[k].score * 100)}%</div>
-                            ${ev}
-                        </div>`;
-                    }).join('');
+                    .map(k => `<div class="evidence-snippet">
+                        <div class="evidence-axis-label">${AXIS_LABELS[k]} ${Math.round(t.axes[k].score * 100)}%</div>
+                        ${t.axes[k].evidence[0]}
+                    </div>`).join('');
 
                 const scorerQuery = encodeURIComponent(t.name);
 
                 return `<div class="accel-wrapper ${isExpanded ? 'expanded' : ''}" data-theme="${t.name}">
                     <div class="accel-item" tabindex="0" role="button"
-                        aria-label="${displayName} - ${phase.label} - acceleration ${deltaStr}"
                         aria-expanded="${isExpanded}"
                         onclick="toggleExpand('${t.name}')"
                         onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleExpand('${t.name}')}">
@@ -1106,16 +1522,14 @@
                             <div class="accel-name">${displayName}</div>
                             <div class="accel-meta">
                                 <span class="domain-tag domain-${domain}">${DOMAIN_NAMES[domain] || domain}</span>
-                                <span>${t.item_count} sources</span>
+                                <span>${t.item_count}件</span>
                             </div>
                         </div>
                         <span class="phase-badge ${phase.cls} phase-col">${phase.label}</span>
                         <div class="accel-score">${(t.composite_score * 100).toFixed(0)}%</div>
                         <div class="accel-items-count">${t.item_count}</div>
                         <div class="accel-delta">
-                            <div class="delta-bar-wrap">
-                                <div class="delta-bar up" style="width:${pct}%"></div>
-                            </div>
+                            <div class="delta-bar-wrap"><div class="delta-bar" style="width:${pct}%"></div></div>
                             <span class="delta-value">${deltaStr}</span>
                             <span class="expand-icon">&#9662;</span>
                         </div>
@@ -1123,27 +1537,21 @@
                     <div class="expand-panel ${isExpanded ? 'open' : ''}">
                         <div class="expand-inner">
                             <div class="axes-row">${axesHtml}</div>
-                            ${topEvidence ? `<div class="evidence-preview"><h4>Key Evidence</h4>${topEvidence}</div>` : ''}
+                            ${topEvidence ? `<div class="evidence-preview"><h4>主要エビデンス</h4>${topEvidence}</div>` : ''}
                             <div class="expand-actions">
-                                <a href="#" class="btn-detail btn-primary" onclick="event.stopPropagation();openModal('${t.name}');return false;">Full Details</a>
-                                <a href="${SCORER_URL}?q=${scorerQuery}" target="_blank" rel="noopener" class="btn-detail btn-secondary" onclick="event.stopPropagation();">Open Scorer</a>
+                                <a href="#" class="btn-detail btn-primary" onclick="event.stopPropagation();openModal('${t.name}');return false;">全詳細</a>
+                                <a href="${SCORER_URL}?q=${scorerQuery}" target="_blank" rel="noopener" class="btn-detail btn-secondary" onclick="event.stopPropagation();">スコアラーを開く</a>
                             </div>
                         </div>
                     </div>
                 </div>`;
             }).join('');
 
-            document.getElementById('accel-list').innerHTML = html || '<div class="empty-state"><p>No accelerating themes found for this filter.</p></div>';
+            document.getElementById('accel-list').innerHTML = html || '<div class="empty-state"><p>該当するテーマがありません。</p></div>';
         }
 
-        // --- Inline expand/collapse ---
         window.toggleExpand = function(themeName) {
-            if (expandedTheme === themeName) {
-                expandedTheme = null;
-            } else {
-                expandedTheme = themeName;
-            }
-            // Update DOM without full re-render for smooth animation
+            expandedTheme = expandedTheme === themeName ? null : themeName;
             document.querySelectorAll('.accel-wrapper').forEach(wrapper => {
                 const name = wrapper.dataset.theme;
                 const panel = wrapper.querySelector('.expand-panel');
@@ -1160,18 +1568,16 @@
             });
         };
 
-        // --- Sort ---
         window.handleSort = function(type) {
             currentSort = type;
             expandedTheme = null;
-            render();
+            renderList();
         };
 
-        // --- Modal (full details) ---
+        // --- Modal ---
         window.openModal = function(themeName) {
             const theme = THEMES_DATA.themes.find(t => t.name === themeName);
             if (!theme) return;
-
             const displayName = formatThemeName(theme.name);
             const delta = theme.delta?.composite || 0;
             const deltaStr = delta > 0 ? `+${(delta * 100).toFixed(1)}%` : `${(delta * 100).toFixed(1)}%`;
@@ -1191,44 +1597,38 @@
 
             let evidenceHtml = '';
             for (const [key, axis] of Object.entries(theme.axes)) {
-                if (axis.evidence && axis.evidence.length > 0) {
-                    const scorePct = Math.round(axis.score * 100);
+                if (axis.evidence?.length > 0) {
                     evidenceHtml += `<div class="evidence-section">
-                        <h3>${AXIS_LABELS[key] || key} <span class="evidence-score">${scorePct}%</span></h3>
-                        <ul class="evidence-list">
-                            ${axis.evidence.map(e => `<li>${e}</li>`).join('')}
-                        </ul>
+                        <h3>${AXIS_LABELS[key] || key} <span class="evidence-score">${Math.round(axis.score * 100)}%</span></h3>
+                        <ul class="evidence-list">${axis.evidence.map(e => `<li>${e}</li>`).join('')}</ul>
                     </div>`;
                 }
             }
 
             let sourcesHtml = '';
-            if (theme.source_items && theme.source_items.length > 0) {
-                sourcesHtml = '<h3 style="margin-top:20px;font-size:0.82rem;font-weight:600;color:var(--text);margin-bottom:10px;">Sources</h3>';
+            if (theme.source_items?.length > 0) {
+                sourcesHtml = '<h3 style="margin-top:20px;font-size:0.82rem;font-weight:600;color:var(--text);margin-bottom:10px;">情報ソース</h3>';
                 sourcesHtml += theme.source_items.map(s => `<div class="source-item">
-                    <a href="${s.url}" target="_blank" rel="noopener">${s.title || 'Untitled'}</a>
-                    <div class="source-meta">${s.source} / ${s.date || 'unknown'}</div>
+                    <a href="${s.url}" target="_blank" rel="noopener">${s.title || '無題'}</a>
+                    <div class="source-meta">${s.source} / ${s.date || '日付不明'}</div>
                 </div>`).join('');
             }
 
-            const scorerQuery = encodeURIComponent(theme.name);
             document.getElementById('modal-body').innerHTML = `
                 <div class="modal-header">
                     <h2>${displayName}</h2>
                     <div class="modal-subtitle">
                         <span class="domain-tag domain-${domain}">${DOMAIN_NAMES[domain] || domain}</span>
                         <span class="phase-badge ${phase.cls}">${phase.label}</span>
-                        <span>${theme.item_count} sources</span>
-                        <span>Score: ${(theme.composite_score * 100).toFixed(1)}%</span>
+                        <span>${theme.item_count}件</span>
+                        <span>スコア: ${(theme.composite_score * 100).toFixed(1)}%</span>
                         <span class="modal-delta ${delta > 0 ? 'up' : ''}">${deltaStr}</span>
                     </div>
                 </div>
                 <div class="axes-row" style="margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid var(--border-light);">${axesHtml}</div>
-                ${evidenceHtml}
-                ${sourcesHtml}
-                <a href="${SCORER_URL}?q=${scorerQuery}" target="_blank" rel="noopener" class="scorer-link">Open in Structural Inflection Scorer</a>
+                ${evidenceHtml}${sourcesHtml}
+                <a href="${SCORER_URL}?q=${encodeURIComponent(theme.name)}" target="_blank" rel="noopener" class="scorer-link">詳細スコアリングを実行</a>
             `;
-
             document.getElementById('modal-overlay').classList.add('active');
             document.body.style.overflow = 'hidden';
             setTimeout(() => document.querySelector('.modal-close').focus(), 100);
@@ -1242,9 +1642,7 @@
 
         window.closeModal = function(event) {
             if (event && event.target !== document.getElementById('modal-overlay')) return;
-            if (document.getElementById('modal-overlay').classList.contains('active')) {
-                history.back();
-            }
+            if (document.getElementById('modal-overlay').classList.contains('active')) history.back();
         };
 
         window.addEventListener('popstate', () => {
@@ -1258,14 +1656,10 @@
             if (e.key === 'Tab') {
                 const modal = document.getElementById('modal-content');
                 const focusable = modal.querySelectorAll('button, a[href], [tabindex]:not([tabindex="-1"])');
-                if (focusable.length === 0) return;
-                const first = focusable[0];
-                const last = focusable[focusable.length - 1];
-                if (e.shiftKey && document.activeElement === first) {
-                    e.preventDefault(); last.focus();
-                } else if (!e.shiftKey && document.activeElement === last) {
-                    e.preventDefault(); first.focus();
-                }
+                if (!focusable.length) return;
+                const first = focusable[0], last = focusable[focusable.length - 1];
+                if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+                else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
             }
         });
 
