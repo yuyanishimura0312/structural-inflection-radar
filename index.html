@@ -1432,6 +1432,12 @@ domains + domain_keywords （ドメインとキーワード定義）<br>
                 <h2>フィルタとソート</h2>
                 <p>ドメインフィルターのピル（タブ）をクリックすると、特定のドメインのテーマだけを表示できます。複数選択も可能です。「全て」を押すとフィルタを解除します。ソートは右上のドロップダウンから「加速度順」「スコア順」「ソース件数順」を選択できます。</p>
 
+                <h2>表示の仕様上の注意</h2>
+                <p>パフォーマンスとファイルサイズの最適化のため、各テーマの<strong>情報ソース（source_items）は最大10件まで</strong>UIに載せています。ソース件数が10件を超える場合、モーダルの「情報ソース」欄には「全N件中、代表10件を表示」と注釈が表示されます。実際の件数（N）は一覧画面の「件数」列に表示される値と一致します。</p>
+                <div class="info-box">
+                    例: 「量子コンピューティング」は24件のソース記事に基づいてスコアリングされていますが、UI上では代表的な10件のみ閲覧可能です。AIのスコアリング判定は24件すべてを分析した結果です。
+                </div>
+
                 <h2>更新頻度とデータソース</h2>
                 <p>パイプラインはローカル環境で手動実行されます。実行コマンドは <code>python3 run_pipeline.py</code> です。ドメインを指定する場合は <code>python3 run_pipeline.py --domain energy</code> のように指定します。収集されたデータは <code>themes_data.js</code> としてエクスポートされ、GitHubへのpushで自動的に公開版が更新されます。</p>
             </div>
@@ -2143,7 +2149,12 @@ domains + domain_keywords （ドメインとキーワード定義）<br>
 
             let sourcesHtml = '';
             if (theme.source_items?.length > 0) {
-                sourcesHtml = '<h3 style="margin-top:20px;font-size:0.82rem;font-weight:600;color:var(--text);margin-bottom:10px;">情報ソース</h3>';
+                const shownCount = theme.source_items.length;
+                const totalCount = theme.item_count;
+                const note = shownCount < totalCount
+                    ? `<span style="font-size:0.72rem;font-weight:400;color:var(--text-muted);margin-left:6px;">（全${totalCount}件中、代表${shownCount}件を表示）</span>`
+                    : '';
+                sourcesHtml = `<h3 style="margin-top:20px;font-size:0.82rem;font-weight:600;color:var(--text);margin-bottom:10px;">情報ソース${note}</h3>`;
                 sourcesHtml += theme.source_items.map(s => `<div class="source-item">
                     <a href="${s.url}" target="_blank" rel="noopener">${s.title || '無題'}</a>
                     <div class="source-meta">${s.source} / ${s.date || '日付不明'}</div>
